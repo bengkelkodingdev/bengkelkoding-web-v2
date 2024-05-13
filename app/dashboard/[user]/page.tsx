@@ -6,7 +6,7 @@ const statistics = [
     data: "600",
     info: "Jumlah Mahasiswa",
     link: "superadmin/pengguna/mahasiswa",
-    color: "blue",
+    style: "from-blue-700 to-blue-600 focus:ring-blue-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@ const statistics = [
     data: "24",
     info: "Kelas Aktif",
     link: "superadmin/kelas",
-    color: "red",
+    style: "from-red-700 to-red-600 focus:ring-red-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +40,7 @@ const statistics = [
     data: "5",
     info: "Feedback belum dibaca",
     link: "superadmin/feedback",
-    color: "orange",
+    style: "from-orange-700 to-orange-600 focus:ring-orange-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +57,7 @@ const statistics = [
     data: "120",
     info: "Token aktif belum redeem",
     link: "superadmin/token",
-    color: "green",
+    style: "from-green-700 to-green-600 focus:ring-green-100",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ const HomeDashboardPage = () => {
           <Link
             key={index}
             href={s.link}
-            className={`flex items-center gap-4 p-6 lg:p-8 bg-gradient-to-r from-${s.color}-700 to-${s.color}-600 text-white rounded-lg hover:shadow-[rgba(0,_0,_0,_0.1)_0px_6px_10px] focus:ring-4 focus:ring-${s.color}-100 transition-all ease-out duration-200`}
+            className={`flex items-center gap-4 p-6 lg:p-8 bg-gradient-to-r text-white rounded-lg hover:shadow-[rgba(0,_0,_0,_0.1)_0px_6px_10px] focus:ring-4 transition-all ease-out duration-200 ${s.style}`}
           >
             <div className="w-max p-4 rounded-full bg-white fill-white bg-opacity-10">
               {s.icon}
