@@ -48,7 +48,7 @@ const Breadcrumb = ({ items }: BreadcrumbProps) => {
                 {item.text}
               </Link>
             ) : (
-              <span className="inline-flex items-center text-sm font-medium text-neutral2 md:ms-2">
+              <span className="inline-flex items-center text-sm font-medium text-neutral2">
                 {item.text}
               </span>
             )}
