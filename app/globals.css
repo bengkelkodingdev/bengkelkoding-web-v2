@@ -47,17 +47,25 @@ caption {
 
 /* Elevation */
 .elevation1 {
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.1);
 }
 .elevation2 {
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 .elevation3 {
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 .elevation4 {
-  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.1);
 }
 .elevation5 {
-  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.1);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
