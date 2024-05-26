@@ -2,6 +2,32 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Header from "./component/general/Header";
+import Footer from "./component/general/Footer";
+
+const statistik = {
+  total_mahasiswa: 2103,
+  total_rating: 342,
+  total_kursus: 5,
+};
+
+const faq = [
+  {
+    pertanyaan: "Apa itu Bengkel Koding?",
+    jawaban:
+      "Bengkel Koding adalah platform pembelajaran pemrograman yang menyediakan berbagai macam materi pemrograman yang dapat dipelajari oleh mahasiswa Universitas Dian Nuswantoro.",
+  },
+  {
+    pertanyaan: "Bagaimana cara mendaftar di Bengkel Koding?",
+    jawaban:
+      "Untuk mendaftar di Bengkel Koding, mahasiswa Universitas Dian Nuswantoro dapat mendaftar melalui website Bengkel Koding.",
+  },
+  {
+    pertanyaan: "Apakah Bengkel Koding menyediakan sertifikat?",
+    jawaban:
+      "Ya, Bengkel Koding menyediakan sertifikat bagi mahasiswa yang telah menyelesaikan pembelajaran di Bengkel Koding.",
+  },
+];
 
 const useSmoothScroll = (initialDirection: "right" | "left") => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -41,9 +67,6 @@ const useSmoothScroll = (initialDirection: "right" | "left") => {
 };
 
 const HomePage = () => {
-  const login = false;
-  const user = "superadmin";
-
   const scrollContainerRef = useSmoothScroll("right");
   const scrollContainerRefTwo = useSmoothScroll("left");
 
@@ -56,51 +79,32 @@ const HomePage = () => {
     }
   }, [scrollContainerRefTwo]);
 
+  // FAQ Open and Close
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const toggleFAQ = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
   return (
     <div className="bg-[#f7f9fa] z-50">
-      <header className="bg-[#f7f9fa] bg-opacity-80 backdrop-blur-md w-full sticky top-0">
-        <div className="max-w-7xl mx-auto px-2 lg:px-4 py-4 flex items-center justify-between">
-          <Image
-            src={"/logo/bengkelkoding-text.png"}
-            alt={"Bengkel Koding"}
-            width={110}
-            height={110}
-          />
-          <div className="flex gap-10">
-            <Link href={"/"} className="font-semibold text-primary1">
-              Home
-            </Link>
-            <Link
-              href={"/kelas"}
-              className="text-neutral1 hover:text-primary1 font-semibold"
-            >
-              Kelas
-            </Link>
-          </div>
-          {login ? (
-            <Link
-              href={`/dashboard/${user}`}
-              className="font-medium hover:text-primary1"
-            >
-              Dashboard
-            </Link>
-          ) : (
-            <Link
-              href={"/masuk"}
-              className="bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
-            >
-              Masuk
-            </Link>
-          )}
-        </div>
-      </header>
+      <Header />
 
-      <main className="w-full px-2 lg:px-4 py-4 min-h-screen">
-        <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex flex-col gap-4 lg:gap-6">
-            <h1 className="font-bold bg-gradient-to-r from-blue-700 to-cyan-400 bg-clip-text text-transparent">
-              Mari Belajar Mengubah Ide Menjadi Kode
-            </h1>
+      <main className="w-full px-2 md:px-4 py-4 min-h-screen">
+        <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col-reverse md:flex-row justify-between items-center gap-10">
+          <div className="flex flex-col gap-4 md:gap-6">
+            <div>
+              <p className="font-medium text-primary1">Mari Belajar</p>
+              <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl">
+                Mengubah{" "}
+                <strong className="font-bold bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">
+                  Ide
+                </strong>{" "}
+                Menjadi{" "}
+                <strong className="font-bold bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">
+                  Kode
+                </strong>
+              </h1>
+            </div>
             <p className="text-neutral1">
               Ayo mulai petualangan belajarmu bersama kami!
             </p>
@@ -111,18 +115,20 @@ const HomePage = () => {
               Gabung Discord
             </Link>
           </div>
+
           <Image
             src={"/img/bengkod.png"}
             alt={"Home Image"}
-            width={400}
-            height={400}
-            className="w-full lg:w-[80%]"
+            width={380}
+            height={380}
+            className="w-[90%] lg:w-[80%]"
           />
         </article>
 
-        <article className="max-w-4xl mx-auto my-2 lg:my-10 2xl:my-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Statistik singkat */}
+        <article className="max-w-[90%] md:max-w-2xl lg:max-w-4xl mx-auto my-10 md:my-10 2xl:my-12 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 lg:gap-12 2xl:gap-16">
+          {/* Total Mahasiswa */}
           <div className="flex items-center gap-4">
-            {/*  */}
             <div className="bg-blue-100 fill-blue-600 p-4 rounded-md">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -134,13 +140,15 @@ const HomePage = () => {
               </svg>
             </div>
             <div>
-              <strong className="text-3xl text-blue-600">1123+</strong>
+              <strong className="text-3xl text-blue-600">
+                {statistik.total_mahasiswa}+
+              </strong>
               <p className="text-neutral1 font-medium">Mahasiswa</p>
             </div>
           </div>
 
-          {/*  */}
-          <div className="flex items-center gap-4">
+          {/* Total Rating Bintang 5 */}
+          <div className="flex flex-row-reverse md:flex-row items-center gap-4">
             <div className="bg-yellow-100 fill-yellow-500 p-4 rounded-md">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -152,12 +160,14 @@ const HomePage = () => {
               </svg>
             </div>
             <div>
-              <strong className="text-3xl text-yellow-500">113+</strong>
+              <strong className="text-3xl text-yellow-500">
+                {statistik.total_rating}+
+              </strong>
               <p className="text-neutral1 font-medium">Bintang 5</p>
             </div>
           </div>
 
-          {/*  */}
+          {/* Total Kursus */}
           <div className="flex items-center gap-4">
             <div className="bg-red-100 fill-red-600 p-4 rounded-md">
               <svg
@@ -170,7 +180,9 @@ const HomePage = () => {
               </svg>
             </div>
             <div>
-              <strong className="text-3xl text-red-600">5+</strong>
+              <strong className="text-3xl text-red-600">
+                {statistik.total_kursus}+
+              </strong>
               <p className="text-neutral1 font-medium">Kursus</p>
             </div>
           </div>
@@ -178,15 +190,18 @@ const HomePage = () => {
 
         <article className="bg-white rounded-xl w-full py-10 2xl:py-20 mx-auto my-10 flex justify-between items-center gap-10">
           <div className="max-w-5xl mx-auto">
-            <div className="max-w-[60%]">
+            {/* Judul dan Deskripsi Singkat */}
+            <div className="md:max-w-[60%]">
               <p className="font-medium text-primary1">Kenapa kami?</p>
-              <strong className="text-3xl font-semibold">
+              <strong className="text-xl md:text-2xl lg:text-3xl font-semibold">
                 Support Penuh Akan Kalian Dapatkan Jika Bergabung Dengan Kami
               </strong>
             </div>
+
             <div className="flex gap-10">
-              <div className="mt-4">
-                <div className="flex items-center gap-4 border-b py-6">
+              <div className="mt-3 md:mt-4">
+                {/* 1 */}
+                <div className="flex items-center gap-3 md:gap-4 border-b py-4 md:py-6">
                   <div className="bg-orange-100 fill-orange-600 p-3 rounded-full">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -198,10 +213,10 @@ const HomePage = () => {
                     </svg>
                   </div>
                   <div>
-                    <strong className="font-semibold text-lg">
+                    <strong className="font-semibold text-base md:text-lg">
                       Proyek Koding Praktis
                     </strong>
-                    <p className="text-neutral1">
+                    <p className="text-neutral1 text-xs md:text-base">
                       Pengalaman ngoding langsung dengan proyek-proyek koding
                       yang relevan untuk meningkatkan keterampilanmu.
                     </p>
@@ -209,7 +224,7 @@ const HomePage = () => {
                 </div>
 
                 {/* 2 */}
-                <div className="flex items-center gap-4 border-b py-6">
+                <div className="flex items-center gap-3 md:gap-4 border-b py-4 md:py-6">
                   <div className="bg-purple-100 fill-purple-600 p-3 rounded-full">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -221,10 +236,10 @@ const HomePage = () => {
                     </svg>
                   </div>
                   <div>
-                    <strong className="font-semibold text-lg">
+                    <strong className="font-semibold text-base md:text-lg">
                       Live Class Interaktif
                     </strong>
-                    <p className="text-neutral1">
+                    <p className="text-neutral1 text-xs md:text-base">
                       Bergabunglah dalam kelas langsung yang interaktif untuk
                       belajar dari instruktur terbaik.
                     </p>
@@ -232,7 +247,7 @@ const HomePage = () => {
                 </div>
 
                 {/* 3 */}
-                <div className="flex items-center gap-4 border-b py-6">
+                <div className="flex items-center gap-3 md:gap-4 border-b py-4 md:py-6">
                   <div className="bg-cyan-100 fill-cyan-600 p-3 rounded-full">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -244,29 +259,31 @@ const HomePage = () => {
                     </svg>
                   </div>
                   <div>
-                    <strong className="font-semibold text-lg">
+                    <strong className="font-semibold text-base md:text-lg">
                       Dukungan 1-on-1
                     </strong>
-                    <p className="text-neutral1">
+                    <p className="text-neutral1 text-xs md:text-base">
                       Kami memberikan dukungan pribadi untuk membantu kamu
                       mencapai tujuan belajarmu.
                     </p>
                   </div>
                 </div>
               </div>
+
               <Image
-                src={"/img/bengkod.png"}
+                src={"/img/bengkod-2.png"}
                 alt="bengkod"
-                width={400}
-                height={400}
+                width={310}
+                height={310}
                 className="h-max hidden md:block"
               />
             </div>
           </div>
         </article>
 
-        {/*  */}
+        {/* Overview Kursus di Bengkel Koding */}
         <article className="max-w-5xl py-10 mx-auto">
+          {/* Navigasi untuk Filter Konten */}
           <nav className="ml-10 flex">
             <div className="bg-white text-primary1 font-medium px-4 py-2 rounded-t-md cursor-pointer">
               <p>Kursus</p>
@@ -275,8 +292,10 @@ const HomePage = () => {
               <p>Workshop</p>
             </div>
           </nav>
-          <div className="bg-white rounded-xl px-6 py-5 flex">
-            <div className="w-[30%] py-4 flex flex-col justify-between">
+
+          <div className="bg-white rounded-xl px-6 py-5 flex flex-col md:flex-row">
+            {/* Deskripsi Singkat */}
+            <div className="md:w-[30%] py-4 flex flex-col justify-between">
               <div>
                 <h4 className="text-xl font-semibold">
                   Kursus di Bengkel Koding
@@ -295,7 +314,8 @@ const HomePage = () => {
                   molestiae! Non?
                 </p>
               </div>
-              <div className="flex gap-2">
+
+              {/* <div className="flex gap-2">
                 <div className="fill-neutral1 border rounded-full p-2 hover:bg-neutral5 cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -316,9 +336,10 @@ const HomePage = () => {
                     <path d="M420-308q-8 0-14-5.5t-6-14.5v-304q0-9 6-14.5t14-5.5q2 0 14 6l145 145q5 5 7 10t2 11q0 6-2 11t-7 10L434-314q-3 3-6.5 4.5T420-308Z" />
                   </svg>
                 </div>
-              </div>
+              </div> */}
+
             </div>
-            <div className="w-[70%] flex gap-4 overflow-x-auto no-scrollbar py-4">
+            <div className="md:w-[70%] flex gap-4 overflow-x-auto no-scrollbar py-4">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Link
                   key={index}
@@ -380,7 +401,7 @@ const HomePage = () => {
           </div>
         </article>
 
-        {/* tentang bengkel koding */}
+        {/* Tentang Bengkel Koding */}
         <article
           className="max-w-5xl bg-primary1 text-white rounded-xl p-6 2xl:p-10 mx-auto my-10 2xl:mb-20 bg-no-repeat bg-cover"
           style={{ backgroundImage: "url('/img/h6-large.png')" }}
@@ -410,17 +431,19 @@ const HomePage = () => {
           </div>
         </article>
 
-        {/* testimoni mahasiswa */}
+        {/* Testimoni Mahasiswa */}
         <article
-          className="w-full rounded-xl bg-primary5 mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col justify-between items-center gap-6 px-2 py-10 2xl:py-20 bg-no-repeat bg-cover"
+          className="w-full rounded-xl bg-primary5 mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col justify-between items-center gap-6 py-10 2xl:py-20 bg-no-repeat bg-cover"
           style={{ backgroundImage: "url('/img/bg-testimoni.png')" }}
         >
-          <h3 className="text-2xl font-semibold">Testimoni Mahasiswa</h3>
-          <div className="w-full overflow-hidden flex flex-col gap-4">
-            {/* 1 */}
+          <h3 className="text-xl lg:text-2xl font-semibold">
+            Testimoni Mahasiswa
+          </h3>
+          <div className="w-full overflow-hidden flex flex-col gap-3 lg:gap-4">
+            {/* Testimoni Atas */}
             <div
               ref={scrollContainerRef}
-              className="flex gap-4 overflow-x-auto no-scrollbar"
+              className="flex gap-3 lg:gap-4 overflow-x-auto no-scrollbar"
             >
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
@@ -445,10 +468,10 @@ const HomePage = () => {
               ))}
             </div>
 
-            {/* 2 */}
+            {/* Testimoni Bawah */}
             <div
               ref={scrollContainerRefTwo}
-              className="flex gap-4 overflow-x-scroll no-scrollbar"
+              className="flex gap-3 lg:gap-4 overflow-x-scroll no-scrollbar"
             >
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
@@ -475,99 +498,55 @@ const HomePage = () => {
           </div>
         </article>
 
-        {/* faq */}
-        <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col justify-between items-center gap-6">
-          <h3 className="text-2xl font-semibold">Frequently Asked Questions</h3>
+        {/* FAQ */}
+        <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col justify-between items-center py-10 2xl:py-20 gap-6">
+          <h3 className="text-xl lg:text-2xl font-semibold">
+            Pertanyaan yang Sering Ditanyakan
+          </h3>
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-2">
-            <div className="w-full flex flex-col gap-2">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <button
-                  key={index}
-                  className="w-full text-left py-4 px-6 bg-white rounded-lg cursor-pointer hover:shadow-md focus:shadow-md transition-all ease-in-out duration-200"
-                >
-                  {/* question */}
-                  <div className="flex justify-between items-center">
-                    <strong className="font-semibold text-neutral1">
-                      Apakah bumi itu bulat?
-                    </strong>
+            {faq.map((f, index) => (
+              <button
+                key={index}
+                onClick={() => toggleFAQ(index)}
+                className="h-max w-full text-left py-4 px-6 bg-white rounded-lg cursor-pointer focus:shadow-[rgba(7,_65,_210,_0.1)_0px_4px_10px] hover:shadow-[rgba(7,_65,_210,_0.1)_0px_4px_10px] transition-all ease-in-out duration-200"
+              >
+                {/* pertanyaan */}
+                <div className="flex justify-between items-center gap-2">
+                  <strong className="font-semibold text-neutral1 text-sm md:text-base">
+                    {f.pertanyaan}
+                  </strong>
+                  <div className="w-8 h-8">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="30px"
                       viewBox="0 0 24 24"
                       width="30px"
-                      className="fill-neutral1"
+                      className={`fill-neutral1 w-8 h-8 transform transition-transform duration-200 ${
+                        openIndex === index ? "rotate-180" : ""
+                      }`}
                     >
                       <path d="M0 0h24v24H0V0z" fill="none" />
                       <path d="M8.71 11.71l2.59 2.59c.39.39 1.02.39 1.41 0l2.59-2.59c.63-.63.18-1.71-.71-1.71H9.41c-.89 0-1.33 1.08-.7 1.71z" />
                     </svg>
                   </div>
-                  {/* answer */}
-                  <p className="hidden text-neutral2 pt-4">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Corrupti impedit autem minus, in unde nostrum qui labore
-                    ullam asperiores laudantium.
-                  </p>
-                </button>
-              ))}
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <button
-                  key={index}
-                  className="w-full text-left py-4 px-6 bg-white rounded-lg cursor-pointer hover:shadow-md focus:shadow-md transition-all ease-in-out duration-200"
+                </div>
+                {/* jawaban */}
+                <div
+                  className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
+                    openIndex === index ? "max-h-screen" : "max-h-0"
+                  }`}
                 >
-                  {/* question */}
-                  <div className="flex justify-between items-center">
-                    <strong className="font-semibold text-neutral1">
-                      Apakah bumi itu bulat?
-                    </strong>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="30px"
-                      viewBox="0 0 24 24"
-                      width="30px"
-                      className="fill-neutral1"
-                    >
-                      <path d="M0 0h24v24H0V0z" fill="none" />
-                      <path d="M8.71 11.71l2.59 2.59c.39.39 1.02.39 1.41 0l2.59-2.59c.63-.63.18-1.71-.71-1.71H9.41c-.89 0-1.33 1.08-.7 1.71z" />
-                    </svg>
-                  </div>
-                  {/* answer */}
-                  <p className="hidden text-neutral2 pt-4">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Corrupti impedit autem minus, in unde nostrum qui labore
-                    ullam asperiores laudantium.
+                  <p className="text-neutral2 pt-4 text-xs md:text-sm">
+                    {f.jawaban}
                   </p>
-                </button>
-              ))}
-            </div>
+                </div>
+              </button>
+            ))}
           </div>
         </article>
       </main>
 
-      <footer className="w-full px-2 lg:px-4 py-4">
-        <div className="max-w-7xl mx-auto border-t py-10">Bengkel Koding</div>
-        <div className="max-w-7xl mx-auto border-t pt-4">@2024 Copyright</div>
-      </footer>
-
-      {/* <div className="p-10 flex flex-col gap-2">
-        <div className="w-max py-2 px-4 bg-green3 text-green1 rounded-md">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt,
-          autem.
-        </div>
-        <div className="w-max py-2 px-4 bg-red3 text-red1 rounded-md">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt,
-          autem.
-        </div>
-        <div className="w-max py-2 px-4 bg-yellow3 text-yellow1 rounded-md">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt,
-          autem.
-        </div>
-        <div className="w-max py-2 px-4 bg-blue3 text-blue1 rounded-md">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt,
-          autem.
-        </div>
-      </div> */}
+      <Footer />
     </div>
   );
 };
