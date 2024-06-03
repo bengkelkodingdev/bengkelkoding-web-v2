@@ -78,7 +78,7 @@ const KelasPage = () => {
             di Bengkel Koding
           </h2>
           <p className="text-neutral2">
-            Pelajari kursus ini untuk mengasah keterampilan Anda ke level
+            Pelajari kursus ini untuk mengasah keterampilanmu ke level
             berikutnya!
           </p>
         </div>
@@ -112,28 +112,6 @@ const KelasPage = () => {
               />
             </div>
           </div>
-
-          {/* Navigasi */}
-          {/* <nav className="w-max mx-auto flex gap-2 lg:gap-4">
-            <button
-              type="button"
-              className="w-max px-3 py-1 text-sm bg-primary1 text-white font-medium rounded-md transition-all ease-in-out duration-200"
-            >
-              Semua Kursus
-            </button>
-            <button
-              type="button"
-              className="w-max px-3 py-1 text-sm bg-white text-primary1 font-medium hover:bg-slate-100 rounded-md transition-all ease-in-out duration-200"
-            >
-              Kursus
-            </button>
-            <button
-              type="button"
-              className="w-max px-3 py-1 text-sm bg-white text-primary1 font-medium hover:bg-slate-100 rounded-md transition-all ease-in-out duration-200"
-            >
-              Workshop
-            </button>
-          </nav> */}
         </div>
 
         {/* List Kursus */}
