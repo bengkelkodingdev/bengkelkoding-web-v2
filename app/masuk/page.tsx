@@ -10,13 +10,15 @@ const MasukPage = () => {
       <div className="h-screen mx-auto md:w-[40%] lg:p-5 flex items-center">
         <div className="max-w-96 px-4 lg:px-0 mx-auto">
           <div>
-            <Image
-              src={"/logo/bengkelkoding-text.png"}
-              alt="Bengkel Koding"
-              width={150}
-              height={150}
-              className="mx-auto"
-            />
+            <Link href={"/"}>
+              <Image
+                src={"/logo/bengkelkoding-text.png"}
+                alt="Bengkel Koding"
+                width={150}
+                height={150}
+                className="mx-auto"
+              />
+            </Link>
             <div className="mt-8 mb-4 lg:mt-10 lg:mb-6">
               <h2 className="font-semibold">Masuk</h2>
               <p className="text-neutral3">
@@ -39,7 +41,12 @@ const MasukPage = () => {
               placeholder="Input password anda"
               required
             />
-            <Link href={"/lupa-password"} className="block -mt-3 mb-8 lg:mb-10 text-neutral3 hover:underline"><p>Lupa password?</p></Link>
+            <Link
+              href={"/lupa-password"}
+              className="block -mt-3 mb-8 lg:mb-10 text-neutral3 hover:underline"
+            >
+              <p>Lupa password?</p>
+            </Link>
             <Button text="Masuk" className="w-full" />
           </form>
         </div>

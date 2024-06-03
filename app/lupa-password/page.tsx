@@ -10,13 +10,15 @@ const LupaPasswordPage = () => {
       <div className="h-screen mx-auto md:w-[40%] lg:p-5 flex items-center">
         <div className="max-w-96 px-4 lg:px-0 mx-auto">
           <div>
-            <Image
-              src={"/logo/bengkelkoding-text.png"}
-              alt="Bengkel Koding"
-              width={150}
-              height={150}
-              className="mx-auto"
-            />
+            <Link href={"/"}>
+              <Image
+                src={"/logo/bengkelkoding-text.png"}
+                alt="Bengkel Koding"
+                width={150}
+                height={150}
+                className="mx-auto"
+              />
+            </Link>
             <div className="mt-8 mb-4 lg:mt-10 lg:mb-6">
               <h2 className="font-semibold">Lupa Password</h2>
               <p className="text-neutral3">
@@ -57,7 +59,8 @@ const LupaPasswordPage = () => {
               Lupa Password!
             </h1>
             <p>
-              Hubungi kami jika anda mengalami kesulitan <strong>bengkelkodingudinus@gmail.com</strong>
+              Hubungi kami jika anda mengalami kesulitan{" "}
+              <strong>bengkelkodingudinus@gmail.com</strong>
             </p>
           </div>
         </div>
