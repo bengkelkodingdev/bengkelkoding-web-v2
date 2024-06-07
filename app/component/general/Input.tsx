@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  type: "text" | "password" | "email" | "number";
+  type: "text" | "password" | "email" | "number" | "date";
   name: string;
   placeholder?: string;
   errorMessage?: string;
@@ -14,7 +14,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const Input = ({
   label,
-  type = "text",
+  type,
   name,
   placeholder,
   errorMessage,
