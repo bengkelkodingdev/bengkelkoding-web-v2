@@ -2,12 +2,53 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
+import { useEffect, useState } from "react";
 
 const DetailKelasPageSesi = () => {
   const params = useParams();
   const sesi = params.sesi;
 
+  // state qr
+  const [qrText, setQrText] = useState<string>("");
+  const [countdown, setCountdown] = useState<number>(20);
+
   // button generate qrcode
+  const generateRandomText = async () => {
+    try {
+      const newQrValue = `pertemuan-${sesi}`;
+      console.log("qr session", newQrValue);
+      setQrText(newQrValue);
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+    }
+  };
+
+  useEffect(() => {
+    let qrTimeout: ReturnType<typeof setTimeout> | undefined;
+    let countdownInterval: ReturnType<typeof setInterval> | undefined;
+
+    if (qrText) {
+      setCountdown(25); // Reset countdown ke 20
+
+      countdownInterval = setInterval(() => {
+        setCountdown((prevCount) => prevCount - 1);
+      }, 1000); // Memperbarui countdown setiap 1 detik
+
+      qrTimeout = setTimeout(() => {
+        setQrText("");
+        clearInterval(countdownInterval); // Menghentikan interval setelah QR Code hilang
+      }, 25000);
+    }
+    return () => {
+      if (qrTimeout) {
+        clearTimeout(qrTimeout);
+        window.location.reload();
+      }
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+    };
+  }, [qrText]);
 
   return (
     <>
@@ -37,7 +78,10 @@ const DetailKelasPageSesi = () => {
                 <p className="font-medium text-xl text-[#1b2650] ">izin</p>
               </div>
             </div>
-            <button className="btn-generate  w-1/4  mt-5 p-3 font-semibold text-white border-2 border-slate-200 bg-[#4780ea] 4780ea hover:bg-[#3263de] rounded-lg">
+            <button
+              onClick={generateRandomText}
+              className="btn-generate  w-1/4  mt-5 p-3 font-semibold text-white border-2 border-slate-200 bg-[#4780ea] 4780ea hover:bg-[#3263de] rounded-lg"
+            >
               Genetate Qr
             </button>
           </div>
@@ -46,12 +90,16 @@ const DetailKelasPageSesi = () => {
             <div className="canvas-qr">
               <div className=" flex items-center justify-center border-2 border-gray-200 border-dashed h-[50vh] rounded-lg dark:border-gray-700">
                 {/* <p>QR Code belum dihasilkan</p> */}
-                <div className="w-full p-5 ">
-                  <QRCodeSVG className="w-full" height={300} value="tes" />
-                  <p className="pt-5 text-center">
-                    QR Code akan hilang dalam x detik
-                  </p>
-                </div>
+                {qrText ? (
+                  <div className="w-full p-5 ">
+                    <QRCodeSVG className="w-full" height={300} value={qrText} />
+                    <p className="pt-5 text-center">
+                      QR Code akan hilang dalam {countdown} detik
+                    </p>
+                  </div>
+                ) : (
+                  <p>QR Code belum dihasilkan</p>
+                )}
               </div>
             </div>
           </div>
