@@ -1,10 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 
 const DetailKelasPageSesi = () => {
   const params = useParams();
   const sesi = params.sesi;
+
+  // button generate qrcode
+
   return (
     <>
       <div className=" flex flex-col w-full ">
@@ -41,7 +45,13 @@ const DetailKelasPageSesi = () => {
           <div className="up-right lg:w-1/3">
             <div className="canvas-qr">
               <div className=" flex items-center justify-center border-2 border-gray-200 border-dashed h-[50vh] rounded-lg dark:border-gray-700">
-                <p>QR Code belum dihasilkan</p>
+                {/* <p>QR Code belum dihasilkan</p> */}
+                <div className="w-full p-5 ">
+                  <QRCodeSVG className="w-full" height={300} value="tes" />
+                  <p className="pt-5 text-center">
+                    QR Code akan hilang dalam x detik
+                  </p>
+                </div>
               </div>
             </div>
           </div>
