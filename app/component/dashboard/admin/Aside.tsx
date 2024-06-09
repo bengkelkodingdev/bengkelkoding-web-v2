@@ -10,6 +10,7 @@ interface asideProps {
 
 const navigations = {
   superadmin: [
+    // dashboard
     {
       icon: (
         <svg
@@ -26,6 +27,7 @@ const navigations = {
       link: "/dashboard/superadmin",
       child: false,
     },
+    // kelas
     {
       icon: (
         <svg
@@ -42,6 +44,24 @@ const navigations = {
       link: "/dashboard/superadmin/kelas",
       child: false,
     },
+    // Absensi
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+        >
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm1 14H8c-.55 0-1-.45-1-1s.45-1 1-1h5c.55 0 1 .45 1 1s-.45 1-1 1zm3-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z" />
+        </svg>
+      ),
+      title: "Absensi",
+      link: "/dashboard/superadmin/absensi",
+      child: false,
+    },
+    // pengguna
     {
       icon: (
         <svg
@@ -76,6 +96,7 @@ const navigations = {
         },
       ],
     },
+    // kategori kelas
     {
       icon: (
         <svg
@@ -93,6 +114,7 @@ const navigations = {
       title: "Kategori Kelas",
       link: "/dashboard/superadmin/kategori-kelas",
     },
+    // kursus
     {
       icon: (
         <svg
@@ -108,6 +130,7 @@ const navigations = {
       title: "Kursus",
       link: "/dashboard/superadmin/kursus",
     },
+    // pertanyaan
     {
       icon: (
         <svg
@@ -123,6 +146,7 @@ const navigations = {
       title: "Pertanyaan",
       link: "/dashboard/superadmin/pertanyaan",
     },
+    // feedback
     {
       icon: (
         <svg
@@ -138,6 +162,7 @@ const navigations = {
       title: "Feedback",
       link: "/dashboard/superadmin/feedback",
     },
+    // token
     {
       icon: (
         <svg
@@ -154,6 +179,7 @@ const navigations = {
       title: "Token",
       link: "/dashboard/superadmin/token",
     },
+    // aset gambar
     {
       icon: (
         <svg
@@ -177,6 +203,7 @@ const navigations = {
       title: "Aset Gambar",
       link: "/dashboard/superadmin/aset-gambar",
     },
+    // log aktivitas
     {
       icon: (
         <svg
@@ -197,6 +224,7 @@ const navigations = {
     },
   ],
   admin: [
+    // dashboard
     {
       icon: (
         <svg
@@ -213,6 +241,7 @@ const navigations = {
       link: "/dashboard/admin",
       child: false,
     },
+    // kelas
     {
       icon: (
         <svg
@@ -227,6 +256,23 @@ const navigations = {
       ),
       title: "Kelas",
       link: "/dashboard/admin/kelas",
+      child: false,
+    },
+    // Absensi
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+        >
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm1 14H8c-.55 0-1-.45-1-1s.45-1 1-1h5c.55 0 1 .45 1 1s-.45 1-1 1zm3-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z" />
+        </svg>
+      ),
+      title: "Absensi",
+      link: "/dashboard/admin/absensi",
       child: false,
     },
     {
@@ -362,6 +408,7 @@ const navigations = {
     },
   ],
   dosen: [
+    // dashboard
     {
       icon: (
         <svg
@@ -379,6 +426,7 @@ const navigations = {
       child: false,
       children: null,
     },
+    // kelas
     {
       icon: (
         <svg
@@ -396,8 +444,26 @@ const navigations = {
       child: false,
       children: null,
     },
+    // Absensi
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+        >
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm1 14H8c-.55 0-1-.45-1-1s.45-1 1-1h5c.55 0 1 .45 1 1s-.45 1-1 1zm3-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z" />
+        </svg>
+      ),
+      title: "Absensi",
+      link: "/dashboard/dosen/absensi",
+      child: false,
+    },
   ],
   asisten: [
+    // dsahboard
     {
       icon: (
         <svg
@@ -415,6 +481,7 @@ const navigations = {
       child: false,
       children: null,
     },
+    // kelas
     {
       icon: (
         <svg
@@ -431,6 +498,23 @@ const navigations = {
       link: "/dashboard/asisten/kelas",
       child: false,
       children: null,
+    },
+    // Absensi
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+        >
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm1 14H8c-.55 0-1-.45-1-1s.45-1 1-1h5c.55 0 1 .45 1 1s-.45 1-1 1zm3-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z" />
+        </svg>
+      ),
+      title: "Absensi",
+      link: "/dashboard/asisten/absensi",
+      child: false,
     },
   ],
 };
@@ -465,7 +549,7 @@ const Aside = ({ user, open, setOpen }: asideProps) => {
 
   const setOpenFalse = () => {
     setOpen(false);
-  }
+  };
 
   return (
     <div className="fixed h-screen">

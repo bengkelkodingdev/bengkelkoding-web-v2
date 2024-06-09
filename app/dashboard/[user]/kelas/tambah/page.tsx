@@ -55,6 +55,27 @@ const DashboardTambahKelasPage = () => {
             <Input type="text" label="UAS" name="uas" required />
           </div>
         </div>
+        <div>
+          <p className="font-semibold text-neutral2 text-base">
+            Kontrak Pertemuan
+          </p>
+          <p className="text-neutral3 text-sm">Ketentuan penjadwalan</p>
+          <div className="grid grid-cols-3 gap-x-4 mt-2">
+            <Input type="text" label="Maksimal izin" name="maksizin" required />
+            <Input
+              type="number"
+              label="Jumlah Pertemuan"
+              name="jmlpertemuan"
+              required
+            />
+            <Input
+              type="date"
+              label="Mulai Pertemuan"
+              name="mulaipertemuan"
+              required
+            />
+          </div>
+        </div>
 
         <div className="text-end">
           <Button text="Tambah Kursus" />
