@@ -7,8 +7,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   placeholder?: string;
   errorMessage?: string;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  value?: string;
   required?: boolean;
 }
 
@@ -18,8 +16,6 @@ const Input = ({
   name,
   placeholder,
   errorMessage,
-  onChange,
-  value,
   required = false,
   ...rest
 }: InputProps) => {
@@ -40,7 +36,6 @@ const Input = ({
           name={name}
           id={name}
           placeholder={placeholder}
-          value={value}
           className={`block w-full px-3 py-2 border ${
             errorMessage ? "border-red1 focus:ring-red3" : "border-neutral4"
           } rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm`}

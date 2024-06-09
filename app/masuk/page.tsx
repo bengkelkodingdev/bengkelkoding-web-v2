@@ -1,10 +1,69 @@
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import Input from "../component/general/Input";
 import Button from "../component/general/Button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { login } from "../api/auth";
+import { LoginResponse, Meta } from "../component/types/auth";
+import Alert from "../component/general/Alert";
 
 const MasukPage = () => {
+  // for input data
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // for status response
+  const [meta, setMeta] = useState<Meta>();
+  const [showAlert, setShowAlert] = useState(false);
+
+  // for user role path
+  const roleToPath = {
+    student: "/dashboard/mahasiswa",
+    assistant: "/dashboard/assistant",
+    lecture: "/dashboard/lecture",
+    admin: "/dashboard/admin",
+    superadmin: "/dashboard/superadmin",
+  };
+
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // call login api
+      const response: LoginResponse = await login(email, password);
+
+      // Set status message and show alert
+      setMeta(response.meta);
+      setShowAlert(true);
+
+      // Handle login success
+      if (response.meta.success) {
+        // set cookie
+        Cookies.set("access_token", response.token);
+        // push to dashboard
+        const path =
+          roleToPath[response.data.role as keyof typeof roleToPath] || "/";
+        router.push(path);
+      } else {
+        setMeta(response.meta);
+        setShowAlert(true);
+      }
+    } catch (error) {
+      // Handle login error
+      setMeta({
+        status_code: 400,
+        success: false,
+        message: "Gagal Masuk. Email atau Password Anda Salah!",
+      });
+      setShowAlert(true);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex">
       <div className="h-screen mx-auto md:w-[40%] lg:p-5 flex items-center">
@@ -26,13 +85,14 @@ const MasukPage = () => {
               </p>
             </div>
           </div>
-          <form action="">
+          <form onSubmit={handleLogin}>
             <Input
               label="Email"
               type="email"
               name="email"
               placeholder="11120210001@mhs.dinus.ac.id"
               required
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               label="Password"
@@ -40,6 +100,7 @@ const MasukPage = () => {
               name="password"
               placeholder="Input password anda"
               required
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Link
               href={"/lupa-password"}
@@ -47,8 +108,15 @@ const MasukPage = () => {
             >
               <p>Lupa password?</p>
             </Link>
-            <Button text="Masuk" className="w-full" />
+            <Button type="submit" text="Masuk" className="w-full" />
           </form>
+          {showAlert && (
+            <Alert
+              message={meta.message}
+              onClose={() => setShowAlert(false)}
+              status={meta.status_code}
+            />
+          )}
         </div>
       </div>
       <div className="hidden md:block h-screen w-[60%] py-3 pr-3 lg:p-5">
