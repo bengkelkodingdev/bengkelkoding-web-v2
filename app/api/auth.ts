@@ -20,3 +20,18 @@ export const login = async (
     throw new Error("Login failed");
   }
 };
+
+// Logout
+export const logout = async (access_token: string): Promise<void> => {
+  try {
+    const apiUrl = `${API_URL}/api/v1/auth/logout`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    };
+    await Axios.post(apiUrl, null, config);
+  } catch (error) {
+    throw new Error("Logout failed");
+  }
+};
