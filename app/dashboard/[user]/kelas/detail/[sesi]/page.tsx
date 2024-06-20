@@ -53,30 +53,43 @@ const DetailKelasPageSesi = () => {
   return (
     <>
       <div className=" flex flex-col w-full ">
-        <div className="flex flex-col lg:flex-row justify-between  w-full  ">
+        <div className="flex flex-col lg:flex-row gap-4 justify-between  w-full  ">
           {/* kiri */}
-          <div className="up-left flex flex-col gap-2 lg:w-1/2">
-            <div className="profil-cardLecture flex flex-col gap-2 h-[20vh] rounded-lg p-2 bg-gradient-to-r from-[#3263de]  to-[#6aa2f0] ">
-              <div className="info-week gap-2 bg-slate-50 rounded-lg w-[80%] lg:w-[45%] flex p-2">
-                <div className="rounded-full w-[13%]  bg-orange-300"></div>
-                <h1 className="font-semibold text-2xl">Pertemuan {sesi}</h1>
+          <div className="up-left flex flex-col gap-2 lg:w-2/3">
+
+            <div className="flex justify-between pb-4 mb-4  ">
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center me-3">
+                  <svg className="w-6 h-6 text-gray-500 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 19">
+                    <path d="M14.5 0A3.987 3.987 0 0 0 11 2.1a4.977 4.977 0 0 1 3.9 5.858A3.989 3.989 0 0 0 14.5 0ZM9 13h2a4 4 0 0 1 4 4v2H5v-2a4 4 0 0 1 4-4Z"/>
+                    <path d="M5 19h10v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2ZM5 7a5.008 5.008 0 0 1 4-4.9 3.988 3.988 0 1 0-3.9 5.859A4.974 4.974 0 0 1 5 7Zm5 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm5-1h-.424a5.016 5.016 0 0 1-1.942 2.232A6.007 6.007 0 0 1 17 17h2a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5ZM5.424 9H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h2a6.007 6.007 0 0 1 4.366-5.768A5.016 5.016 0 0 1 5.424 9Z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h5 className="leading-none text-2xl font-bold text-gray-900 pb-1">Web Development Bengkel Koding</h5>
+                  <p className="text-sm font-normal text-gray-500">ETIKA KARTIKADARMA, M.Kom</p>
+                </div>
               </div>
-              <div className="info-dosen text-white text-lg">
-                <h2 className="font-bold">nama dose</h2>
-                <h3>inp</h3>
+              <div>
+                <span className="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300">
+                Pertemuan {sesi}
+                </span>
               </div>
             </div>
-            <div className="detail-info flex gap-2">
-              <div className="info-izin rounded-lg w-full flex items-center flex-col bg-[#baf8db] p-2 ">
-                <p className="font-bold text-4xl text-[#3263de]">12312</p>
-                <p className="font-medium text-xl text-[#1b2650] ">
-                  Total Mahasiswa
-                </p>
-              </div>
-              <div className="jml-mhs rounded-lg  w-full flex items-center flex-col bg-yellow-100 p-2 ">
-                <p className="font-bold text-4xl text-[#3263de]">9</p>
-                <p className="font-medium text-xl text-[#1b2650] ">izin</p>
-              </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-2">
+              <dl className="bg-orange-50  rounded-lg flex flex-col items-center justify-center h-[78px]">
+                <dt className="w-8 h-8 rounded-full bg-orange-100 text-orange-600  text-sm font-medium flex items-center justify-center mb-1">12</dt>
+                <dd className="text-orange-600  text-sm font-medium">Total Mahasiswa</dd>
+              </dl>
+              <dl className="bg-blue-50  rounded-lg flex flex-col items-center justify-center h-[78px]">
+                <dt className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:text-blue-300 text-sm font-medium flex items-center justify-center mb-1">64</dt>
+                <dd className="text-blue-600 dark:text-blue-300 text-sm font-medium">Izin</dd>
+              </dl>
+              <dl className="bg-teal-50  rounded-lg flex flex-col items-center justify-center h-[78px]">
+                <dt className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 dark:text-teal-300 text-sm font-medium flex items-center justify-center mb-1">23</dt>
+                <dd className="text-teal-600 dark:text-teal-300 text-sm font-medium">Hadir</dd>
+              </dl>
             </div>
             <button
               onClick={generateRandomText}
@@ -88,11 +101,11 @@ const DetailKelasPageSesi = () => {
           {/* kanan */}
           <div className="up-right lg:w-1/3">
             <div className="canvas-qr">
-              <div className=" flex items-center justify-center border-2 border-gray-200 border-dashed h-[50vh] rounded-lg dark:border-gray-700">
+              <div className=" flex items-center justify-center border-2 border-gray-200 border-dashed h-[40vh] rounded-lg dark:border-gray-700">
                 {/* <p>QR Code belum dihasilkan</p> */}
                 {qrText ? (
                   <div className="w-full p-5 ">
-                    <QRCodeSVG className="w-full" height={300} value={qrText} />
+                    <QRCodeSVG className="w-full" height={200} value={qrText} />
                     <p className="pt-5 text-center">
                       QR Code akan hilang dalam {countdown} detik
                     </p>
@@ -172,7 +185,7 @@ const DetailKelasPageSesi = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from({ length: 10 }).map((_, index) => (
+                    {Array.from({ length: 5 }).map((_, index) => (
                       <tr
                         key={index}
                         className="bg-white border-b hover:bg-gray-50"
@@ -229,7 +242,76 @@ const DetailKelasPageSesi = () => {
                     ))}
                   </tbody>
                 </table>
+ 
               </div>
+              <nav
+              className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+              aria-label="Table navigation"
+            >
+              <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                Showing <span className="font-semibold text-gray-900">1-10</span> of{" "}
+                <span className="font-semibold text-gray-900">1000</span>
+              </span>
+              <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
+                  >
+                    Sebelumnya
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  >
+                    1
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  >
+                    2
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    aria-current="page"
+                    className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
+                  >
+                    3
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  >
+                    4
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  >
+                    5
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
+                  >
+                    Selanjutnya
+                  </a>
+                </li>
+              </ul>
+            </nav>
             </div>
             <div className="right-sudahabsen w-full lg:w-1/2">
               <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">

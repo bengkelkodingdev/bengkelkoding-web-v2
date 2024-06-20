@@ -21,6 +21,34 @@ const meetings: Meeting[] = [
     room: "H.6.3",
     status: "Tidak Aktif",
   },
+  {
+    id: 3,
+    date: "3 Juli 2024",
+    time: "13:00 - 16:00 WIB",
+    room: "H.6.2",
+    status: "Tidak Aktif",
+  },
+  {
+    id: 4,
+    date: "3 Juli 2024",
+    time: "13:00 - 16:00 WIB",
+    room: "H.6.2",
+    status: "Tidak Aktif",
+  },
+  {
+    id: 5,
+    date: "3 Juli 2024",
+    time: "13:00 - 16:00 WIB",
+    room: "H.6.2",
+    status: "Aktif",
+  },
+  {
+    id: 6,
+    date: "3 Juli 2024",
+    time: "13:00 - 16:00 WIB",
+    room: "H.6.2",
+    status: "Tidak Aktif",
+  },
   // Tambahkan data pertemuan lainnya di sini
 ];
 
