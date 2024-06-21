@@ -71,29 +71,29 @@ const DetailKelasPageSesi = () => {
                 </div>
               </div>
               <div>
-                <span className="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300">
+                <span className="bg-gradient-to-r from-blue-700 to-blue-600 text-neutral5 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md">
                 Pertemuan {sesi}
                 </span>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-2">
-              <dl className="bg-orange-50  rounded-lg flex flex-col items-center justify-center h-[78px]">
-                <dt className="w-8 h-8 rounded-full bg-orange-100 text-orange-600  text-sm font-medium flex items-center justify-center mb-1">12</dt>
-                <dd className="text-orange-600  text-sm font-medium">Total Mahasiswa</dd>
+              <dl className="bg-gradient-to-r from-blue-700 to-blue-600 focus:ring-blue-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
+                <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">12</dt>
+                <dd className="text-neutral5 text-sm font-medium">Total Mahasiswa</dd>
               </dl>
-              <dl className="bg-blue-50  rounded-lg flex flex-col items-center justify-center h-[78px]">
-                <dt className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:text-blue-300 text-sm font-medium flex items-center justify-center mb-1">64</dt>
-                <dd className="text-blue-600 dark:text-blue-300 text-sm font-medium">Izin</dd>
+              <dl className="bg-gradient-to-r from-red-700 to-red-600 focus:ring-red-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
+                <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">64</dt>
+                <dd className="text-neutral5  text-sm font-medium">Izin</dd>
               </dl>
-              <dl className="bg-teal-50  rounded-lg flex flex-col items-center justify-center h-[78px]">
-                <dt className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 dark:text-teal-300 text-sm font-medium flex items-center justify-center mb-1">23</dt>
-                <dd className="text-teal-600 dark:text-teal-300 text-sm font-medium">Hadir</dd>
+              <dl className="bg-gradient-to-r from-orange-700 to-orange-600 focus:ring-orange-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
+                <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">23</dt>
+                <dd className="text-neutral5  text-sm font-medium">Hadir</dd>
               </dl>
             </div>
             <button
               onClick={generateRandomText}
-              className="btn-generate  w-1/4  mt-5 p-3 font-semibold text-white border-2 border-slate-200 bg-[#4780ea] 4780ea hover:bg-[#3263de] rounded-lg"
+              className="btn-generate  w-1/4  mt-5 p-3 font-semibold text-white border-2 border-slate-200 bg-gradient-to-r from-blue-700 to-blue-600 4780ea hover:bg-[#3263de] rounded-lg"
             >
               Genetate Qr
             </button>

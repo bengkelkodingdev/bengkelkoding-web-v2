@@ -38,7 +38,7 @@ const DashboardDetailKelasPage = () => {
             </p>
             <p>
               Jam:{" "}
-              <strong className="font-semibold text-primary1">10:20 WIB</strong>
+              <strong className="font-semibold text-primary1">10:20 - 11.00 WIB</strong>
             </p>
             <p>
               Dosen:{" "}
@@ -161,7 +161,7 @@ const DashboardDetailKelasPage = () => {
                               </td>
                               <td className="px-6 py-3 w-36">
                                 <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                                    meetings[index].status === "Aktif"
+                                    meetings[index].status === "Tidak Aktif"
                                       ? "text-green-800 bg-green-100"
                                       : "text-red-800 bg-red-100"
                                   }`}>
@@ -256,23 +256,38 @@ const DashboardDetailKelasPage = () => {
 
       <div className="w-full mt-8 grid grid-cols-3 gap-y-8 gap-x-4">
         {/* list kursus */}
-        <div className="col-span-2">
+         <div className="col-span-2">
           <h3 className="mb-2">Kursus</h3>
-            <ol className="relative border-s border-gray-200 ">
-            {Array.from({ length: 3 }).map((_, index) => (                  
-                <li key={index} className="mb-10 ms-4">
-                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white "></div>
-                    <time className="mb-1 text-sm font-normal leading-none text-gray-400 ">Path { index + 1 }  </time>
-                    <h3 className="text-lg font-semibold text-gray-900 "> Memulai Pemrograman dengan Kotlin</h3>
-                    <p className="mb-4 text-base font-normal text-gray-500 ">Pelajari dasar bahasa pemrograman, functional programming,
-                    object-oriented programming OOP, serta concurrency dengan menggunakan Kotlin.</p>
-                    {/* <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700 ">Cek Kursus <svg className="w-3 h-3 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-              </svg></a> */}
-                </li>
-                ))}
-            </ol>
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
+              >
+                <Image
+                  src={"/img/kursus-image-1.png"}
+                  alt={""}
+                  width={180}
+                  height={140}
+                />
+                <div className="py-3 px-4">
+                  <h4 className="text-primary1 font-medium">
+                    Memulai Pemrograman dengan Kotlin
+                  </h4>
+                  <p className="text-neutral3 text-sm">
+                    Tim Mobile Bengkel Koding
+                  </p>
+                  <p className="text-neutral2 text-sm mt-2">
+                    Pelajari dasar bahasa pemrograman, functional programming,
+                    object-oriented programming OOP, serta concurrency dengan
+                    menggunakan Kotlin.
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
         {/* list Tugas */}
 
         <div className="ml-4 col-span-1">
