@@ -337,7 +337,6 @@ const HomePage = () => {
                   </svg>
                 </div>
               </div> */}
-
             </div>
             <div className="md:w-[70%] flex gap-4 overflow-x-auto no-scrollbar py-4">
               {Array.from({ length: 5 }).map((_, index) => (

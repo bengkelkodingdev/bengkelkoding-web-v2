@@ -62,19 +62,19 @@ const DetailKelasPageSesi = () => {
                 <h1 className="font-semibold text-2xl">Pertemuan {sesi}</h1>
               </div>
               <div className="info-dosen text-white text-lg">
-                <h2 className="font-bold">nama dose</h2>
-                <h3>inp</h3>
+                <h2 className="font-bold">ETIKA KARTIKADARMA, M.Kom</h2>
+                <h3>0686.11.1998.164</h3>
               </div>
             </div>
             <div className="detail-info flex gap-2">
               <div className="info-izin rounded-lg w-full flex items-center flex-col bg-[#baf8db] p-2 ">
-                <p className="font-bold text-4xl text-[#3263de]">12312</p>
+                <p className="font-bold text-4xl text-[#3263de]">32</p>
                 <p className="font-medium text-xl text-[#1b2650] ">
                   Total Mahasiswa
                 </p>
               </div>
               <div className="jml-mhs rounded-lg  w-full flex items-center flex-col bg-yellow-100 p-2 ">
-                <p className="font-bold text-4xl text-[#3263de]">9</p>
+                <p className="font-bold text-4xl text-[#3263de]">0</p>
                 <p className="font-medium text-xl text-[#1b2650] ">izin</p>
               </div>
             </div>
