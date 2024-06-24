@@ -28,17 +28,17 @@ const DashboardDetailKelasPage = () => {
 
   return (
     <>
-      <h2 className="font-semibold">Web Development Bengkel Koding</h2>
+      <h2 className="font-extrabold">Web Development Bengkel Koding</h2>
       <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
         <div>
-          <div className="grid grid-cols-2 lg:flex items-center gap-x-2 text-neutral2">
+          <div className="grid grid-cols-2 lg:flex items-center gap-x-2 text-xs text-neutral2">
             <p>
               Hari:{" "}
               <strong className="font-semibold text-primary1">Kamis</strong>
             </p>
             <p>
               Jam:{" "}
-              <strong className="font-semibold text-primary1">10:20 WIB</strong>
+              <strong className="font-semibold text-primary1">10:20 - 11.00 WIB</strong>
             </p>
             <p>
               Dosen:{" "}
@@ -63,7 +63,7 @@ const DashboardDetailKelasPage = () => {
           </p>
         </div>
         <table className="min-w-max text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-          <thead className="text-sm text-neutral2 bg-gray-100">
+          <thead className=" text-neutral2 bg-gray-100">
             <tr>
               <th scope="col" className="px-6 py-3 w-max">
                 Kontrak Kuliah
@@ -86,6 +86,7 @@ const DashboardDetailKelasPage = () => {
             </tr>
           </tbody>
         </table>
+        
       </div>
 
       {/*Pertemuan */}
@@ -93,9 +94,9 @@ const DashboardDetailKelasPage = () => {
         <h3>List Pertemuan</h3>
         <div className="flex gap-5 flex-col-reverse md:flex-col-reverse lg:flex-row ">
           {/* list */}
-          <div className="lg:w-[78%] shadow-md">
+          <div className="lg:w-[70%] shadow-md">
             <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-              <thead className="text-sm text-neutral2 bg-gray-100">
+              <thead className="text-neutral2 bg-gray-100">
                 <tr>
                   <th scope="col" className="p-4">
                     <div className="flex items-center">
@@ -145,31 +146,34 @@ const DashboardDetailKelasPage = () => {
                         href={`detail/${meetings[index].id}`}
                         className="block w-full h-full p-4"
                       >
-                        <table className="w-full">
+                        <table className="w-full ">
                           <tbody>
                             <tr>
-                              <td className="px-6 py-4 font-semibold">
+                              <td className="px-6 py-3 text-sm font-semibold">
                                 Pertemuan {meetings[index].id}
                               </td>
-                              <td className="px-6 py-4">
-                                <p>{meetings[index].date}</p>
-                                <p>{meetings[index].time}</p>
+                              <td className="px-6 py-3 ">
+                                <p className="text-xs font-semibold">{meetings[index].date}</p>
+                                <p className="text-xs ">{meetings[index].time}</p>
                               </td>
-                              <td className="px-6 py-4">
+                              <td className="px-6 py-3 text-xs">
                                 {meetings[index].room}
                               </td>
-                              <td className="px-6 py-4">
-                                <p
-                                  className={`w-max px-4 rounded-sm ${
+                              <td className="px-6 py-3 w-36">
+                                <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                                    meetings[index].status === "Tidak Aktif"
+                                      ? "text-green-800 bg-green-100"
+                                      : "text-red-800 bg-red-100"
+                                  }`}>
+                                    <span className={`w-2 h-2 me-1  rounded-full ${
                                     meetings[index].status === "Aktif"
-                                      ? "text-green-600 bg-green-100"
-                                      : "text-red-600 bg-red-100"
-                                  }`}
-                                >
-                                  {meetings[index].status}
-                                </p>
+                                      ? "bg-green-500"
+                                      : " bg-red-500"
+                                  }`}></span>
+                                    {meetings[index].status}
+                                </span>
                               </td>
-                              <td className="px-6 py-4">
+                              <td className="px-6 py-3">
                                 <div className="flex gap-1">
                                   <Link
                                     href={`/edit/${meetings[index].id}`}
@@ -216,7 +220,7 @@ const DashboardDetailKelasPage = () => {
             </table>
           </div>
           {/* kontrak pertemuan */}
-          <div className="lg:w-[22%] ">
+          <div className="lg:w-[30%] ">
             <table className="w-full shadow-sm text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
               <thead className="text-sm text-neutral2 bg-gray-100">
                 <tr>
@@ -241,7 +245,6 @@ const DashboardDetailKelasPage = () => {
                 </tr>
               </tbody>
             </table>
-            <div></div>
           </div>
         </div>
         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
@@ -251,9 +254,9 @@ const DashboardDetailKelasPage = () => {
         </Modal>
       </div>
 
-      <div className="w-full mt-8 grid grid-cols-1 xl:grid-cols-2 gap-y-8 gap-x-4">
+      <div className="w-full mt-8 grid grid-cols-3 gap-y-8 gap-x-4">
         {/* list kursus */}
-        <div>
+         <div className="col-span-2">
           <h3 className="mb-2">Kursus</h3>
           <div className="flex flex-col gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -284,45 +287,31 @@ const DashboardDetailKelasPage = () => {
             ))}
           </div>
         </div>
+
         {/* list Tugas */}
-        <div>
+
+        <div className="ml-4 col-span-1">
           <h3 className="mb-2">Tugas</h3>
-          <div className="flex flex-col gap-2">
-            {Array.from({ length: 2 }).map((_, index) => (
-              <div
-                key={index}
-                className="py-3 px-4 rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200"
-              >
-                <div className="flex justify-between">
-                  <h4 className="text-neutral1 font-medium">
-                    Tugas Slicing UI/UX
-                  </h4>
-                  <p className="text-primary1 font-medium text-sm">Tugas</p>
-                </div>
-                <p className="mt-2 text-neutral2 text-sm">
-                  Pelajari dasar bahasa pemrograman, functional programming,
+          <ol className="relative border-s border-gray-200 ">  
+          {Array.from({ length: 2 }).map((_, index) => (                
+              <li className="mb-10 ms-6">            
+                  <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white ">
+                      <svg className="w-2.5 h-2.5 text-gray-500 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                      </svg>
+                  </span>
+                  <h3 className="flex items-center mb-1 text-lg font-semibold text-gray-900 ">Tugas Slicing UI/UX<span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">Latest</span></h3>
+                  <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">Deadline on 12 Mei 2024 (23:59) </time>
+                  <p className="mb-4 text-base font-normal text-gray-500 ">Pelajari dasar bahasa pemrograman, functional programming,
                   object-oriented programming (OOP), serta concurrency dengan
-                  menggunakan Kotlin. Pelajari dasar bahasa pemrograman,
-                  functional programming, object-oriented programming (OOP),
-                  serta concurrency dengan menggunakan Kotlin.
-                </p>
-                <div className="mt-2 flex items-center gap-6 text-neutral2">
-                  <p className="text-sm">
-                    Waktu Mulai{" "}
-                    <strong className="font-semibold text-green1">
-                      (10:00) 10 Mei 2024
-                    </strong>
-                  </p>
-                  <p className="text-sm">
-                    Deadline{" "}
-                    <strong className="font-semibold text-red1">
-                      (23:59) 12 Mei 2024
-                    </strong>
-                  </p>
-                </div>
-              </div>
+                  menggunakan Kotlin.</p>
+                  {/* <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700   "><svg className="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
+              <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
+              </svg> Lihat Tugas</a> */}
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
     </>
