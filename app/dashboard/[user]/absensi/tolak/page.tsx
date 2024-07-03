@@ -1,6 +1,7 @@
 import Link from "next/link";
+import React from "react";
 
-const HomeDashboardAbsensiPage = () => {
+export default function TolakAbsensiPage() {
   return (
     <>
       <div className=" overflow-x-auto">
@@ -14,19 +15,22 @@ const HomeDashboardAbsensiPage = () => {
             placeholder="Cari Mahasiswa"
           />
 
-          <Link
-            href={`absensi/tolak`}
-            className="box-tolak text-white w-[10%] p-1 rounded-md flex justify-center items-center bg-red-500 from-red-700 to-red-600 focus:ring-red-100"
-          >
-            <div>Ditolak</div>
-          </Link>
-
-          <Link
-            href={`absensi/terima`}
-            className="box-tolak text-white w-[10%] p-1 rounded-md flex justify-center items-center bg-green-500 from-green-700 to-green-600 focus:ring-red-100"
-          >
-            Diterima
-          </Link>
+          <div className="box-tolak text-white w-[15%] gap-5 p-1 rounded-md flex justify-center items-center bg-red-500 from-red-700 to-red-600 focus:ring-red-100">
+            <div className="w-max p-2 rounded-full bg-white fill-white bg-opacity-10">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 0 24 24"
+                width="20px"
+              >
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path d="M5 13.18v2.81c0 .73.4 1.41 1.04 1.76l5 2.73c.6.33 1.32.33 1.92 0l5-2.73c.64-.35 1.04-1.03 1.04-1.76v-2.81l-6.04 3.3c-.6.33-1.32.33-1.92 0L5 13.18zm6.04-9.66-8.43 4.6c-.69.38-.69 1.38 0 1.76l8.43 4.6c.6.33 1.32.33 1.92 0L21 10.09V16c0 .55.45 1 1 1s1-.45 1-1V9.59c0-.37-.2-.7-.52-.88l-9.52-5.19c-.6-.32-1.32-.32-1.92 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              25<p>Ditolak</p>
+            </div>
+          </div>
         </div>
 
         {/* Table */}
@@ -62,12 +66,12 @@ const HomeDashboardAbsensiPage = () => {
                 Tanggal Permohonan
               </th>
               <th scope="col" className="px-6 py-3">
-                Keterangan
-              </th>
-              <th scope="col" className="px-6 py-3">
                 File
               </th>
-              <th scope="col" className="px-32 py-3">
+              <th scope="col" className="px-6 py-3">
+                Alasan
+              </th>
+              <th scope="col" className="px-16 py-3">
                 Status
               </th>
               <th scope="col" className="px-6 py-3">
@@ -101,44 +105,28 @@ const HomeDashboardAbsensiPage = () => {
                 <td className="px-6 py-4">A11.40444</td>
                 <td className="px-6 py-4">Pertemuan 7</td>
                 <td className="px-6 py-4">25 Juni 2024</td>
-                <td className="px-6 py-4">Lainya</td>
                 <td className="px-6 py-4">file.pdf</td>
+                <td className="px-6 py-4">Tidak sesuai dengan isi file</td>
                 <td className=" text-center">
-                  <span className={`rounded-full bg-yellow-300 p-2 `}>
-                    Menunggu Konfirmasi
+                  <span className={`rounded-full bg-red-300 p-2 `}>
+                    Ditolak
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex gap-1">
-                    <Link
-                      href={"/"}
-                      className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
+                  <Link
+                    href={`/`}
+                    className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="18px"
+                      viewBox="0 0 24 24"
+                      width="18px"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
-                      >
-                        <path d="M0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none" />
-                        <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href={"/"}
-                      className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
-                      >
-                        <path d="M0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none" />
-                        <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
-                      </svg>
-                    </Link>
-                  </div>
+                      <path d="M0 0h24v24H0V0z" fill="none" />
+                      <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -217,6 +205,4 @@ const HomeDashboardAbsensiPage = () => {
       </div>{" "}
     </>
   );
-};
-
-export default HomeDashboardAbsensiPage;
+}
