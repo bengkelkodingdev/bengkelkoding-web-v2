@@ -1,7 +1,35 @@
+"use client";
+import { getAllClassroom } from "@/app/api/api-kelas/getAll-kelas";
+import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 const HomeDashboardKelasPage = () => {
+  // const router = useRouter();
+  // const { user } = router.query;
+  const [kelas, setKelas] = useState<Kelas[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchClassrooms = async () => {
+      try {
+        const response = await getAllClassroom();
+        setKelas(response.data);
+      } catch (error) {
+        setError("Failed to fetch classrooms");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClassrooms();
+  }, []);
+  console.log("tes:", kelas);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
   return (
     <>
       <div className="relative overflow-x-auto">
@@ -88,80 +116,87 @@ const HomeDashboardKelasPage = () => {
             </tr>
           </thead>
           <tbody>
-            {Array.from({ length: 10 }).map((_, index) => (
-              <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                <td className="w-4 p-4">
-                  <div className="flex items-center">
-                    <input
-                      id="checkbox-table-search-1"
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label className="sr-only">checkbox</label>
-                  </div>
-                </td>
-                <th scope="row" className="px-6 py-4 whitespace-nowrap ">
-                  <div className="text-xs flex flex-col gap-1">
-                    <p className="font-medium text-neutral2">
-                      Web Developer Bengkel Koding
-                    </p>
-                    <p className="font-normal">Semester 6 &#40;2020&#41;</p>
-                  </div>
-                </th>
-                <td className="px-6 py-4">Marc Klok</td>
-                <td className="px-6 py-4">Kamis</td>
-                <td className="px-6 py-4">10:20</td>
-                <td className="px-6 py-4">H.6.3</td>
-                <td className="px-6 py-4">25</td>
-                <td className="px-6 py-4">19</td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-1">
-                    <Link
-                      href={"/"}
-                      className="block bg-blue2 p-1 rounded-md fill-white hover:bg-blue1 transition-all ease-in-out duration-150"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
+            {kelas.map((classroom) => {
+              return (
+                <tr
+                  key={classroom.id}
+                  className="bg-white border-b hover:bg-gray-50"
+                >
+                  <td className="w-4 p-4">
+                    <div className="flex items-center">
+                      <input
+                        id="checkbox-table-search-1"
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <label className="sr-only">checkbox</label>
+                    </div>
+                  </td>
+                  <th scope="row" className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-xs flex flex-col gap-1">
+                      <p className="font-medium text-neutral2">
+                        {classroom.name}
+                      </p>
+                    </div>
+                  </th>
+                  <td className="px-6 py-4"> {classroom.lecture.name} </td>
+                  <td className="px-6 py-4"> {classroom.day} </td>
+                  <td className="px-6 py-4">
+                    {" "}
+                    {classroom.time_start} - {classroom.time_end}{" "}
+                  </td>
+                  <td className="px-6 py-4">{classroom.room}</td>
+                  <td className="px-6 py-4">{classroom.quota}</td>
+                  <td className="px-6 py-4">19</td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-1">
+                      <Link
+                        href={`kelas/${classroom.id}`}
+                        className="block bg-blue2 p-1 rounded-md fill-white hover:bg-blue1 transition-all ease-in-out duration-150"
                       >
-                        <path d="M0 0h24v24H0V0z" fill="none" />
-                        <path d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href={"/"}
-                      className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                        >
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                        </svg>
+                      </Link>
+                      <Link
+                        href={"/"}
+                        className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
-                        <path d="M0 0h24v24H0V0z" fill="none" />
-                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href={"/"}
-                      className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                        >
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                        </svg>
+                      </Link>
+                      <Link
+                        href={"/"}
+                        className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
-                        <path d="M0 0h24v24H0V0z" fill="none" />
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                      </svg>
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                        >
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <nav
