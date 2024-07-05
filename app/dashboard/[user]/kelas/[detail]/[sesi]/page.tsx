@@ -26,6 +26,9 @@ const DetailKelasPageSesi = () => {
   const [detailClassRoom, setdetailClassRoom] = useState<ClassroomData[]>([]);
   const [loading, setLoading] = useState(true); // State untuk indikator loading
   const [error, setError] = useState(null); // State untuk menangani kesalahan
+
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+
   const week = classRoom;
   // button generate qrcode
   const generateRandomText = async () => {
@@ -40,31 +43,41 @@ const DetailKelasPageSesi = () => {
   };
 
   useEffect(() => {
-    let qrTimeout: ReturnType<typeof setTimeout> | undefined;
-    let countdownInterval: ReturnType<typeof setInterval> | undefined;
+    let qrTimeout;
+    let countdownInterval;
 
     if (qrText) {
-      setCountdown(60); // Reset countdown ke 60
+      setCountdown(60);
 
       countdownInterval = setInterval(() => {
-        setCountdown((prevCount) => prevCount - 1);
-      }, 1000); // Memperbarui countdown setiap 1 detik
+        setCountdown((prevCount) => {
+          if (prevCount <= 1) {
+            clearInterval(countdownInterval);
+            setShouldRefresh(true);
+            return 0;
+          }
+          return prevCount - 1;
+        });
+      }, 1000);
 
       qrTimeout = setTimeout(() => {
         setQrText("");
-        clearInterval(countdownInterval); // Menghentikan interval setelah QR Code hilang
+        clearInterval(countdownInterval);
+        setShouldRefresh(true);
       }, 60000);
     }
+
     return () => {
-      if (qrTimeout) {
-        clearTimeout(qrTimeout);
-        window.location.reload();
-      }
-      if (countdownInterval) {
-        clearInterval(countdownInterval);
-      }
+      if (qrTimeout) clearTimeout(qrTimeout);
+      if (countdownInterval) clearInterval(countdownInterval);
     };
   }, [qrText]);
+
+  useEffect(() => {
+    if (shouldRefresh) {
+      window.location.reload();
+    }
+  }, [shouldRefresh]);
 
   useEffect(() => {
     const fetchDetailSession = async () => {
@@ -187,7 +200,7 @@ const DetailKelasPageSesi = () => {
                     <div className="w-full p-5 ">
                       <QRCodeSVG
                         className="w-full"
-                        height={200}
+                        height={230}
                         value={qrText}
                       />
                       <p className="pt-5 text-center">

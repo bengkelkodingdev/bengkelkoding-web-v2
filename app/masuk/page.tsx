@@ -24,7 +24,7 @@ const MasukPage = () => {
   const roleToPath = {
     student: "/dashboard/mahasiswa",
     assistant: "/dashboard/assistant",
-    lecture: "/dashboard/lecture",
+    lecture: "/dashboard/dosen",
     admin: "/dashboard/admin",
     superadmin: "/dashboard/superadmin",
   };
