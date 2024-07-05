@@ -9,6 +9,9 @@ import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
+import Modal from "@/app/component/general/Modal";
+import EditFormKelas from "@/app/component/general/EditFormKelas";
+import EditFormStatus from "@/app/component/general/EditFormStatus";
 
 const DetailKelasPageSesi = () => {
   // const router = useRouter();
@@ -16,6 +19,15 @@ const DetailKelasPageSesi = () => {
   const sesi = params.sesi;
   const detail = params.detail;
   // const { kelas } = router.query;
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const sesiInt = sesi[0];
   let coba = "";
@@ -321,6 +333,10 @@ const DetailKelasPageSesi = () => {
                             <div className="flex gap-1">
                               <Link
                                 href={"/"}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleOpenModal();
+                                }}
                                 className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                               >
                                 <svg
@@ -340,6 +356,11 @@ const DetailKelasPageSesi = () => {
                     </tbody>
                   </table>
                 </div>
+
+                <Modal title="Status Kehadiran" isOpen={isModalOpen} onClose={handleCloseModal}>
+                        <EditFormStatus />
+                </Modal>
+
                 <nav
                   className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
                   aria-label="Table navigation"

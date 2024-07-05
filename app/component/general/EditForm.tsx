@@ -25,31 +25,7 @@ const EditForm: React.FC<EditFormProps> = ({ user, onSave }) => {
 
   return (
     <div>
-      <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-        <h3 className="text-xl font-semibold text-gray-900">Pertemuan</h3>
-        <button
-          type="button"
-          className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-          data-modal-hide="default-modal"
-        >
-          <svg
-            className="w-3 h-3"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 14 14"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-            />
-          </svg>
-          <span className="sr-only">Close modal</span>
-        </button>
-      </div>
+
 
       <div className="p-4 md:p-5 space-y-4">
         <div>
@@ -98,13 +74,14 @@ const EditForm: React.FC<EditFormProps> = ({ user, onSave }) => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5"
           />
         </div>
-      </div>
-      <button
+        <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick={handleSave}
       >
         Save
       </button>
+      </div>
+
     </div>
   );
 };
