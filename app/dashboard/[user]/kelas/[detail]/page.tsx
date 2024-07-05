@@ -20,6 +20,7 @@ const DashboardDetailKelasPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
+  
   const handleOpenModal = (presence: Presence) => {
     setSelectedMeeting(presence);
     setIsModalOpen(true);
@@ -284,7 +285,8 @@ const DashboardDetailKelasPage = () => {
                 </table>
               </div>
             </div>
-            <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+
+            <Modal title="Pertemuan" isOpen={isModalOpen} onClose={handleCloseModal}>
               {selectedMeeting && (
                 <EditForm user={selectedMeeting} onSave={handleSaveMeeting} />
               )}

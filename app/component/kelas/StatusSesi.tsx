@@ -11,7 +11,7 @@ const StatusLabel = ({ presence, index, kelas }) => {
   // TES ANOTHER DAY.
 
   const presenceDate = new Date(presence.presence_date);
-  const today = "Wed Jun 19 2024";
+  const today = "Wed Jun 26 2024";
   const isToday = today === presenceDate.toDateString();
   // -------
   return (

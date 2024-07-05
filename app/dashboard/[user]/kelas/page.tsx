@@ -4,6 +4,8 @@ import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import Modal from "@/app/component/general/Modal";
+import EditFormKelas from "@/app/component/general/EditFormKelas";
 
 const HomeDashboardKelasPage = () => {
   // const router = useRouter();
@@ -11,6 +13,15 @@ const HomeDashboardKelasPage = () => {
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchClassrooms = async () => {
@@ -166,6 +177,11 @@ const HomeDashboardKelasPage = () => {
                       </Link>
                       <Link
                         href={"/"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleOpenModal();
+                        }}
+
                         className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -178,6 +194,11 @@ const HomeDashboardKelasPage = () => {
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                       </Link>
+                      
+                      <Modal title="Kelas" isOpen={isModalOpen} onClose={handleCloseModal}>
+                        <EditFormKelas />
+                      </Modal>
+                      
                       <Link
                         href={"/"}
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
