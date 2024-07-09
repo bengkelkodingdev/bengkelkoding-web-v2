@@ -1,20 +1,32 @@
 "use client";
 import ViewModalPDF from "@/app/component/general/ViewModalPDF";
+import Modal from "@/app/component/general/Modal";
 import PDFView from "@/app/component/general/PDFView";
+import Keterangan from "@/app/component/general/Keterangan";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 
 const HomeDashboardAbsensiPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isKetModalOpen, setIsKetModalOpen] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpenViewModal = () => {
+    setIsViewModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
   };
+
+  const handleOpenKetModal = () => {
+    setIsKetModalOpen(true);
+  };
+
+  const handleCloseKetModal = () => {
+    setIsKetModalOpen(false);
+  };
+
   return (
     <>
       <div className=" overflow-x-auto">
@@ -61,9 +73,6 @@ const HomeDashboardAbsensiPage = () => {
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
-                NIM
-              </th>
-              <th scope="col" className="px-6 py-3">
                 MATA KULIAH
               </th>
               <th scope="col" className="px-6 py-3">
@@ -80,9 +89,6 @@ const HomeDashboardAbsensiPage = () => {
               </th>
               <th scope="col" className="px-6 py-3">
                 File
-              </th>
-              <th scope="col" className="px-32 py-3">
-                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Aksi
@@ -107,10 +113,10 @@ const HomeDashboardAbsensiPage = () => {
                     <p className="font-medium text-neutral2">
                       Muhamad Alif Anwar
                     </p>
-                    <p className="font-normal">1112113717@mhs.dinus.ac.id</p>
+                    <p className="font-normal text-xs">1112113717@mhs.dinus.ac.id</p>
+                    <p className="font-normal text-xs">A11.2021.13717</p>
                   </div>
                 </th>
-                <td className="px-6 py-4">A11.2021.13717</td>
                 <td className="px-6 py-4">Pengolahan Citra Digital</td>
                 <td className="px-6 py-4">A11.40444</td>
                 <td className="px-6 py-4">Pertemuan 7</td>
@@ -121,7 +127,7 @@ const HomeDashboardAbsensiPage = () => {
                     href={"/"}
                     onClick={(e) => {
                       e.preventDefault();
-                      handleOpenModal();
+                      handleOpenViewModal();
                     }}
                     className="text-gray-500 gap-2 bg-gray-50 hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2"
                   >
@@ -137,11 +143,6 @@ const HomeDashboardAbsensiPage = () => {
                       </svg>
                   </Link>
                  
-                </td>
-                <td className=" text-center">
-                  <span className={`rounded-full bg-yellow-300 p-2 `}>
-                    Menunggu Konfirmasi
-                  </span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex gap-1">
@@ -161,8 +162,13 @@ const HomeDashboardAbsensiPage = () => {
                     </Link>
                     <Link
                       href={"/"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOpenKetModal();
+                      }}
                       className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                     >
+                      <span className="sr-only">EditFormKelas</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="18px"
@@ -173,15 +179,21 @@ const HomeDashboardAbsensiPage = () => {
                         <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
                       </svg>
                     </Link>
+
+                      
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <ViewModalPDF title="Kelas" isOpen={isModalOpen} onClose={handleCloseModal}>
-                        <PDFView />
+
+        <ViewModalPDF title="Kelas" isOpen={isViewModalOpen} onClose={handleCloseViewModal}>
+          <PDFView />
         </ViewModalPDF>
+        <Modal title="Keterangan" isOpen={isKetModalOpen} onClose={handleCloseKetModal}>
+            <Keterangan />
+        </Modal>
 
         {/* pagination */}
         <nav
