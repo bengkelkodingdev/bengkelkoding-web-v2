@@ -33,14 +33,42 @@ export interface ClassroomData {
     start_date: string;
     start_date_formatted: string;
     max_absent: number;
+    task_percent: string;
+    uts_percent: string;
+    uas_percent: string;
   };
   presences: Presence[];
   assignments: Assignment[];
 }
 
+// types.ts
+
+export interface ClassFormData {
+  name: string;
+  lecture_id: number;
+  path_id: number;
+  period_id: number;
+  description: string;
+  quota: number;
+  day: number;
+  time_start: string;
+  time_end: string;
+  room: string;
+  task_percent: number;
+  uts_percent: number;
+  uas_percent: number;
+  start_date: string;
+  max_absent: number;
+  jml_pertemuan: number;
+}
+
 export interface Presence {
   id: number;
-  lecture: Lecture;
+  lecture: {
+    identity_code: string;
+    name: string;
+    role: string;
+  };
   student_count: number;
   time_start: string;
   time_end: string;

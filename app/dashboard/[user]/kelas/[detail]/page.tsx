@@ -20,7 +20,7 @@ const DashboardDetailKelasPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
-  
+
   const handleOpenModal = (presence: Presence) => {
     setSelectedMeeting(presence);
     setIsModalOpen(true);
@@ -77,8 +77,8 @@ const DashboardDetailKelasPage = () => {
           <h1>{kelasItem.classroom.name}</h1>
 
           <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
-            <div>
-              <div className="grid grid-cols-2 lg:flex items-center gap-x-2 text-xs text-neutral2">
+            <div className="w-full">
+              <div className="grid grid-cols-2 lg:flex items-center gap-x-2 md:gap-5 text-xs text-neutral2">
                 <p>
                   Hari:{" "}
                   <strong className="font-semibold text-primary1">Kamis</strong>
@@ -101,16 +101,7 @@ const DashboardDetailKelasPage = () => {
                 </p>
               </div>
               <p className="mt-4 text-neutral2">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industries standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged. It was
-                popularised in the 1960s with the release of Letraset sheets
-                containing Lorem Ipsum passages, and more recently with desktop
-                publishing software like Aldus PageMaker including versions of
-                Lorem Ipsum.
+                {kelasItem.classroom.description}
               </p>
             </div>
             <table className="min-w-max text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
@@ -125,15 +116,21 @@ const DashboardDetailKelasPage = () => {
               <tbody>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 w-max">Presentase UTS</td>
-                  <td className="px-6 py-4">30%</td>
+                  <td className="px-6 py-4">
+                    {kelasItem.classroom.uts_percent}
+                  </td>
                 </tr>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">Presentase UAS</td>
-                  <td className="px-6 py-4">30%</td>
+                  <td className="px-6 py-4">
+                    {kelasItem.classroom.uas_percent}
+                  </td>
                 </tr>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">Presentase Tugas</td>
-                  <td className="px-6 py-4">40%</td>
+                  <td className="px-6 py-4">
+                    {kelasItem.classroom.task_percent}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -286,7 +283,11 @@ const DashboardDetailKelasPage = () => {
               </div>
             </div>
 
-            <Modal title="Pertemuan" isOpen={isModalOpen} onClose={handleCloseModal}>
+            <Modal
+              title="Pertemuan"
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            >
               {selectedMeeting && (
                 <EditForm user={selectedMeeting} onSave={handleSaveMeeting} />
               )}
