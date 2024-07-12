@@ -8,9 +8,16 @@ import EditForm from "@/app/component/general/EditForm";
 import { useRouter } from "next/router";
 import { useParams } from "react-router-dom";
 import { usePathname } from "next/navigation";
-import { ClassroomData, Kelas, Presence } from "@/app/interface/Kelas";
+import {
+  Assignment,
+  AssignmentResponse,
+  ClassroomData,
+  Kelas,
+  Presence,
+} from "@/app/interface/Kelas";
 import { getDetailClassroom } from "@/app/api/api-kelas/getDetail-kelas";
 import StatusLabel from "@/app/component/kelas/StatusSesi";
+import { getAssigment } from "@/app/api/api-kelas/getAll-Assigment";
 
 //
 
@@ -38,6 +45,7 @@ const DashboardDetailKelasPage = () => {
   };
 
   const [kelas, setKelas] = useState<ClassroomData[]>([]);
+  const [tugas, setTugas] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,7 +53,9 @@ const DashboardDetailKelasPage = () => {
     const fetchClassrooms = async () => {
       try {
         const response = await getDetailClassroom(parts[4]);
-        console.log("Response data:", response.data); // Log the response data
+        const responseAssigment = await getAssigment(parts[4]);
+
+        console.log("tugas", responseAssigment);
 
         // Check if response.data is an object, convert to array if necessary
         if (Array.isArray(response.data)) {
@@ -53,6 +63,19 @@ const DashboardDetailKelasPage = () => {
           console.log("Check if response.data is an object");
         } else if (response.data && typeof response.data === "object") {
           setKelas([response.data]); // Convert single object to array
+        } else {
+          throw new Error("Unexpected response format");
+        }
+
+        // --- assigment
+        if (Array.isArray(responseAssigment.data)) {
+          setTugas(responseAssigment.data);
+          console.log("Check if response.data is an array");
+        } else if (
+          responseAssigment.data &&
+          typeof responseAssigment.data === "object"
+        ) {
+          setTugas([responseAssigment.data]); // Convert single object to array
         } else {
           throw new Error("Unexpected response format");
         }
@@ -66,43 +89,44 @@ const DashboardDetailKelasPage = () => {
     fetchClassrooms();
   }, []);
 
-  console.log("d;", kelas);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Kelas Tidak ditemukan</p>;
 
   return (
     <>
       {kelas.map((kelasItem) => (
-        <div key={kelasItem.classroom.id}>
-          <h1>{kelasItem.classroom.name}</h1>
+        <div>
+          <h1>{kelasItem.name}</h1>
 
           <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
             <div className="w-full">
               <div className="grid grid-cols-2 lg:flex items-center gap-x-2 md:gap-5 text-xs text-neutral2">
                 <p>
                   Hari:{" "}
-                  <strong className="font-semibold text-primary1">Kamis</strong>
+                  <strong className="font-semibold text-primary1">
+                    {kelasItem.day}
+                  </strong>
                 </p>
                 <p>
                   Jam:{" "}
                   <strong className="font-semibold text-primary1">
-                    10:20 - 11.00 WIB
+                    {kelasItem.time_start} - {kelasItem.time_end} WIB
                   </strong>
                 </p>
                 <p>
                   Dosen:{" "}
                   <strong className="font-semibold text-primary1">
-                    Vinicius Junior
+                    {kelasItem.lecture}
                   </strong>
                 </p>
                 <p>
                   Kuota:{" "}
-                  <strong className="font-semibold text-primary1">7</strong>
+                  <strong className="font-semibold text-primary1">
+                    {kelasItem.quota}
+                  </strong>
                 </p>
               </div>
-              <p className="mt-4 text-neutral2">
-                {kelasItem.classroom.description}
-              </p>
+              <p className="mt-4 text-neutral2">{kelasItem.description}</p>
             </div>
             <table className="min-w-max text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
               <thead className=" text-neutral2 bg-gray-100">
@@ -116,21 +140,15 @@ const DashboardDetailKelasPage = () => {
               <tbody>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 w-max">Presentase UTS</td>
-                  <td className="px-6 py-4">
-                    {kelasItem.classroom.uts_percent}
-                  </td>
+                  <td className="px-6 py-4">{kelasItem.uts_percent}</td>
                 </tr>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">Presentase UAS</td>
-                  <td className="px-6 py-4">
-                    {kelasItem.classroom.uas_percent}
-                  </td>
+                  <td className="px-6 py-4">{kelasItem.uas_percent}</td>
                 </tr>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">Presentase Tugas</td>
-                  <td className="px-6 py-4">
-                    {kelasItem.classroom.task_percent}
-                  </td>
+                  <td className="px-6 py-4">{kelasItem.task_percent}</td>
                 </tr>
               </tbody>
             </table>
@@ -197,9 +215,7 @@ const DashboardDetailKelasPage = () => {
                             {presence.presence_date_formatted}
                           </p>
                         </td>
-                        <td className="px-6 py-3 text-xs">
-                          {kelasItem.classroom.room}
-                        </td>
+                        <td className="px-6 py-3 text-xs">{kelasItem.room}</td>
                         <td className="px-6 py-3 w-36">
                           <StatusLabel
                             presence={presence}
@@ -262,9 +278,7 @@ const DashboardDetailKelasPage = () => {
                   <tbody>
                     <tr className="bg-white border-b hover:bg-gray-50">
                       <td className="px-6 py-4 w-max">Maksimal Izin</td>
-                      <td className="px-6 py-4">
-                        {kelasItem.classroom.max_absent}
-                      </td>
+                      <td className="px-6 py-4">{kelasItem.max_absent}</td>
                     </tr>
                     <tr className="bg-white border-b hover:bg-gray-50">
                       <td className="px-6 py-4">Jumlah pertemuan</td>
@@ -299,7 +313,8 @@ const DashboardDetailKelasPage = () => {
             <div className="col-span-2">
               <h3 className="mb-2">Kursus</h3>
               <div className="flex flex-col gap-2">
-                {Array.from({ length: 3 }).map((_, index) => (
+                {/* list kursus */}
+                {kelasItem.courses.map((courses, index) => (
                   <div
                     key={index}
                     className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
@@ -312,15 +327,11 @@ const DashboardDetailKelasPage = () => {
                     />
                     <div className="py-3 px-4">
                       <h4 className="text-primary1 font-medium">
-                        Memulai Pemrograman dengan Kotlin
+                        {courses.title}
                       </h4>
-                      <p className="text-neutral3 text-sm">
-                        Tim Mobile Bengkel Koding
-                      </p>
+                      <p className="text-neutral3 text-sm">{courses.author}</p>
                       <p className="text-neutral2 text-sm mt-2">
-                        Pelajari dasar bahasa pemrograman, functional
-                        programming, object-oriented programming OOP, serta
-                        concurrency dengan menggunakan Kotlin.
+                        {courses.description}
                       </p>
                     </div>
                   </div>
@@ -333,8 +344,8 @@ const DashboardDetailKelasPage = () => {
             <div className="ml-4 col-span-1">
               <h3 className="mb-2">Tugas</h3>
               <ol className="relative border-s border-gray-200 ">
-                {Array.from({ length: 2 }).map((_, index) => (
-                  <li className="mb-10 ms-6">
+                {tugas.map((tugas, index) => (
+                  <li key={tugas.id} className="mb-10 ms-6">
                     <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white ">
                       <svg
                         className="w-2.5 h-2.5 text-gray-500 "
@@ -347,18 +358,16 @@ const DashboardDetailKelasPage = () => {
                       </svg>
                     </span>
                     <h3 className="flex items-center mb-1 text-lg font-semibold text-gray-900 ">
-                      Tugas Slicing UI/UX
+                      {tugas.title}
                       <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
-                        Latest
+                        {tugas.type}
                       </span>
                     </h3>
                     <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
-                      Deadline on 12 Mei 2024 (23:59){" "}
+                      Deadline on 12 Mei 2024 (23:59) {tugas.deadline}
                     </time>
                     <p className="mb-4 text-base font-normal text-gray-500 ">
-                      Pelajari dasar bahasa pemrograman, functional programming,
-                      object-oriented programming (OOP), serta concurrency
-                      dengan menggunakan Kotlin.
+                      {tugas.description}
                     </p>
                     {/* <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700   "><svg className="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
               <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>

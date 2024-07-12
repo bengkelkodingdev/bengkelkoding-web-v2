@@ -123,6 +123,9 @@ const HomeDashboardKelasPage = () => {
               <th scope="col" className="px-6 py-3">
                 Terisi
               </th>
+              <th scope="col" className="px-6 py-3">
+                Status
+              </th>
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
@@ -148,9 +151,12 @@ const HomeDashboardKelasPage = () => {
                       <p className="font-medium text-neutral2">
                         {classroom.name}
                       </p>
+                      <p className="font-normal text-sm text-neutral2">
+                        {classroom.period}
+                      </p>
                     </div>
                   </th>
-                  <td className="px-6 py-4"> {classroom.lecture.name} </td>
+                  <td className="px-6 py-4"> {classroom.lecture} </td>
                   <td className="px-6 py-4"> {classroom.day} </td>
                   <td className="px-6 py-4">
                     {" "}
@@ -158,7 +164,13 @@ const HomeDashboardKelasPage = () => {
                   </td>
                   <td className="px-6 py-4">{classroom.room}</td>
                   <td className="px-6 py-4">{classroom.quota}</td>
-                  <td className="px-6 py-4">19</td>
+                  <td className="px-6 py-4">{classroom.student_count}</td>
+                  {classroom.student_count > 0 ? (
+                    <td className="px-6 py-4">aktif</td>
+                  ) : (
+                    <td className="px-6 py-4"> tidak aktif</td>
+                  )}
+
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
                       <Link
@@ -181,7 +193,6 @@ const HomeDashboardKelasPage = () => {
                           e.preventDefault();
                           handleOpenModal();
                         }}
-
                         className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -194,11 +205,15 @@ const HomeDashboardKelasPage = () => {
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                       </Link>
-                      
-                      <Modal title="Kelas" isOpen={isModalOpen} onClose={handleCloseModal}>
+
+                      <Modal
+                        title="Kelas"
+                        isOpen={isModalOpen}
+                        onClose={handleCloseModal}
+                      >
                         <EditFormKelas />
                       </Modal>
-                      
+
                       <Link
                         href={"/"}
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"

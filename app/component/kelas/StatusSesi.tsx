@@ -2,8 +2,6 @@ import React from "react";
 import Link from "next/link";
 
 const StatusLabel = ({ presence, index, kelas }) => {
-  console.log("Keseluruhan object presence:", kelas);
-
   // const presenceDate = new Date(presence.presence_date);
   // const today = new Date();
   // const isToday = today.toDateString() === presenceDate.toDateString();
@@ -21,7 +19,7 @@ const StatusLabel = ({ presence, index, kelas }) => {
       }`}
     >
       {isToday ? (
-        <Link href={`${kelas.classroom.id}/${index}`}>
+        <Link href={`${kelas.id}/${index}`}>
           {" "}
           <p className="text-sm">Masuk</p>
         </Link>

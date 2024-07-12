@@ -1,9 +1,11 @@
 "use client";
+import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useRef, useState } from "react";
 import { ClassFormData } from "@/app/interface/Kelas";
 import { createClassroom } from "@/app/api/api-kelas/post-kelas";
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
+import { toast, ToastContainer } from "react-toastify";
 
 const pathOptions = [
   { id: 1, label: "Frontend Page" },
@@ -127,9 +129,12 @@ const DashboardTambahKelasPage: React.FC = () => {
     try {
       const response = await createClassroom(formData);
       console.log("Classroom created successfully", response);
+      toast.success("Berhasil Menambahkan Kelas 😁");
+
       // Tambahkan logika untuk menangani sukses, misalnya navigasi ke halaman lain atau menampilkan notifikasi
     } catch (error) {
       console.error("Failed to create classroom", error);
+      toast.error(`Gagal Menambahkan Kelas 😔: ${error.message}`);
       if (error instanceof Error) {
         console.error("Error message:", error.message);
       }
@@ -384,6 +389,7 @@ const DashboardTambahKelasPage: React.FC = () => {
           <Button text="Tambah Kursus" type="submit" />
         </div>
       </form>
+      <ToastContainer />
     </>
   );
 };

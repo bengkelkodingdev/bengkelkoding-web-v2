@@ -2,42 +2,40 @@ import { Dosen } from "./Dosen";
 
 export interface Kelas {
   id: number;
-  lecture: Dosen;
   name: string;
+  lecture: string;
+  period: string;
   description: string;
   time_start: string;
   time_end: string;
   day: string;
   room: string;
   quota: number;
-  start_date: string;
-  start_date_formatted: string;
-  max_absent: number;
+  student_count: number;
 }
 
 export interface ClassroomData {
-  classroom: {
-    id: number;
-    lecture: {
-      identity_code: string;
-      name: string;
-      role: string;
-    };
-    name: string;
-    description: string;
-    time_start: string;
-    time_end: string;
-    day: string;
-    room: string;
-    quota: number;
-    start_date: string;
-    start_date_formatted: string;
-    max_absent: number;
-    task_percent: string;
-    uts_percent: string;
-    uas_percent: string;
-  };
+  id: number;
+  name: string;
+  lecture: string;
+  period: string;
+  description: string;
+  time_start: string;
+  time_end: string;
+  day: string;
+  room: string;
+  quota: number;
+  student_count: number;
+  quota_left: number;
+  task_percent: string;
+  uts_percent: string;
+  uas_percent: string;
+  start_date: string;
+  start_date_formatted: string;
+  max_absent: number;
+  total_session: number;
   presences: Presence[];
+  courses: Courses[];
   assignments: Assignment[];
 }
 
@@ -92,11 +90,41 @@ interface Lecture {
 }
 
 export interface Assignment {
-  id: number;
+  id: string;
   title: string;
+  type: string;
   description: string;
   start_time: string;
+  file: string | null;
   deadline: string;
+}
+
+export interface AssignmentResponse {
+  data: Assignment[];
+  meta: {
+    status_code: number;
+    success: boolean;
+    message: string;
+    pagination: {
+      total: number;
+      count: number;
+      per_page: number;
+      current_page: number;
+      total_pages: number;
+      links: {
+        next: string | null;
+        previous: string | null;
+      };
+    };
+  };
+}
+
+export interface Courses {
+  id: number;
+  title: string;
+  image: string;
+  author: string;
+  description: string;
 }
 
 export interface Meta {
