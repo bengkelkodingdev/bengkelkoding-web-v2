@@ -26,7 +26,16 @@ export interface Kelas {
   is_active: boolean;
 }
 
+interface Student {
+  id: number;
+  identity_code: string;
+  name: string;
+  email: string;
+  semester: number;
+}
+
 export interface ClassroomData {
+  students: Student[];
   classroom: Kelas;
   presences: Presence[];
   courses: Courses[];

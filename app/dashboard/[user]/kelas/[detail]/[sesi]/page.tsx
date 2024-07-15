@@ -110,23 +110,7 @@ const DetailKelasPageSesi = () => {
   }, [shouldRefresh]);
 
   if (loading) {
-    return (
-      <div className="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-        <div className="animate-pulse flex space-x-4">
-          <div className="rounded-full bg-slate-700 h-10 w-10"></div>
-          <div className="flex-1 space-y-6 py-1">
-            <div className="h-2 bg-slate-700 rounded"></div>
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="h-2 bg-slate-700 rounded col-span-2"></div>
-                <div className="h-2 bg-slate-700 rounded col-span-1"></div>
-              </div>
-              <div className="h-2 bg-slate-700 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <p>Loading..</p>;
   }
 
   if (error) {
@@ -136,7 +120,20 @@ const DetailKelasPageSesi = () => {
   if (!detailClassRoom) {
     return <span>Data tidak tersedia</span>;
   }
-  console.log(detailClassRoom.students);
+
+  function countPresentStudents(students) {
+    return students.filter((student) => student.is_present).length;
+  }
+  const presentCount = countPresentStudents(detailClassRoom.students);
+
+  // 2024-07-15
+
+  // test 2024-04-05
+  // const today = new Date().toISOString().split("T")[0];
+  const today = "2024-04-04";
+  const isDateMatching = detailClassRoom.presence.presence_date === today;
+  console.log("hari ini", today);
+
   return (
     // <>
     //   <div className="atas w-full flex">
@@ -165,7 +162,7 @@ const DetailKelasPageSesi = () => {
                 </div>
                 <div>
                   <h5 className="leading-none text-2xl font-bold text-gray-900 pb-1">
-                    nama kelas
+                    {detailClassRoom.presence.classroom_name}
                     {/* {detailClassRoom.} */}
                   </h5>
                   <p className="text-sm font-normal text-gray-500">
@@ -191,22 +188,29 @@ const DetailKelasPageSesi = () => {
               </dl>
               <dl className="bg-gradient-to-r from-red-700 to-red-600 focus:ring-red-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
                 <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">
-                  64
+                  {detailClassRoom.absence_students.length}
                 </dt>
                 <dd className="text-neutral5  text-sm font-medium">Izin</dd>
               </dl>
               <dl className="bg-gradient-to-r from-orange-700 to-orange-600 focus:ring-orange-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
                 <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">
-                  23
+                  {presentCount}
                 </dt>
                 <dd className="text-neutral5  text-sm font-medium">Hadir</dd>
               </dl>
             </div>
             <button
-              onClick={generateRandomText}
-              className="btn-generate  w-1/4  mt-5 p-3 font-semibold text-white border-2 border-slate-200 bg-gradient-to-r from-blue-700 to-blue-600 4780ea hover:bg-[#3263de] rounded-lg"
+              onClick={isDateMatching ? generateRandomText : null}
+              className={`btn-generate w-1/4 mt-5 p-3 font-semibold text-white border-2 border-slate-200 
+                ${
+                  isDateMatching
+                    ? "bg-gradient-to-r from-blue-700 to-blue-600 hover:bg-[#3263de]"
+                    : "bg-gray-400 cursor-not-allowed"
+                } 
+                rounded-lg`}
+              disabled={!isDateMatching}
             >
-              Genetate Qr
+              {isDateMatching ? "Generate QR" : "Terkunci"}
             </button>
           </div>
           {/* kanan */}

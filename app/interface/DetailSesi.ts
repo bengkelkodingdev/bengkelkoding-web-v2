@@ -7,6 +7,7 @@ interface Lecture {
 interface Presence {
   id: number;
   lecture: Lecture;
+  classroom_name: string;
   student_count: number;
   time_start: string;
   time_end: string;

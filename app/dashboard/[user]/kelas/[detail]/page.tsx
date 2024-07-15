@@ -101,11 +101,26 @@ const DashboardDetailKelasPage = () => {
     { id: "kursus", label: "Kursus" },
   ];
 
+  // contoh
+
+  const contoh1 = [
+    {
+      presences: [
+        { week: 1, attendance_count: 10 },
+        { week: 2, attendance_count: 15 },
+        { week: 3, attendance_count: 12 },
+        { week: 4, attendance_count: 20 },
+      ],
+    },
+  ];
+
+  // -- end contoh
+
   const chartOptions: ApexCharts.ApexOptions = {
     series: [
       {
         name: "Kehadiran",
-        data: kelas.flatMap((kelasItem) =>
+        data: contoh1.flatMap((kelasItem) =>
           kelasItem.presences.map((presence) =>
             presence.attendance_count !== 0 ? presence.attendance_count : null
           )
@@ -251,6 +266,7 @@ const DashboardDetailKelasPage = () => {
                       {/* list */}
                       <div className="lg:w-[70%] shadow-md px-2 rounded-md">
                         <div id="chart">
+                          <p className="p-2">Statistik Kehadiran</p>
                           <ReactApexChart
                             options={chartOptions}
                             series={chartOptions.series}
@@ -274,7 +290,7 @@ const DashboardDetailKelasPage = () => {
                             <tr className="bg-white border-b hover:bg-gray-50">
                               <td className="px-6 py-4 w-max">Maksimal Izin</td>
                               <td className="px-6 py-4">
-                                {kelasItem.max_absent}
+                                {kelasItem.classroom.max_absent}
                               </td>
                             </tr>
                             <tr className="bg-white border-b hover:bg-gray-50">
@@ -350,14 +366,23 @@ const DashboardDetailKelasPage = () => {
                                 </p>
                               </td>
                               <td className="px-6 py-3 text-xs">
-                                {kelasItem.room}
+                                {kelasItem.classroom.room}
                               </td>
                               <td className="px-6 py-3 w-36">
-                                <StatusLabel
+                                <span className="flex justify-center items-center text-xs font-medium w-full h-[2rem] rounded-full text-center  text-blue-800 bg-blue-100">
+                                  <Link
+                                    className="flex items-center justify-center text-center"
+                                    href={`${kelasItem.classroom.id}/${presence.id}`}
+                                  >
+                                    Masuk
+                                  </Link>
+                                </span>
+
+                                {/* <StatusLabel
                                   presence={presence}
                                   kelas={kelasItem}
                                   index={presence.id}
-                                />
+                                /> */}
                               </td>
                               <td className="px-6 py-3">
                                 <div className="flex gap-1">
@@ -465,6 +490,9 @@ const DashboardDetailKelasPage = () => {
                               <div className="text-xs flex flex-col gap-1">
                                 <p className="font-medium text-neutral2">
                                   {student.name}
+                                </p>
+                                <p className="font-normal text-neutral2">
+                                  Semester {student.semester}
                                 </p>
                               </div>
                             </td>
