@@ -12,20 +12,6 @@ export interface Kelas {
   room: string;
   quota: number;
   student_count: number;
-}
-
-export interface ClassroomData {
-  id: number;
-  name: string;
-  lecture: string;
-  period: string;
-  description: string;
-  time_start: string;
-  time_end: string;
-  day: string;
-  room: string;
-  quota: number;
-  student_count: number;
   quota_left: number;
   task_percent: string;
   uts_percent: string;
@@ -34,6 +20,14 @@ export interface ClassroomData {
   start_date_formatted: string;
   max_absent: number;
   total_session: number;
+  total_attendance_count: number;
+  total_absence_count: number;
+  total_non_attendance_count: number;
+  is_active: boolean;
+}
+
+export interface ClassroomData {
+  classroom: Kelas;
   presences: Presence[];
   courses: Courses[];
   assignments: Assignment[];

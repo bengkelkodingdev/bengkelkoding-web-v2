@@ -136,7 +136,7 @@ const DetailKelasPageSesi = () => {
   if (!detailClassRoom) {
     return <span>Data tidak tersedia</span>;
   }
-
+  console.log(detailClassRoom.students);
   return (
     // <>
     //   <div className="atas w-full flex">
@@ -165,8 +165,8 @@ const DetailKelasPageSesi = () => {
                 </div>
                 <div>
                   <h5 className="leading-none text-2xl font-bold text-gray-900 pb-1">
-                    {/* nama kelas */}
                     nama kelas
+                    {/* {detailClassRoom.} */}
                   </h5>
                   <p className="text-sm font-normal text-gray-500">
                     {detailClassRoom.presence.lecture.name}
@@ -372,7 +372,7 @@ const DetailKelasPageSesi = () => {
               </Modal>
 
               <nav
-                className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+                className="flex items-center flex-column flex-wrap md:flex-row justify-start pt-4"
                 aria-label="Table navigation"
               >
                 <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
@@ -441,15 +441,238 @@ const DetailKelasPageSesi = () => {
                 </ul>
               </nav>
             </div>
-            <div className="right-sudahabsen w-full lg:w-1/2">
+
+            {/* list izin */}
+
+            <div className="right-izin w-full lg:w-[30%]">
               <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">
                 <div className="text-center w-full flex justify-left ">
                   <p className="bg-yellow-200 p-1 w-3/12 rounded-lg mb-3 ">
                     List Izin
                   </p>
                 </div>
+                <table className="text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                  <thead className=" text-sm text-neutral2 bg-gray-100 ">
+                    <tr>
+                      <th scope="col" className="p-4">
+                        <div className="flex items-center">
+                          <input
+                            id="checkbox-all-search"
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <label className="sr-only">checkbox</label>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Nama
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {detailClassRoom.absence_students.map((absen) => (
+                      <tr
+                        key={absen.id}
+                        className="bg-white border-b hover:bg-gray-50"
+                      >
+                        <td className="w-4 p-4">
+                          <div className="flex items-center">
+                            <input
+                              id="checkbox-table-search-1"
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                            />
+                            <label className="sr-only">checkbox</label>
+                          </div>
+                        </td>
+                        <th
+                          scope="row"
+                          className="px-6 py-4 whitespace-nowrap "
+                        >
+                          <div className="text-xs flex flex-col gap-1">
+                            <p className="font-medium text-neutral2">
+                              {absen.name}
+                            </p>
+                            <div className="flex items-center py-1 gap-2">
+                              <p className="font-normal text-sm">
+                                {" "}
+                                {absen.identity_code}
+                              </p>
+                              {absen.approve_status ? (
+                                <p className=" text-xs rounded-xl px-4 text-green-600 bg-green-100">
+                                  terKonfirmasi
+                                </p>
+                              ) : (
+                                <p className=" text-xs text-center rounded-xl px-4 text-red-600 bg-red-100">
+                                  Belum dikonfirmasi
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex gap-3 items-center">
+                              <p>file</p>
+                              <Link
+                                href={"/"}
+                                className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path
+                                    d="M0 0h24v24H0V0zm0 0h24v24H0V0z"
+                                    fill="none"
+                                  />
+                                  <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
+                                </svg>
+                              </Link>
+                              <Link
+                                href={"/"}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                }}
+                                className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                              >
+                                <span className="sr-only">EditFormKelas</span>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path
+                                    d="M0 0h24v24H0V0zm0 0h24v24H0V0z"
+                                    fill="none"
+                                  />
+                                  <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                                </svg>
+                              </Link>
+                            </div>
+                          </div>
+                        </th>
+                        {/* <td className="px-6 py-4">file</td> */}
+
+                        {/* <td className="px-6 py-4">
+                          {listMhs.is_present ? (
+                            <p className="w-max text-sm rounded-xl px-4 text-green-600 bg-green-100">
+                              Konfirmasi
+                            </p>
+                          ) : (
+                            <p className="w-max text-sm rounded-xl px-4 text-red-600 bg-red-100">
+                              Belum dikonfirmasi
+                            </p>
+                          )}
+                        </td> */}
+
+                        {/* <td className="px-6 py-4">
+                          <div className="flex gap-1">
+                            <Link
+                              href={"/"}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleOpenModal();
+                              }}
+                              className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                              >
+                                <path d="M0 0h24v24H0V0z" fill="none" />
+                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                              </svg>
+                            </Link>
+                          </div>
+                        </td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+
+              <Modal
+                title="Status Kehadiran"
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+              >
+                <EditFormStatus />
+              </Modal>
+
+              {/* <nav
+                className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+                aria-label="Table navigation"
+              >
+                <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                  Showing{" "}
+                  <span className="font-semibold text-gray-900">1-10</span> of{" "}
+                  <span className="font-semibold text-gray-900">1000</span>
+                </span>
+                <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                  <li>
+                    <a
+                      href="#"
+                      className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
+                    >
+                      Sebelumnya
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                    >
+                      1
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                    >
+                      2
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      aria-current="page"
+                      className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
+                    >
+                      3
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                    >
+                      4
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                    >
+                      5
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
+                    >
+                      Selanjutnya
+                    </a>
+                  </li>
+                </ul>
+              </nav> */}
             </div>
+
+            {/* --- */}
           </div>
         </div>
       </div>

@@ -91,12 +91,15 @@ const DashboardDetailKelasPage = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Kelas Tidak ditemukan</p>;
-
+  const contoh = () => {
+    kelas.map((kelasItem) => console.log(kelasItem.classroom.max_absent));
+  };
+  console.log("kelas", contoh);
   return (
     <>
       {kelas.map((kelasItem) => (
         <div>
-          <h1>{kelasItem.name}</h1>
+          <h1>{kelasItem.classroom.name}</h1>
 
           <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
             <div className="w-full">
@@ -104,29 +107,32 @@ const DashboardDetailKelasPage = () => {
                 <p>
                   Hari:{" "}
                   <strong className="font-semibold text-primary1">
-                    {kelasItem.day}
+                    {kelasItem.classroom.day}
                   </strong>
                 </p>
                 <p>
                   Jam:{" "}
                   <strong className="font-semibold text-primary1">
-                    {kelasItem.time_start} - {kelasItem.time_end} WIB
+                    {kelasItem.classroom.time_start} -{" "}
+                    {kelasItem.classroom.time_end} WIB
                   </strong>
                 </p>
                 <p>
                   Dosen:{" "}
                   <strong className="font-semibold text-primary1">
-                    {kelasItem.lecture}
+                    {kelasItem.classroom.lecture}
                   </strong>
                 </p>
                 <p>
                   Kuota:{" "}
                   <strong className="font-semibold text-primary1">
-                    {kelasItem.quota}
+                    {kelasItem.classroom.quota}
                   </strong>
                 </p>
               </div>
-              <p className="mt-4 text-neutral2">{kelasItem.description}</p>
+              <p className="mt-4 text-neutral2">
+                {kelasItem.classroom.description}
+              </p>
             </div>
             <table className="min-w-max text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
               <thead className=" text-neutral2 bg-gray-100">
@@ -140,15 +146,21 @@ const DashboardDetailKelasPage = () => {
               <tbody>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 w-max">Presentase UTS</td>
-                  <td className="px-6 py-4">{kelasItem.uts_percent}</td>
+                  <td className="px-6 py-4">
+                    {kelasItem.classroom.uts_percent}
+                  </td>
                 </tr>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">Presentase UAS</td>
-                  <td className="px-6 py-4">{kelasItem.uas_percent}</td>
+                  <td className="px-6 py-4">
+                    {kelasItem.classroom.uas_percent}
+                  </td>
                 </tr>
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">Presentase Tugas</td>
-                  <td className="px-6 py-4">{kelasItem.task_percent}</td>
+                  <td className="px-6 py-4">
+                    {kelasItem.classroom.task_percent}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -215,13 +227,23 @@ const DashboardDetailKelasPage = () => {
                             {presence.presence_date_formatted}
                           </p>
                         </td>
-                        <td className="px-6 py-3 text-xs">{kelasItem.room}</td>
+                        <td className="px-6 py-3 text-xs">
+                          {kelasItem.classroom.room}
+                        </td>
                         <td className="px-6 py-3 w-36">
-                          <StatusLabel
+                          <span className="flex justify-center items-center gap-2 text-xs font-medium w-full h-[2rem] rounded-full  text-blue-800 bg-blue-100">
+                            <Link
+                              href={`${kelasItem.classroom.id}/${presence.id}`}
+                            >
+                              {" "}
+                              <p className="text-sm">Masuk</p>
+                            </Link>
+                          </span>
+                          {/* <StatusLabel
                             presence={presence}
                             kelas={kelasItem}
                             index={presence.id}
-                          />
+                          /> */}
                         </td>
                         <td className="px-6 py-3">
                           <div className="flex gap-1">
@@ -278,7 +300,11 @@ const DashboardDetailKelasPage = () => {
                   <tbody>
                     <tr className="bg-white border-b hover:bg-gray-50">
                       <td className="px-6 py-4 w-max">Maksimal Izin</td>
-                      <td className="px-6 py-4">{kelasItem.max_absent}</td>
+                      <td className="px-6 py-4">
+                        {kelasItem.classroom.max_absent}
+                      </td>
+
+                      {/* {console.log("tes")} */}
                     </tr>
                     <tr className="bg-white border-b hover:bg-gray-50">
                       <td className="px-6 py-4">Jumlah pertemuan</td>
