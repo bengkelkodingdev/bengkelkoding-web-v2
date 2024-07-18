@@ -502,18 +502,22 @@ const DetailKelasPageSesi = () => {
                                 {" "}
                                 {absen.identity_code}
                               </p>
-                              {absen.approve_status ? (
-                                <p className=" text-xs rounded-xl px-4 text-green-600 bg-green-100">
-                                  terKonfirmasi
+                              {absen.approve_status_label === "Diterima" ? (
+                                <p className="text-xs rounded-xl px-4 text-green-600 bg-green-100">
+                                  Diterima
+                                </p>
+                              ) : absen.approve_status_label === "Ditolak" ? (
+                                <p className="text-xs text-center rounded-xl px-4 text-red-600 bg-red-100">
+                                  Ditolak
                                 </p>
                               ) : (
-                                <p className=" text-xs text-center rounded-xl px-4 text-red-600 bg-red-100">
-                                  Belum dikonfirmasi
+                                <p className="text-xs text-center rounded-xl px-4 text-yellow-600 bg-yellow-100">
+                                  Menunggu
                                 </p>
                               )}
                             </div>
                             <div className="flex gap-3 items-center">
-                              <p>file</p>
+                              <Link href={absen.attachment}>File</Link>
                               <Link
                                 href={"/"}
                                 className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
