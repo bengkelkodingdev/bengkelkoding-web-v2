@@ -2,8 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { KelasRespon } from "@/app/interface/Kelas";
 import { createRequest } from "../request";
 
-const API_URL: string =
-  process.env.NEXT_PUBLIC_GETAPICLASSROOM_URL_BENGKEL_KODING || "";
+const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
 import Cookies from "js-cookie";
 
@@ -15,7 +14,7 @@ export const getAllClassroom = async (): Promise<KelasRespon> => {
   }
 
   try {
-    const response = await axios.get(`${API_URL}`, {
+    const response = await axios.get(`${API_URL}/api/v2/admin/classrooms`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
