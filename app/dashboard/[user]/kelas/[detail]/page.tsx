@@ -110,6 +110,7 @@ const DashboardDetailKelasPage = () => {
         { week: 2, attendance_count: 15 },
         { week: 3, attendance_count: 12 },
         { week: 4, attendance_count: 20 },
+        { week: 5, attendance_count: 12 },
       ],
     },
   ];
@@ -119,6 +120,7 @@ const DashboardDetailKelasPage = () => {
   const chartOptions: ApexCharts.ApexOptions = {
     series: [
       {
+        // ganti kelas
         name: "Kehadiran",
         data: contoh1.flatMap((kelasItem) =>
           kelasItem.presences.map((presence) =>
@@ -150,7 +152,8 @@ const DashboardDetailKelasPage = () => {
       },
     },
     xaxis: {
-      categories: kelas.flatMap((kelasItem) =>
+      // ganti kelas
+      categories: contoh1.flatMap((kelasItem) =>
         kelasItem.presences
           .filter((presence) => presence.attendance_count !== 0)
           .map((presence) => `Pertemuan ${presence.week}`)
@@ -524,13 +527,141 @@ const DashboardDetailKelasPage = () => {
 
               {/* Tugas */}
               {activeSection === "tugas" && (
-                <div id="tugas" className="mx-auto">
+                <div id="tugas" className="mx-auto mt-4">
                   {/* list Tugas */}
+                  <h3 className="font-semibold mb-3">Tabel Penugasan</h3>
+                  <div className="flex  w-full justify-between items-center">
+                    <div className="relative ml-2">
+                      <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-neutral3"
+                          aria-hidden="true"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        id="table-search"
+                        className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                        placeholder="Cari Tugas"
+                      />
+                    </div>
+                    <Link
+                      href={"/"}
+                      className="w-max bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+                    >
+                      + Tambah Tugas
+                    </Link>
+                  </div>
+                  <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden mt-5 ">
+                    <thead className="text-sm text-neutral2 bg-gray-100">
+                      <tr>
+                        <th scope="col" className="p-4">
+                          No
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Nama Tugas
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Deskripsi
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Tanggal Mulai
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Tanggal Selesai
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          File
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-center">
+                          Jenis
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-center">
+                          Terkumpul
+                        </th>
 
-                  <div className="ml-4 col-span-1">
-                    <ol className="relative border-s border-gray-200 ">
+                        <th scope="col" className="px-6 py-3">
+                          Aksi
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <tr
+                          key={index}
+                          className="bg-white border-b hover:bg-gray-50"
+                        >
+                          <td className="w-4 p-4">{index + 1}</td>
+                          <td className="px-6 py-4 font-semibold">
+                            Nama Tugas {index + 1}
+                          </td>
+                          <td className="px-6 py-4">
+                            Deskripsi Tugas {index + 1}
+                          </td>
+                          <td className="px-6 py-4">2024-07-22</td>
+                          <td className="px-6 py-4">2024-07-30</td>
+                          <td className="px-6 py-4">File Tugas {index + 1}</td>
+                          <td className="px-6 py-4 flex items-center justify-center">
+                            <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
+                              task
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center font-semibold">
+                            {index + 3}/12
+                          </td>
+
+                          <td className="px-6 py-4">
+                            <div className="flex gap-1">
+                              <Link
+                                href="/"
+                                className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path d="M0 0h24v24H0V0z" fill="none" />
+                                  <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                </svg>
+                              </Link>
+                              <Link
+                                href="/"
+                                className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path d="M0 0h24v24H0V0z" fill="none" />
+                                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                </svg>
+                              </Link>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* card tugas */}
+
+                  {/* <div className="ml-4 col-span-1 mt-5">
+                    <ol className="relative border-s bg-blue-200 border-gray-200 ">
                       {tugas.map((tugas, index) => (
-                        <li key={tugas.id} className="mb-10 ms-6">
+                        <li key={tugas.id} className="mb-10 ms-6 bg-red-300">
                           <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white ">
                             <svg
                               className="w-2.5 h-2.5 text-gray-500 "
@@ -554,14 +685,26 @@ const DashboardDetailKelasPage = () => {
                           <p className="mb-4 text-base font-normal text-gray-500 ">
                             {tugas.description}
                           </p>
-                          {/* <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700   "><svg className="w-3.5 h-3.5 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
-                    <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
-                    </svg> Lihat Tugas</a> */}
+                          <a
+                            href="#"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700   "
+                          >
+                            <svg
+                              className="w-3.5 h-3.5 me-2.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z" />
+                              <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
+                            </svg>{" "}
+                            Lihat Tugas
+                          </a>
                         </li>
                       ))}
                     </ol>
-                  </div>
+                  </div> */}
                 </div>
               )}
 
