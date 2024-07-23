@@ -89,7 +89,7 @@ const HomePage = () => {
     <div className="bg-[#f7f9fa] z-50">
       <Header />
 
-      <main className="w-full px-2 md:px-4 py-4 min-h-screen">
+      <main className="w-full px-5 md:px-4 py-4 min-h-screen">
         <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col-reverse md:flex-row justify-between items-center gap-10">
           <div className="flex flex-col gap-4 md:gap-6">
             <div>

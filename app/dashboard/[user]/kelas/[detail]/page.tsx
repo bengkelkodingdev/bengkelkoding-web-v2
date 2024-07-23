@@ -555,7 +555,7 @@ const DashboardDetailKelasPage = () => {
                       />
                     </div>
                     <Link
-                      href={"/"}
+                      href={``}
                       className="w-max bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
                     >
                       + Tambah Tugas
