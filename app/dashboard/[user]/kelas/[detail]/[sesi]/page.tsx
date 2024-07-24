@@ -130,7 +130,7 @@ const DetailKelasPageSesi = () => {
 
   // test 2024-04-05
   // const today = new Date().toISOString().split("T")[0];
-  const today = "2024-04-04";
+  const today = "2024-04-05";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
   console.log("hari ini", today);
 

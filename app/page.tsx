@@ -309,9 +309,7 @@ const HomePage = () => {
                   </p>
                 </div>
                 <p className="text-neutral1 mt-4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
-                  vitae voluptatem neque deleniti sequi vel nam delectus aliquam
-                  molestiae! Non?
+                Bengkel Koding merupakan program yang diselenggarakan oleh Program Studi Teknik Informatika Universitas Dian Nuswantoro untuk membantu mahasiswa memahami pembelajaran dibidang ilmu teknologi.
                 </p>
               </div>
 
@@ -339,14 +337,14 @@ const HomePage = () => {
               </div> */}
             </div>
             <div className="md:w-[70%] flex gap-4 overflow-x-auto no-scrollbar py-4">
-              {Array.from({ length: 5 }).map((_, index) => (
+              {/* {Array.from({ length: 5 }).map((_, index) => ( */}
                 <Link
-                  key={index}
+                  // key={index}
                   href={"/kursus"}
                   className="min-w-[250px] block border bg rounded-lg overflow-hidden hover:shadow-md transition-all ease-in-out duration-200"
                 >
                   <Image
-                    src={"/img/kursus-image-1.png"}
+                    src={"/img/web.png"}
                     alt="kursus"
                     width={250}
                     height={250}
@@ -390,12 +388,119 @@ const HomePage = () => {
                       </div>
                     </div>
                     <p className="text-sm text-neutral1 mt-2">
-                      Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                      Perferendis, nulla?
+                    Pelatihan Web Developer terdiri dari dua tahap, yaitu dasar-dasar pemrograman dan penggunaan framework, dengan materi berkelanjutan.
                     </p>
                   </div>
                 </Link>
-              ))}
+                <Link
+                  // key={index}
+                  href={"/kursus"}
+                  className="min-w-[250px] block border bg rounded-lg overflow-hidden hover:shadow-md transition-all ease-in-out duration-200"
+                >
+                  <Image
+                    src={"/img/mobile.png"}
+                    alt="kursus"
+                    width={250}
+                    height={250}
+                  />
+                  <div className="p-4">
+                    <strong className="font-semibold">Mobile Developer</strong>
+                    <div className="flex gap-4">
+                      <div className="text-sm flex items-center gap-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          className="fill-blue-500"
+                        >
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
+                        </svg>
+                        <p className="text-neutral1 text-sm font-semibold">
+                          120
+                        </p>
+                      </div>
+                      <div className="text-sm flex items-center gap-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          enable-background="new 0 0 24 24"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          className="fill-yellow-500"
+                        >
+                          <g>
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                          </g>
+                          <g>
+                            <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
+                          </g>
+                        </svg>
+                        <p className="text-neutral1 text-sm font-semibold">5</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-neutral1 mt-2">
+                    Diskusi ini akan mengajarkan Mobile Developer menggunakan Flutter, SDK open source dari Google, untuk membuat aplikasi multi-platform dengan satu kode.
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  // key={index}
+                  href={"/kursus"}
+                  className="min-w-[250px] block border bg rounded-lg overflow-hidden hover:shadow-md transition-all ease-in-out duration-200"
+                >
+                  <Image
+                    src={"/img/dataScience.png"}
+                    alt="kursus"
+                    width={250}
+                    height={250}
+                  />
+                  <div className="p-4">
+                    <strong className="font-semibold">Data Science</strong>
+                    <div className="flex gap-4">
+                      <div className="text-sm flex items-center gap-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          className="fill-blue-500"
+                        >
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
+                        </svg>
+                        <p className="text-neutral1 text-sm font-semibold">
+                          120
+                        </p>
+                      </div>
+                      <div className="text-sm flex items-center gap-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          enable-background="new 0 0 24 24"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          className="fill-yellow-500"
+                        >
+                          <g>
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                          </g>
+                          <g>
+                            <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
+                          </g>
+                        </svg>
+                        <p className="text-neutral1 text-sm font-semibold">5</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-neutral1 mt-2">
+                    Memberikan pemahaman komprehensif tentang konsep, metode, dan aplikasi Data Science, yang kini menjadi kunci dalam pengambilan keputusan cerdas di berbagai bidang.
+                    </p>
+                  </div>
+                </Link>
+              {/* ))} */}
             </div>
           </div>
         </article>
@@ -439,62 +544,136 @@ const HomePage = () => {
             Testimoni Mahasiswa
           </h3>
           <div className="w-full overflow-hidden flex flex-col gap-3 lg:gap-4">
-            {/* Testimoni Atas */}
-            <div
-              ref={scrollContainerRef}
-              className="flex gap-3 lg:gap-4 overflow-x-auto no-scrollbar"
-            >
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
-                >
-                  {/* feedback */}
-                  <div className="mb-4">
-                    <strong className="text-lg">Lorem, ipsum dolor.</strong>
-                    <p className="text-sm">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Unde, quos.
-                    </p>
-                  </div>
-                  {/* mahasiswa */}
-                  <div className="text-right">
-                    <strong className="text-xs">
-                      Arif Saputra | Web Developer
-                    </strong>
-                  </div>
-                </div>
-              ))}
-            </div>
+  {/* Testimoni Atas */}
+  <div
+    ref={scrollContainerRef}
+    className="flex gap-3 lg:gap-4 overflow-x-auto no-scrollbar"
+  >
+    {[
+      {
+        title: "Pengalaman Luar Biasa",
+        feedback: "Pelatihan ini sangat membantu saya memahami dasar-dasar pemrograman web. Materinya jelas dan instruktur sangat berpengalaman.",
+        name: "Budi Santoso",
+        role: "Junior Web Developer",
+      },
+      {
+        title: "Sangat Memuaskan",
+        feedback: "Saya sangat puas dengan pelatihan ini. Penjelasan materi sangat mendalam dan mudah dipahami.",
+        name: "Siti Aminah",
+        role: "Web Developer",
+      },
+      {
+        title: "Rekomendasi Terbaik",
+        feedback: "Saya merekomendasikan pelatihan ini kepada siapa saja yang ingin menguasai web development dengan baik.",
+        name: "Ahmad Fauzi",
+        role: "Web Developer",
+      },
+      {
+        title: "Instruktur Hebat",
+        feedback: "Instrukturnya hebat dan sangat membantu dalam memahami konsep yang sulit.",
+        name: "Rina Puspita",
+        role: "Junior Web Developer",
+      },
+      {
+        title: "Materi Mendalam",
+        feedback: "Materi yang diajarkan sangat mendalam dan aplikatif untuk kebutuhan industri.",
+        name: "Tono Prasetyo",
+        role: "Web Developer",
+      },
+      {
+        title: "Kelas yang Interaktif",
+        feedback: "Kelas ini sangat interaktif dan menyenangkan, membuat proses belajar menjadi lebih mudah.",
+        name: "Desi Anggraeni",
+        role: "Junior Web Developer",
+      }
+    ].map((testimoni, index) => (
+      <div
+        key={index}
+        className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
+      >
+        {/* feedback */}
+        <div className="mb-4">
+          <strong className="text-lg">{testimoni.title}</strong>
+          <p className="text-sm">
+            {testimoni.feedback}
+          </p>
+        </div>
+        {/* mahasiswa */}
+        <div className="text-right">
+          <strong className="text-xs">
+            {testimoni.name} | {testimoni.role}
+          </strong>
+        </div>
+      </div>
+    ))}
+  </div>
 
-            {/* Testimoni Bawah */}
-            <div
-              ref={scrollContainerRefTwo}
-              className="flex gap-3 lg:gap-4 overflow-x-scroll no-scrollbar"
-            >
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
-                >
-                  {/* feedback */}
-                  <div className="mb-4">
-                    <strong className="text-lg">Lorem, ipsum dolor.</strong>
-                    <p className="text-sm">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Unde, quos.
-                    </p>
-                  </div>
-                  {/* mahasiswa */}
-                  <div className="text-right">
-                    <strong className="text-xs">
-                      Arif Saputra | Web Developer
-                    </strong>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+  {/* Testimoni Bawah */}
+  <div
+    ref={scrollContainerRefTwo}
+    className="flex gap-3 lg:gap-4 overflow-x-scroll no-scrollbar"
+  >
+    {[
+      {
+        title: "Pelatihan Terbaik",
+        feedback: "Pelatihan ini memberikan saya pengetahuan yang sangat berharga untuk karir saya.",
+        name: "Rudi Hartono",
+        role: "Junior Web Developer",
+      },
+      {
+        title: "Penuh Inspirasi",
+        feedback: "Saya merasa sangat terinspirasi setelah mengikuti pelatihan ini. Materinya sangat relevan.",
+        name: "Mira Ningsih",
+        role: "Web Developer",
+      },
+      {
+        title: "Pengalaman yang Menyenangkan",
+        feedback: "Pelatihan ini memberikan pengalaman belajar yang menyenangkan dan bermanfaat.",
+        name: "Andi Surya",
+        role: "Web Developer",
+      },
+      {
+        title: "Pembelajaran Efektif",
+        feedback: "Metode pembelajarannya sangat efektif, membuat saya lebih cepat menguasai materi.",
+        name: "Lia Agustina",
+        role: "Junior Web Developer",
+      },
+      {
+        title: "Kualitas Tinggi",
+        feedback: "Kualitas pelatihan ini sangat tinggi dan layak untuk diikuti oleh siapa saja.",
+        name: "Dedi Kurniawan",
+        role: "Web Developer",
+      },
+      {
+        title: "Sangat Membantu",
+        feedback: "Pelatihan ini sangat membantu dalam memahami konsep web development yang kompleks.",
+        name: "Tika Saraswati",
+        role: "Junior Web Developer",
+      }
+    ].map((testimoni, index) => (
+      <div
+        key={index}
+        className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
+      >
+        {/* feedback */}
+        <div className="mb-4">
+          <strong className="text-lg">{testimoni.title}</strong>
+          <p className="text-sm">
+            {testimoni.feedback}
+          </p>
+        </div>
+        {/* mahasiswa */}
+        <div className="text-right">
+          <strong className="text-xs">
+            {testimoni.name} | {testimoni.role}
+          </strong>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+ 
         </article>
 
         {/* FAQ */}
