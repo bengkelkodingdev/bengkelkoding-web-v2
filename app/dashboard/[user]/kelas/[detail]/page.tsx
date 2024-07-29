@@ -31,6 +31,8 @@ const DashboardDetailKelasPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
 
+  // modal --
+
   const handleOpenModal = (presence: Presence) => {
     setSelectedMeeting(presence);
     setIsModalOpen(true);
@@ -42,10 +44,10 @@ const DashboardDetailKelasPage = () => {
   };
 
   const handleSaveMeeting = (updatedMeeting: Presence) => {
-    // Logic to save the updated meeting
-    console.log("Meeting saved:", updatedMeeting);
     handleCloseModal();
   };
+
+  // end modal --
 
   const [kelas, setKelas] = useState<ClassroomData[]>([]);
   const [tugas, setTugas] = useState<Assignment[]>([]);
@@ -58,12 +60,9 @@ const DashboardDetailKelasPage = () => {
         const response = await getDetailClassroom(parts[4]);
         const responseAssigment = await getAssigment(parts[4]);
 
-        console.log("tugas", responseAssigment);
-
         // Check if response.data is an object, convert to array if necessary
         if (Array.isArray(response.data)) {
           setKelas(response.data);
-          console.log("Check if response.data is an object");
         } else if (response.data && typeof response.data === "object") {
           setKelas([response.data]); // Convert single object to array
         } else {
@@ -73,7 +72,6 @@ const DashboardDetailKelasPage = () => {
         // --- assigment
         if (Array.isArray(responseAssigment.data)) {
           setTugas(responseAssigment.data);
-          console.log("Check if response.data is an array");
         } else if (
           responseAssigment.data &&
           typeof responseAssigment.data === "object"
@@ -161,12 +159,340 @@ const DashboardDetailKelasPage = () => {
     },
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div>
+        <h1 className="h-8 w-3/4 bg-gray-200 animate-pulse mb-4"></h1>
+
+        <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
+          <div className="w-full">
+            <div className="grid grid-cols-2 lg:flex items-center gap-x-2 md:gap-5 text-xs text-neutral2">
+              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
+              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
+              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
+              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
+            </div>
+            <p className="mt-4 h-4 w-full bg-gray-200 animate-pulse"></p>
+          </div>
+          <table className="min-w-max text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+            <thead className=" text-neutral2 bg-gray-100">
+              <tr>
+                <th scope="col" className="px-6 py-3 w-max">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </th>
+                <th scope="col" className="px-6 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bg-white border-b hover:bg-gray-50">
+                <td className="px-6 py-4 w-max">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </td>
+              </tr>
+              <tr className="bg-white border-b hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </td>
+              </tr>
+              <tr className="bg-white border-b hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <article className=" mx-auto">
+          {/* Navigasi untuk management active section */}
+          <nav className="flex">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <button
+                key={index}
+                className="w-max px-4 py-2 font-medium rounded-t-md transition-all ease-in-out duration-200 bg-gray-200 animate-pulse"
+              >
+                &nbsp;
+              </button>
+            ))}
+          </nav>
+
+          <section
+            id="group-content"
+            className="px-2 lg:px-4 py-4 w-full bg-slate-50 rounded-b-lg rounded-tr-lg"
+          >
+            {/* Pertemuan */}
+            <div id="pertemuan" className="mx-auto">
+              {/*Pertemuan */}
+              <div className="flex flex-col gap-3 Box-Pertemuan">
+                <div className="flex gap-5 flex-col-reverse md:flex-col-reverse lg:flex-row ">
+                  {/* list */}
+                  <div className="lg:w-[70%] shadow-md px-2 rounded-md">
+                    <div id="chart">
+                      <p className="p-2 h-4 w-1/4 bg-gray-200 animate-pulse"></p>
+                      <div className="h-36 bg-gray-200 animate-pulse"></div>
+                    </div>
+                  </div>
+                  {/* kontrak pertemuan */}
+                  <div className="lg:w-[30%]">
+                    <table className="w-full shadow-sm text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                      <thead className="text-sm text-neutral2 bg-gray-100">
+                        <tr>
+                          <th scope="col" className="px-6 py-3 w-max">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </th>
+                          <th scope="col" className="px-6 py-3"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="bg-white border-b hover:bg-gray-50">
+                          <td className="px-6 py-4 w-max">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                        </tr>
+                        <tr className="bg-white border-b hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                        </tr>
+                        <tr className="bg-white border-b hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="shadow-md">
+                  <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                    <thead className="text-neutral2 bg-gray-100">
+                      <tr>
+                        <th scope="col" className="p-4">
+                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <tr
+                          key={index}
+                          className="bg-white border-b hover:bg-gray-50"
+                        >
+                          <td className="w-4 p-4">
+                            <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
+                          </td>
+
+                          <td className="px-6 py-3">
+                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-3 w-36">
+                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Mahasiswa */}
+            <div id="mahasiswa" className="mx-auto">
+              <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                <thead className="text-sm text-neutral2 bg-gray-100">
+                  <tr>
+                    <th scope="col" className="p-4">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <tr
+                      key={index}
+                      className="bg-white border-b hover:bg-gray-50"
+                    >
+                      <td className="w-4 p-4">
+                        <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Tugas */}
+            <div id="tugas" className="mx-auto mt-4">
+              <h3 className="font-semibold mb-3 h-4 w-1/4 bg-gray-200 animate-pulse"></h3>
+              <div className="flex w-full justify-between items-center">
+                <div className="relative ml-2">
+                  <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+                    <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
+                  </div>
+                  <input
+                    type="text"
+                    id="table-search"
+                    className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                    placeholder="Cari Tugas"
+                  />
+                </div>
+                <div className="w-max bg-gray-200 animate-pulse text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300">
+                  &nbsp;
+                </div>
+              </div>
+              <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden mt-5 ">
+                <thead className="text-sm text-neutral2 bg-gray-100">
+                  <tr>
+                    <th scope="col" className="p-4">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-center">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-center">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <tr
+                      key={index}
+                      className="bg-white border-b hover:bg-gray-50"
+                    >
+                      <td className="w-4 p-4">
+                        <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4 font-semibold">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4 flex items-center justify-center">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4 text-center font-semibold">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Kursus */}
+            <div id="kursus" className="mx-auto">
+              {/* list kursus */}
+              <div className="col-span-2">
+                <div className="flex flex-col gap-2">
+                  {/* list kursus */}
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
+                    >
+                      <div className="h-36 w-48 bg-gray-200 animate-pulse"></div>
+                      <div className="py-3 px-4 w-full">
+                        <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
+                        <div className="h-4 w-1/2 bg-gray-200 animate-pulse mt-2"></div>
+                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse mt-2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        </article>
+      </div>
+    );
   if (error) return <p>Kelas Tidak ditemukan</p>;
-  const contoh = () => {
-    kelas.map((kelasItem) => console.log(kelasItem.classroom.max_absent));
-  };
-  console.log("kelas", contoh);
+
   return (
     <>
       {kelas.map((kelasItem) => (
@@ -270,12 +596,14 @@ const DashboardDetailKelasPage = () => {
                       <div className="lg:w-[70%] shadow-md px-2 rounded-md">
                         <div id="chart">
                           <p className="p-2">Statistik Kehadiran</p>
-                          <ReactApexChart
-                            options={chartOptions}
-                            series={chartOptions.series}
-                            type="line"
-                            height={180}
-                          />
+                          {kelas.length > 0 && (
+                            <ReactApexChart
+                              options={chartOptions}
+                              series={chartOptions.series}
+                              type="line"
+                              height={180}
+                            />
+                          )}
                         </div>
                       </div>
                       {/* kontrak pertemuan */}
@@ -655,56 +983,6 @@ const DashboardDetailKelasPage = () => {
                       ))}
                     </tbody>
                   </table>
-
-                  {/* card tugas */}
-
-                  {/* <div className="ml-4 col-span-1 mt-5">
-                    <ol className="relative border-s bg-blue-200 border-gray-200 ">
-                      {tugas.map((tugas, index) => (
-                        <li key={tugas.id} className="mb-10 ms-6 bg-red-300">
-                          <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white ">
-                            <svg
-                              className="w-2.5 h-2.5 text-gray-500 "
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                            </svg>
-                          </span>
-                          <h3 className="flex items-center mb-1 text-lg font-semibold text-gray-900 ">
-                            {tugas.title}
-                            <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
-                              {tugas.type}
-                            </span>
-                          </h3>
-                          <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
-                            Deadline on {tugas.deadline}
-                          </time>
-                          <p className="mb-4 text-base font-normal text-gray-500 ">
-                            {tugas.description}
-                          </p>
-                          <a
-                            href="#"
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700   "
-                          >
-                            <svg
-                              className="w-3.5 h-3.5 me-2.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z" />
-                              <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
-                            </svg>{" "}
-                            Lihat Tugas
-                          </a>
-                        </li>
-                      ))}
-                    </ol>
-                  </div> */}
                 </div>
               )}
 
@@ -725,6 +1003,7 @@ const DashboardDetailKelasPage = () => {
                             alt={""}
                             width={180}
                             height={140}
+                            loading="lazy"
                           />
                           <div className="py-3 px-4">
                             <h4 className="text-primary1 font-medium">

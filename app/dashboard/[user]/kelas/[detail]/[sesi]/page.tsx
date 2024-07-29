@@ -45,7 +45,6 @@ const DetailKelasPageSesi = () => {
       try {
         //  get detail session for qr
         const presenceData = await getDetailQrSession(sesi[0]);
-        console.log("tes", presenceData);
 
         setdetailClassRoom(presenceData);
       } catch (error) {
@@ -132,15 +131,9 @@ const DetailKelasPageSesi = () => {
   // const today = new Date().toISOString().split("T")[0];
   const today = "2024-04-05";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
-  console.log("hari ini", today);
 
+  let count = 1;
   return (
-    // <>
-    //   <div className="atas w-full flex">
-    //     <div className="kiri w-[60%]">a</div>
-    //     <div className="kanan w-[40%]">b</div>
-    //   </div>
-    // </>
     <>
       <div className=" flex flex-col w-full ">
         <div className="flex flex-col lg:flex-row gap-4 justify-between  w-full  ">
@@ -276,14 +269,7 @@ const DetailKelasPageSesi = () => {
                   <thead className="text-sm text-neutral2 bg-gray-100 ">
                     <tr>
                       <th scope="col" className="p-4">
-                        <div className="flex items-center">
-                          <input
-                            id="checkbox-all-search"
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <label className="sr-only">checkbox</label>
-                        </div>
+                        No
                       </th>
                       <th scope="col" className="px-6 py-3">
                         Nama
@@ -305,16 +291,7 @@ const DetailKelasPageSesi = () => {
                         key={listMhs.id}
                         className="bg-white border-b hover:bg-gray-50"
                       >
-                        <td className="w-4 p-4">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-table-search-1"
-                              type="checkbox"
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                            />
-                            <label className="sr-only">checkbox</label>
-                          </div>
-                        </td>
+                        <td className="w-4 p-4">{count++}</td>
                         <th
                           scope="row"
                           className="px-6 py-4 whitespace-nowrap "
@@ -459,14 +436,7 @@ const DetailKelasPageSesi = () => {
                   <thead className=" text-sm text-neutral2 bg-gray-100 ">
                     <tr>
                       <th scope="col" className="p-4">
-                        <div className="flex items-center">
-                          <input
-                            id="checkbox-all-search"
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <label className="sr-only">checkbox</label>
-                        </div>
+                        No
                       </th>
                       <th scope="col" className="px-6 py-3">
                         Nama
@@ -479,16 +449,7 @@ const DetailKelasPageSesi = () => {
                         key={absen.id}
                         className="bg-white border-b hover:bg-gray-50"
                       >
-                        <td className="w-4 p-4">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-table-search-1"
-                              type="checkbox"
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                            />
-                            <label className="sr-only">checkbox</label>
-                          </div>
-                        </td>
+                        <td className="w-4 p-4">{count++}</td>
                         <th
                           scope="row"
                           className="px-6 py-4 whitespace-nowrap "

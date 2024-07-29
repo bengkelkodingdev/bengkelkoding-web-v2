@@ -217,7 +217,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               {/* periode */}
               <div className="mt-3">
                 <label htmlFor="period_id" className="block text-neutral2">
-                  Periode kursus
+                  Periode Kelas
                 </label>
                 <select
                   name="period_id"
@@ -229,7 +229,7 @@ const DashboardTambahKelasPage: React.FC = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Pilih Periode Kursus</option>
+                  <option value="">Pilih Periode Kelas</option>
                   {periodOptions.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.label}
