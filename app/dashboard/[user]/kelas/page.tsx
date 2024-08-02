@@ -1,5 +1,5 @@
 "use client";
-import { getAllClassroom } from "@/app/api/api-kelas/getAll-kelas";
+import { getAllClassroom } from "@/app/api/admin/api-kelas/getAll-kelas";
 import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -244,7 +244,7 @@ const HomeDashboardKelasPage = () => {
                   <td className="px-6 py-4">{classroom.room}</td>
                   <td className="px-6 py-4">{classroom.quota}</td>
                   <td className="px-6 py-4">{classroom.student_count}</td>
-                  {classroom.student_count > 0 ? (
+                  {classroom.is_active == true ? (
                     <td className="px-6 py-4">aktif</td>
                   ) : (
                     <td className="px-6 py-4"> tidak aktif</td>

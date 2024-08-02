@@ -15,9 +15,9 @@ import {
   Kelas,
   Presence,
 } from "@/app/interface/Kelas";
-import { getDetailClassroom } from "@/app/api/api-kelas/getDetail-kelas";
+import { getDetailClassroom } from "@/app/api/admin/api-kelas/getDetail-kelas";
 import StatusLabel from "@/app/component/kelas/StatusSesi";
-import { getAssigment } from "@/app/api/api-kelas/getAll-Assigment";
+import { getAssigment } from "@/app/api/admin/api-kelas/getAll-Assigment";
 import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
@@ -120,7 +120,7 @@ const DashboardDetailKelasPage = () => {
       {
         // ganti kelas
         name: "Kehadiran",
-        data: contoh1.flatMap((kelasItem) =>
+        data: kelas.flatMap((kelasItem) =>
           kelasItem.presences.map((presence) =>
             presence.attendance_count !== 0 ? presence.attendance_count : null
           )
@@ -151,7 +151,7 @@ const DashboardDetailKelasPage = () => {
     },
     xaxis: {
       // ganti kelas
-      categories: contoh1.flatMap((kelasItem) =>
+      categories: kelas.flatMap((kelasItem) =>
         kelasItem.presences
           .filter((presence) => presence.attendance_count !== 0)
           .map((presence) => `Pertemuan ${presence.week}`)
@@ -883,7 +883,7 @@ const DashboardDetailKelasPage = () => {
                       />
                     </div>
                     <Link
-                      href={``}
+                      href={`${kelasItem.classroom.id}/tambah-tugas`}
                       className="w-max bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
                     >
                       + Tambah Tugas

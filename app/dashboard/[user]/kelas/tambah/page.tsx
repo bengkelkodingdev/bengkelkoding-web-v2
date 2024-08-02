@@ -2,28 +2,18 @@
 import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useRef, useState } from "react";
 import { ClassFormData } from "@/app/interface/Kelas";
-import { createClassroom } from "@/app/api/api-kelas/post-kelas";
+import { createClassroom } from "@/app/api/admin/api-kelas/tambah-kelas/post-kelas";
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
 import { toast, ToastContainer } from "react-toastify";
-
-const pathOptions = [
-  { id: 1, label: "Frontend Page" },
-  { id: 2, label: "Backend Page" },
-  { id: 3, label: "Database" },
-];
-
-const periodOptions = [
-  { id: 1, label: "Satu Semester" },
-  { id: 2, label: "Setengah Semester" },
-  { id: 3, label: "Selamanya" },
-];
-
-const dosenOptions = [
-  { id: 1, label: "Alif" },
-  { id: 2, label: "Defri Kurniawan, M.Kom" },
-  { id: 3, label: "Adhitya Nugraha, S.Kom, M.CS" },
-];
+import {
+  SelectLecture,
+  SelectPath,
+  SelectPeriod,
+} from "@/app/interface/SelectData";
+import { getSelectLecture } from "@/app/api/admin/api-kelas/tambah-kelas/select-lecture";
+import { getSelectPaths } from "@/app/api/admin/api-kelas/tambah-kelas/select-path";
+import { getSelectPeriods } from "@/app/api/admin/api-kelas/tambah-kelas/select-period";
 
 const DashboardTambahKelasPage: React.FC = () => {
   const [formData, setFormData] = useState<ClassFormData>({
@@ -49,9 +39,52 @@ const DashboardTambahKelasPage: React.FC = () => {
     undefined
   );
 
+  const [selectLectureApi, setSelectLectureApi] = useState<SelectLecture[]>([]);
+  const [selectPathApi, setSelectPathApi] = useState<SelectPath[]>([]);
+  const [selectPeriodApi, setSelectPeriodApi] = useState<SelectPeriod[]>([]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const [descriptionCharCount, setDescriptionCharCount] = useState<number>(0);
+  const maxDescriptionLength = 255;
+
+  const fetchSelectLecture = async () => {
+    try {
+      const response = await getSelectLecture();
+      console.log("responnan: ", response);
+      setSelectLectureApi(response.data);
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  const fetchSelectPaths = async () => {
+    try {
+      const response = await getSelectPaths();
+      console.log("responnan: ", response);
+      setSelectPathApi(response.data);
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  const fetchSelectPeriods = async () => {
+    try {
+      const response = await getSelectPeriods();
+      console.log("responnan: ", response);
+      setSelectPeriodApi(response.data);
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSelectLecture();
+    fetchSelectPaths();
+    fetchSelectPeriods();
+  }, []);
 
   // Fungsi untuk menangani perubahan pada input pencarian dosen
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,8 +123,8 @@ const DashboardTambahKelasPage: React.FC = () => {
   }, []);
 
   // Filter dosen berdasarkan pencarian
-  const filteredDosenOptions = dosenOptions.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDosenOptions = selectLectureApi.filter((option) =>
+    option.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChange = (
@@ -100,6 +133,11 @@ const DashboardTambahKelasPage: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
+
+    if (name === "description") {
+      setDescriptionCharCount(value.length);
+    }
+
     setFormData((prevData) => {
       const updatedData = {
         ...prevData,
@@ -128,9 +166,9 @@ const DashboardTambahKelasPage: React.FC = () => {
     e.preventDefault();
     try {
       const response = await createClassroom(formData);
-      console.log("Classroom created successfully", response);
-      toast.success("Berhasil Menambahkan Kelas 😁");
 
+      toast.success("Berhasil Menambahkan Kelas 😁");
+      window.location.href = `./`;
       // Tambahkan logika untuk menangani sukses, misalnya navigasi ke halaman lain atau menampilkan notifikasi
     } catch (error) {
       console.error("Failed to create classroom", error);
@@ -142,7 +180,7 @@ const DashboardTambahKelasPage: React.FC = () => {
     }
   };
 
-  console.log("Form data to be submitted:", formData);
+  // console.log("Form data to be submitted:", formData);
 
   return (
     <>
@@ -151,6 +189,7 @@ const DashboardTambahKelasPage: React.FC = () => {
           <p className="font-semibold text-neutral2 text-base">Informasi</p>
           <p className="text-neutral3 text-sm">Indentitas kelas</p>
           <div className="grid grid-cols-2 gap-x-4 mt-2">
+            {/* nama */}
             <div>
               <Input
                 type="text"
@@ -179,10 +218,10 @@ const DashboardTambahKelasPage: React.FC = () => {
                           key={option.id}
                           className="cursor-pointer p-2 hover:bg-gray-100"
                           onClick={() =>
-                            handleSelectDosen(option.id, option.label)
+                            handleSelectDosen(option.id, option.name)
                           }
                         >
-                          {option.label}
+                          {option.name}
                         </div>
                       ))
                     ) : (
@@ -207,9 +246,9 @@ const DashboardTambahKelasPage: React.FC = () => {
                   required
                 >
                   <option value="">Pilih Path Kursus</option>
-                  {pathOptions.map((option) => (
+                  {selectPathApi.map((option) => (
                     <option key={option.id} value={option.id}>
-                      {option.label}
+                      {option.name}
                     </option>
                   ))}
                 </select>
@@ -230,14 +269,15 @@ const DashboardTambahKelasPage: React.FC = () => {
                   required
                 >
                   <option value="">Pilih Periode Kelas</option>
-                  {periodOptions.map((option) => (
+                  {selectPeriodApi.map((option) => (
                     <option key={option.id} value={option.id}>
-                      {option.label}
+                      {option.period}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
+            {/* deskripsi */}
             <div className="h-full">
               <label htmlFor="description" className="block text-neutral2">
                 Deskripsi
@@ -248,8 +288,18 @@ const DashboardTambahKelasPage: React.FC = () => {
                 className="h-[82%] mt-1 relative shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
                 value={formData.description}
                 onChange={handleChange}
+                maxLength={maxDescriptionLength}
                 required
               ></textarea>
+              <div
+                className={`text-sm mt-1 ${
+                  descriptionCharCount == maxDescriptionLength
+                    ? "text-red-500"
+                    : "text-neutral2"
+                }`}
+              >
+                {descriptionCharCount}/{maxDescriptionLength} karakter
+              </div>
             </div>
           </div>
         </div>

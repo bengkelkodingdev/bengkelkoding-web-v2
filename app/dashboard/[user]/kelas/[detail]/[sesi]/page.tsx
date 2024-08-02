@@ -1,7 +1,7 @@
 "use client";
 
-import { getDetailQrSession } from "@/app/api/api-kelas/presensi/getDetailPresensi";
-import { getGenerateQr } from "@/app/api/api-kelas/presensi/getGenerateQr";
+import { getDetailQrSession } from "@/app/api/admin/api-kelas/presensi/getDetailPresensi";
+import { getGenerateQr } from "@/app/api/admin/api-kelas/presensi/getGenerateQr";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -16,6 +16,7 @@ const DetailKelasPageSesi = () => {
   // const router = useRouter();
   const params = useParams();
   const sesi = params.sesi;
+
   const detail = params.detail;
   // const { kelas } = router.query;
 
@@ -27,8 +28,6 @@ const DetailKelasPageSesi = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  const sesiInt = sesi[0];
 
   // state qr
   const [qrText, setQrText] = useState<string>("");
@@ -44,7 +43,11 @@ const DetailKelasPageSesi = () => {
     const fetchDetailSession = async () => {
       try {
         //  get detail session for qr
-        const presenceData = await getDetailQrSession(sesi[0]);
+        if (typeof sesi !== "string") {
+          throw new Error("sesi harus bertipe string");
+        }
+
+        const presenceData = await getDetailQrSession(parseInt(sesi));
 
         setdetailClassRoom(presenceData);
       } catch (error) {
@@ -62,7 +65,10 @@ const DetailKelasPageSesi = () => {
   // button generate qrcode
   const generateRandomText = async () => {
     try {
-      const presenceQr = await getGenerateQr(sesi[0]);
+      if (typeof sesi !== "string") {
+        throw new Error("sesi harus bertipe string");
+      }
+      const presenceQr = await getGenerateQr(sesi);
       let coba = presenceQr;
       setQrText(presenceQr.qr_code);
       console.log("qr session:", presenceQr.qr_code);
@@ -278,6 +284,7 @@ const DetailKelasPageSesi = () => {
   const today = "2024-04-05";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
 
+  console.log(detailClassRoom);
   let count = 1;
   return (
     <>

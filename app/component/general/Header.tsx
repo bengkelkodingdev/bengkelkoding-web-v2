@@ -20,6 +20,13 @@ const Header = () => {
             Home
           </Link>
           <Link
+            href={"/learning-path"}
+            className="text-neutral1 hover:text-primary1 font-semibold"
+          >
+            Learning Path
+          </Link>
+
+          <Link
             href={"/kursus"}
             className="text-neutral1 hover:text-primary1 font-semibold"
           >
