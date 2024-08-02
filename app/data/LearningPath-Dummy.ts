@@ -1,10 +1,9 @@
 export interface MenuPath {
   name: string;
-  ref: string;
+  id: number;
 }
 
 export const menuData: MenuPath[] = [
-  { name: "Web Dev", ref: "/" },
-  { name: "Mobile Dev", ref: "/" },
-  { name: "Data Science", ref: "/" },
+  { name: "Web Dev", id: 1 },
+  { name: "Data Science", id: 2 },
 ];
