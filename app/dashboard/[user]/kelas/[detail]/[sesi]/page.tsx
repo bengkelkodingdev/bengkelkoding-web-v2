@@ -18,7 +18,7 @@ const DetailKelasPageSesi = () => {
   const sesi = params.sesi;
 
   const detail = params.detail;
-  // const { kelas } = router.query;
+  // const { kelas } = router.query;  
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => {
@@ -38,6 +38,11 @@ const DetailKelasPageSesi = () => {
   const [error, setError] = useState(null); // State untuk menangani kesalahan
 
   const [shouldRefresh, setShouldRefresh] = useState(false);
+
+  //pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; //10 item per halaman
+
 
   useEffect(() => {
     const fetchDetailSession = async () => {
@@ -286,6 +291,16 @@ const DetailKelasPageSesi = () => {
 
   console.log(detailClassRoom);
   let count = 1;
+
+  // Pagination logic
+  const totalPages = Math.ceil(detailClassRoom.students.length / itemsPerPage);
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const paginatedStudents = detailClassRoom.students.slice(
+    startIdx,
+    startIdx + itemsPerPage
+  );
+  
   return (
     <>
       <div className=" flex flex-col w-full ">
@@ -439,12 +454,12 @@ const DetailKelasPageSesi = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {detailClassRoom.students.map((listMhs) => (
+                    {paginatedStudents.map((listMhs, index) => (
                       <tr
                         key={listMhs.id}
                         className="bg-white border-b hover:bg-gray-50"
                       >
-                        <td className="w-4 p-4">{count++}</td>
+                        <td className="w-4 p-4">{startIdx + index + 1}</td>
                         <th
                           scope="row"
                           className="px-6 py-4 whitespace-nowrap "
@@ -506,71 +521,53 @@ const DetailKelasPageSesi = () => {
               </Modal>
 
               <nav
-                className="flex items-center flex-column flex-wrap md:flex-row justify-start pt-4"
+                className="flex items-center flex-column flex-wrap md:flex-row justify-start pt-4 gap-4"
                 aria-label="Table navigation"
               >
                 <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
                   Showing{" "}
-                  <span className="font-semibold text-gray-900">1-10</span> of{" "}
-                  <span className="font-semibold text-gray-900">1000</span>
+                  <span className="font-semibold text-gray-900">
+                    {startIdx + 1}-{Math.min(startIdx + itemsPerPage, detailClassRoom.students.length)}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-gray-900">
+                    {detailClassRoom.students.length}
+                  </span>
                 </span>
                 <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
                   <li>
-                    <a
-                      href="#"
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
                       className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
                     >
                       Sebelumnya
-                    </a>
+                    </button>
                   </li>
+
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <li key={index + 1}>
+                      <button
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`flex items-center justify-center px-3 h-8 leading-tight ${
+                          currentPage === index + 1
+                            ? "text-blue-600 border border-gray-300 bg-blue-50"
+                            : "text-neutral3 bg-white border border-gray-300"
+                        } hover:bg-gray-100 hover:text-neutral2`}
+                      >
+                        {index + 1}
+                      </button>
+                    </li>
+                  ))}
+
                   <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      1
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      2
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      aria-current="page"
-                      className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-                    >
-                      3
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      4
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      5
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
                       className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
                     >
                       Selanjutnya
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </nav>
