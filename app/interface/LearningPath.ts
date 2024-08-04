@@ -63,3 +63,12 @@ export interface PathResponse {
   data: DataPath;
   meta: Meta;
 }
+
+export interface MenuPath {
+  id: number;
+  name: string;
+}
+
+export interface ResponMenuPath {
+  data: MenuPath;
+}

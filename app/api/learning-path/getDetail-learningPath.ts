@@ -5,7 +5,7 @@ const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
 import { PathResponse } from "@/app/interface/LearningPath";
 
-export const getDetaiLearningPath = async (
+export const getDetailLearningPath = async (
   id: number
 ): Promise<PathResponse> => {
   try {
