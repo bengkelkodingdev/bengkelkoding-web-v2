@@ -1,3 +1,5 @@
-const DetailTambahKelas = () => {
-  return <>tambah tugas</>;
-};
+import React from "react";
+
+export default function DetailTambahKelas() {
+  return <div>tambah</div>;
+}

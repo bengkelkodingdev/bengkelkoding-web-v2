@@ -141,7 +141,7 @@ const HomePage = () => {
     <div className="bg-[#f7f9fa] z-50">
       <Header />
 
-      <main className="w-full px-2 md:px-4 py-4 min-h-screen">
+      <main className="w-full px-5 md:px-4 py-4 min-h-screen">
         <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col-reverse md:flex-row justify-between items-center gap-10">
           <div className="flex flex-col gap-4 md:gap-6">
             <div>
@@ -404,7 +404,8 @@ const HomePage = () => {
                   className="min-w-[250px] block border bg rounded-lg overflow-hidden hover:shadow-md transition-all ease-in-out duration-200"
                 >
                   <Image
-                    src={course.image}
+                    // src={course.image}
+                    src={"/"}
                     alt="kursus"
                     width={250}
                     height={250}
@@ -444,7 +445,9 @@ const HomePage = () => {
                             <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
                           </g>
                         </svg>
-                        <p className="text-neutral1 text-sm font-semibold">{course.rating}</p>
+                        <p className="text-neutral1 text-sm font-semibold">
+                          {course.rating}
+                        </p>
                       </div>
                     </div>
                     <p className="text-sm text-neutral1 mt-2">

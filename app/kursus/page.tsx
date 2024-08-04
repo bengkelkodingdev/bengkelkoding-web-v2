@@ -12,6 +12,7 @@ const kursus = [
     student: 120,
     rating: 4.9,
     tools: ["HTML", "CSS", "Javascript", "PHP", "MySQL"],
+    ref: "/kursus/detail",
   },
   {
     name: "Mobile Development",
@@ -19,6 +20,7 @@ const kursus = [
     student: 89,
     rating: 4.5,
     tools: ["Fluter", "Kotlin", "Android Studio", "VS Code"],
+    ref: "/kursus/detail",
   },
   ,
   {
@@ -27,6 +29,7 @@ const kursus = [
     student: 51,
     rating: 4.7,
     tools: ["Jupyter Notebook", "Python", "K-Means", "Klasifikasi"],
+    ref: "/kursus/detail",
   },
   {
     name: "Data Analyst",
@@ -34,6 +37,7 @@ const kursus = [
     student: 400,
     rating: 4.0,
     tools: ["Python", "Analisis", "Data", "Multi Tasking", "Result"],
+    ref: "/kursus/detail",
   },
   {
     name: "Networking",
@@ -41,6 +45,7 @@ const kursus = [
     student: 23,
     rating: 4.3,
     tools: ["Addressing", "Mikrotik", "Cisco", "Linux", "Hacking"],
+    ref: "/kursus/detail",
   },
   {
     name: "Artificial Intelligence",
@@ -48,6 +53,7 @@ const kursus = [
     student: 99,
     rating: 4.2,
     tools: ["Modeling", "Fuzzy Logic", "Robot", "Learning"],
+    ref: "/kursus/detail",
   },
 ];
 
@@ -126,7 +132,7 @@ const KelasPage = () => {
 
               return (
                 <Link
-                  href="/"
+                  href={`${k?.ref}`}
                   key={index}
                   className="max-w-[90%] lg:max-w-full mx-auto rounded-xl transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px] hover:scale-105"
                 >
