@@ -152,9 +152,7 @@ const DashboardDetailKelasPage = () => {
     xaxis: {
       // ganti kelas
       categories: kelas.flatMap((kelasItem) =>
-        kelasItem.presences
-          .filter((presence) => presence.attendance_count !== 0)
-          .map((presence) => `Pertemuan ${presence.week}`)
+        kelasItem.presences.map((presence) => `Pertemuan ${presence.week}`)
       ),
     },
   };
