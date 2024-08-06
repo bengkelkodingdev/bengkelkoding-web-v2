@@ -16,3 +16,15 @@ export const createRequest = async (
     throw new Error(`API Request for ${url} failed`);
   }
 };
+
+// No Auth
+export const createRequestNoAuth = async (
+  url: string
+): Promise<AxiosResponse> => {
+  try {
+    const response: AxiosResponse = await Axios.get(`${API_URL}${url}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`API Request for ${url} failed`);
+  }
+};

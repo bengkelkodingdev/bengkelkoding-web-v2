@@ -1,84 +1,87 @@
-import { Meeting } from "@/app/dashboard/[user]/kelas/detail/data";
+import { Presence } from "@/app/interface/Kelas";
+import { stringify } from "querystring";
 import React, { useState } from "react";
 
 interface EditFormProps {
-  user: Meeting;
-  onSave: (updatedUser: Meeting) => void;
+  user: Presence;
+  onSave: (updatedUser: Presence) => void;
 }
 
 const EditForm: React.FC<EditFormProps> = ({ user, onSave }) => {
-  const [date, setDate] = useState(user.date);
-  const [time, setTime] = useState(user.time);
-  const [room, setRoom] = useState(user.room);
-  const [status, setStatus] = useState(user.status);
+  const [date, setDate] = useState(user.presence_date);
+  const [time, setTime] = useState(user.presence_date_formatted);
+
+  const [status, setStatus] = useState(user.is_enabled_label);
 
   const handleSave = () => {
-    const updatedUser: Meeting = {
+    const updatedUser: Presence = {
       ...user,
-      date,
-      time,
-      room,
-      status,
+      presence_date: date,
+      presence_date_formatted: time,
+      is_enabled_label: status,
     };
     onSave(updatedUser);
   };
 
   return (
     <div>
-      <div className="mb-4">
-        <label htmlFor="Date" className="block font-bold mb-2">
-          Date
-        </label>
-        <input
-          type="text"
-          id="text"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="border border-gray-400 p-2 w-full"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="time" className="block font-bold mb-2">
-          time
-        </label>
-        <input
-          type="text"
-          id="username"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          className="border border-gray-400 p-2 w-full"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="Room" className="block font-bold mb-2">
-          Room
-        </label>
-        <input
-          type="text"
-          id="room"
-          value={time}
-          onChange={(e) => setRoom(e.target.value)}
-          className="border border-gray-400 p-2 w-full"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="status" className="block font-bold mb-2">
-          status
-        </label>
-        <input
-          type="text"
-          id="status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="border border-gray-400 p-2 w-full"
-        />
-      </div>
-      <button
+
+
+      <div className="p-4 md:p-5 space-y-4">
+        <div>
+          <label
+            htmlFor="Date"
+            className="block mb-2 text-sm font-medium text-gray-900"
+          >
+            Date
+          </label>
+          <input
+            type="text"
+            id="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="time"
+            className="block mb-2 text-sm font-medium text-gray-900"
+          >
+            Time
+          </label>
+          <input
+            type="text"
+            id="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="status"
+            className="block mb-2 text-sm font-medium text-gray-900"
+          >
+            Status
+          </label>
+          <input
+            type="text"
+            id="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5"
+          />
+        </div>
+        <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick={handleSave}
       >
         Save
       </button>
+      </div>
+
     </div>
   );
 };

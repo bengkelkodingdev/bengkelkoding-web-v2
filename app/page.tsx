@@ -4,30 +4,13 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Header from "./component/general/Header";
 import Footer from "./component/general/Footer";
-
-const statistik = {
-  total_mahasiswa: 2103,
-  total_rating: 342,
-  total_kursus: 5,
-};
-
-const faq = [
-  {
-    pertanyaan: "Apa itu Bengkel Koding?",
-    jawaban:
-      "Bengkel Koding adalah platform pembelajaran pemrograman yang menyediakan berbagai macam materi pemrograman yang dapat dipelajari oleh mahasiswa Universitas Dian Nuswantoro.",
-  },
-  {
-    pertanyaan: "Bagaimana cara mendaftar di Bengkel Koding?",
-    jawaban:
-      "Untuk mendaftar di Bengkel Koding, mahasiswa Universitas Dian Nuswantoro dapat mendaftar melalui website Bengkel Koding.",
-  },
-  {
-    pertanyaan: "Apakah Bengkel Koding menyediakan sertifikat?",
-    jawaban:
-      "Ya, Bengkel Koding menyediakan sertifikat bagi mahasiswa yang telah menyelesaikan pembelajaran di Bengkel Koding.",
-  },
-];
+import {
+  getFaqs,
+  getHomeListPath,
+  getHomePathDetail,
+  getStatistics,
+  getTestimonies,
+} from "./api/homePage";
 
 const useSmoothScroll = (initialDirection: "right" | "left") => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -85,11 +68,80 @@ const HomePage = () => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const [statistics, setStatistics] = useState({
+    total_students: 0,
+    total_five_stars: 0,
+    total_courses: 0,
+  });
+  const [testimonies, setTestimonies] = useState([
+    {
+      id: 0,
+      title: "",
+      comment: "",
+      rating: 0,
+      student_name: "",
+    },
+  ]);
+  const [faqs, setFaqs] = useState([
+    {
+      id: 0,
+      question: "",
+      answer: "",
+    },
+  ]);
+  const [listPaths, setListPaths] = useState([
+    {
+      id: 0,
+      name: "",
+      description: "",
+    },
+  ]);
+  const [pathDetail, setPathDetail] = useState({
+    id: 0,
+    name: "",
+    description: "",
+    classroom_count: 0,
+    student_count: 0,
+    courses: [
+      {
+        id: 0,
+        image: "",
+        level: "",
+        title: "",
+        rating: 0,
+        brief_description: "",
+        student_count: 0,
+      },
+    ],
+  });
+  const [activeIdPath, setActiveIdPath] = useState(1);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // Response Statistics
+      const responseStatistics = await getStatistics();
+      setStatistics(responseStatistics.data);
+      // Response Testimonies
+      const responseTestimonies = await getTestimonies();
+      setTestimonies(responseTestimonies.data);
+      // Response FAQs
+      const responseFaqs = await getFaqs();
+      setFaqs(responseFaqs.data);
+      // Response List Paths
+      const responseListPaths = await getHomeListPath();
+      setListPaths(responseListPaths.data);
+      // Response Path Detail
+      const responsePathDetail = await getHomePathDetail(activeIdPath);
+      setPathDetail(responsePathDetail.data);
+    };
+    fetchData();
+  }, [activeIdPath]);
+
   return (
     <div className="bg-[#f7f9fa] z-50">
       <Header />
 
-      <main className="w-full px-2 md:px-4 py-4 min-h-screen">
+      <main className="w-full px-5 md:px-4 py-4 min-h-screen">
         <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col-reverse md:flex-row justify-between items-center gap-10">
           <div className="flex flex-col gap-4 md:gap-6">
             <div>
@@ -141,7 +193,7 @@ const HomePage = () => {
             </div>
             <div>
               <strong className="text-3xl text-blue-600">
-                {statistik.total_mahasiswa}+
+                {statistics.total_students}+
               </strong>
               <p className="text-neutral1 font-medium">Mahasiswa</p>
             </div>
@@ -161,7 +213,7 @@ const HomePage = () => {
             </div>
             <div>
               <strong className="text-3xl text-yellow-500">
-                {statistik.total_rating}+
+                {statistics.total_five_stars}+
               </strong>
               <p className="text-neutral1 font-medium">Bintang 5</p>
             </div>
@@ -181,7 +233,7 @@ const HomePage = () => {
             </div>
             <div>
               <strong className="text-3xl text-red-600">
-                {statistik.total_kursus}+
+                {statistics.total_courses}+
               </strong>
               <p className="text-neutral1 font-medium">Kursus</p>
             </div>
@@ -284,38 +336,43 @@ const HomePage = () => {
         {/* Overview Kursus di Bengkel Koding */}
         <article className="max-w-5xl py-10 mx-auto">
           {/* Navigasi untuk Filter Konten */}
-          <nav className="ml-10 flex">
+          {/* <nav className="ml-10 flex">
             <div className="bg-white text-primary1 font-medium px-4 py-2 rounded-t-md cursor-pointer">
               <p>Kursus</p>
             </div>
             <div className="bg-gray-100 font-medium px-4 py-2 rounded-t-md cursor-pointer hover:bg-white hover:text-primary1">
               <p>Workshop</p>
             </div>
+          </nav> */}
+          <nav className="flex gap-4 mb-4">
+            {listPaths.map((path) => (
+              <div
+                key={path.id}
+                className="min-w-48 bg-gradient-to-t from-primary4 to-white p-6 border rounded-md"
+              >
+                {path.name}
+              </div>
+            ))}
           </nav>
 
           <div className="bg-white rounded-xl px-6 py-5 flex flex-col md:flex-row">
             {/* Deskripsi Singkat */}
             <div className="md:w-[30%] py-4 flex flex-col justify-between">
               <div>
-                <h4 className="text-xl font-semibold">
-                  Kursus di Bengkel Koding
-                </h4>
+                <h4 className="text-xl font-semibold">{pathDetail.name}</h4>
                 <div className="flex gap-4">
                   <p className="text-neutral1">
-                    <strong>5</strong> Kursus
+                    <strong>{pathDetail.classroom_count}</strong> Kursus
                   </p>
                   <p className="text-neutral1">
-                    <strong>600+</strong> Mahasiswa
+                    <strong>{pathDetail.student_count}</strong> Mahasiswa
                   </p>
                 </div>
-                <p className="text-neutral1 mt-4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
-                  vitae voluptatem neque deleniti sequi vel nam delectus aliquam
-                  molestiae! Non?
-                </p>
+                <p className="text-neutral1 mt-4">{pathDetail.description}</p>
               </div>
 
-              {/* <div className="flex gap-2">
+              {/* Navigation to Right/Left */}
+              <div className="flex gap-2">
                 <div className="fill-neutral1 border rounded-full p-2 hover:bg-neutral5 cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -336,24 +393,25 @@ const HomePage = () => {
                     <path d="M420-308q-8 0-14-5.5t-6-14.5v-304q0-9 6-14.5t14-5.5q2 0 14 6l145 145q5 5 7 10t2 11q0 6-2 11t-7 10L434-314q-3 3-6.5 4.5T420-308Z" />
                   </svg>
                 </div>
-              </div> */}
-
+              </div>
             </div>
+            {/* Get List Course */}
             <div className="md:w-[70%] flex gap-4 overflow-x-auto no-scrollbar py-4">
-              {Array.from({ length: 5 }).map((_, index) => (
+              {pathDetail.courses.map((course) => (
                 <Link
-                  key={index}
+                  key={course.id}
                   href={"/kursus"}
                   className="min-w-[250px] block border bg rounded-lg overflow-hidden hover:shadow-md transition-all ease-in-out duration-200"
                 >
                   <Image
-                    src={"/img/kursus-image-1.png"}
+                    // src={course.image}
+                    src={"/"}
                     alt="kursus"
                     width={250}
                     height={250}
                   />
                   <div className="p-4">
-                    <strong className="font-semibold">Web Development</strong>
+                    <strong className="font-semibold">{course.title}</strong>
                     <div className="flex gap-4">
                       <div className="text-sm flex items-center gap-1">
                         <svg
@@ -367,7 +425,7 @@ const HomePage = () => {
                           <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
                         </svg>
                         <p className="text-neutral1 text-sm font-semibold">
-                          120
+                          {course.student_count}
                         </p>
                       </div>
                       <div className="text-sm flex items-center gap-1">
@@ -387,13 +445,15 @@ const HomePage = () => {
                             <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
                           </g>
                         </svg>
-                        <p className="text-neutral1 text-sm font-semibold">5</p>
+                        <p className="text-neutral1 text-sm font-semibold">
+                          {course.rating}
+                        </p>
                       </div>
                     </div>
                     <p className="text-sm text-neutral1 mt-2">
-                      Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                      Perferendis, nulla?
+                      {course.brief_description}
                     </p>
+                    {course.level}
                   </div>
                 </Link>
               ))}
@@ -445,24 +505,38 @@ const HomePage = () => {
               ref={scrollContainerRef}
               className="flex gap-3 lg:gap-4 overflow-x-auto no-scrollbar"
             >
-              {Array.from({ length: 6 }).map((_, index) => (
+              {testimonies.map((t, index) => (
                 <div
                   key={index}
                   className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
                 >
                   {/* feedback */}
                   <div className="mb-4">
-                    <strong className="text-lg">Lorem, ipsum dolor.</strong>
-                    <p className="text-sm">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Unde, quos.
-                    </p>
+                    <strong className="text-lg">{t.title}</strong>
+                    <p className="text-sm">{t.comment}</p>
                   </div>
                   {/* mahasiswa */}
-                  <div className="text-right">
-                    <strong className="text-xs">
-                      Arif Saputra | Web Developer
+                  <div className="text-xs text-right flex justify-between items-center">
+                    <strong className="flex gap-1 items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        enable-background="new 0 0 24 24"
+                        height="18px"
+                        viewBox="0 0 24 24"
+                        width="18px"
+                        className="fill-secondary1 h-max"
+                      >
+                        <g>
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                        </g>
+                        <g>
+                          <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
+                        </g>
+                      </svg>
+                      {t.rating}
                     </strong>
+                    <strong className="text-xs">{t.student_name}</strong>
                   </div>
                 </div>
               ))}
@@ -473,24 +547,38 @@ const HomePage = () => {
               ref={scrollContainerRefTwo}
               className="flex gap-3 lg:gap-4 overflow-x-scroll no-scrollbar"
             >
-              {Array.from({ length: 6 }).map((_, index) => (
+              {testimonies.map((t, index) => (
                 <div
                   key={index}
                   className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
                 >
                   {/* feedback */}
                   <div className="mb-4">
-                    <strong className="text-lg">Lorem, ipsum dolor.</strong>
-                    <p className="text-sm">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Unde, quos.
-                    </p>
+                    <strong className="text-lg">{t.title}</strong>
+                    <p className="text-sm">{t.comment}</p>
                   </div>
                   {/* mahasiswa */}
-                  <div className="text-right">
-                    <strong className="text-xs">
-                      Arif Saputra | Web Developer
+                  <div className="text-xs text-right flex justify-between items-center">
+                    <strong className="flex gap-1 items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        enable-background="new 0 0 24 24"
+                        height="18px"
+                        viewBox="0 0 24 24"
+                        width="18px"
+                        className="fill-secondary1 h-max"
+                      >
+                        <g>
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                        </g>
+                        <g>
+                          <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
+                        </g>
+                      </svg>
+                      {t.rating}
                     </strong>
+                    <strong className="text-xs">{t.student_name}</strong>
                   </div>
                 </div>
               ))}
@@ -504,7 +592,7 @@ const HomePage = () => {
             Pertanyaan yang Sering Ditanyakan
           </h3>
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-2">
-            {faq.map((f, index) => (
+            {faqs.map((f, index) => (
               <button
                 key={index}
                 onClick={() => toggleFAQ(index)}
@@ -513,7 +601,7 @@ const HomePage = () => {
                 {/* pertanyaan */}
                 <div className="flex justify-between items-center gap-2">
                   <strong className="font-semibold text-neutral1 text-sm md:text-base">
-                    {f.pertanyaan}
+                    {f.question}
                   </strong>
                   <div className="w-8 h-8">
                     <svg
@@ -537,7 +625,7 @@ const HomePage = () => {
                   }`}
                 >
                   <p className="text-neutral2 pt-4 text-xs md:text-sm">
-                    {f.jawaban}
+                    {f.answer}
                   </p>
                 </div>
               </button>

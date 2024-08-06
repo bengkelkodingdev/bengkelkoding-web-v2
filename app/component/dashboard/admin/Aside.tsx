@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import { redirect, usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+
+import { logout as apiLogout } from "@/app/api/auth";
 
 interface asideProps {
   user: string;
@@ -521,8 +524,21 @@ const navigations = {
 
 const Aside = ({ user, open, setOpen }: asideProps) => {
   const pathname = usePathname();
-
+  const access_token = Cookies.get("access_token");
   let userNavigations;
+
+  const handleLogout = async () => {
+    const token = access_token;
+    if (token) {
+      try {
+        await apiLogout(token);
+        Cookies.remove("access_token");
+        window.location.href = "/";
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    }
+  };
 
   switch (user) {
     case "superadmin":
@@ -655,7 +671,10 @@ const Aside = ({ user, open, setOpen }: asideProps) => {
               </Link>
             </li>
             <li>
-              <button className="flex items-center w-full p-2 text-neutral1 fill-neutral1 rounded-lg hover:bg-red3 hover:text-red1 hover:fill-red1 focus:bg-red1 focus:text-white focus:fill-white focus:ring-4 focus:ring-red3 transition-all ease-in-out duration-200">
+              <button
+                onClick={handleLogout}
+                className="flex items-center w-full p-2 text-neutral1 fill-neutral1 rounded-lg hover:bg-red3 hover:text-red1 hover:fill-red1 focus:bg-red1 focus:text-white focus:fill-white focus:ring-4 focus:ring-red3 transition-all ease-in-out duration-200"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   enable-background="new 0 0 24 24"

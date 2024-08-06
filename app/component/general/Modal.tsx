@@ -4,22 +4,47 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  title: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   return (
     <Fragment>
       {isOpen ? (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                  <div className="flex items-center justify-center min-h-screen">
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  data-modal-hide="default-modal"
+                  
+                >
+                  <svg
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                  <span className="sr-only">Close modal</span>
+                </button>
+              </div>
+              
               <div>{children}</div>
-              <button
-                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={onClose}
-              >
-                Close
-              </button>
+             
+              
             </div>
           </div>
         </div>
