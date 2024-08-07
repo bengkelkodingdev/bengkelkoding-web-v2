@@ -1,5 +1,6 @@
 import Axios, { AxiosResponse } from "axios";
 import { LoginResponse } from "../component/types/auth";
+import Cookies from "js-cookie";
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
@@ -22,7 +23,9 @@ export const login = async (
 };
 
 // Logout
-export const logout = async (access_token: string): Promise<void> => {
+export const logout = async (): Promise<void> => {
+  const access_token = Cookies.get("access_token");
+
   try {
     const apiUrl = `${API_URL}/api/v1/auth/logout`;
     const config = {
