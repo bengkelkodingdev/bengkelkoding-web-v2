@@ -1,29 +1,76 @@
 "use client";
+import { getDetailCourse } from "@/app/api/courses";
 import Footer from "@/app/component/general/Footer";
 import Header from "@/app/component/general/Header";
+import { marked } from "marked";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-
-const detail_kursus = {
-  name: "Belajar Web Development Untuk Pemula",
-  img: "/img/kursus/kursus-3.png",
-  bg: "/img/kursus/bg-kursus-3.png",
-  student: 120,
-  rating: 4.9,
-  tools: ["HTML", "CSS", "Javascript", "PHP", "MySQL"],
-};
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const DetailKursusPage = () => {
-  const [activeSection, setActiveSection] = useState("deskripsi");
+  const url = usePathname();
+  const pathParts = url.split("/");
+  const idKursus = Number(pathParts[2]);
 
+  const [activeSection, setActiveSection] = useState("deskripsi");
   const sections = [
     { id: "deskripsi", label: "Deskripsi" },
-    { id: "kurikulum", label: "Kurikulum" },
-    { id: "benefit", label: "Benefit" },
+    // { id: "kurikulum", label: "Kurikulum" },
+    // { id: "benefit", label: "Benefit" },
     { id: "asisten", label: "Asisten" },
     { id: "testimoni", label: "Testimoni" },
   ];
+
+  const [detailKursus, setDetailKursus] = useState({
+    id: 0,
+    title: "",
+    image: "",
+    background_image: "",
+    tools: "",
+    brief_description: "",
+    description: "",
+    rating: 0,
+    student_count: 0,
+    teaching_method: "",
+    assistants: [
+      {
+        nim: "",
+        name: "",
+        image: "",
+      },
+    ],
+    testimonials: [
+      {
+        nim: "",
+        name: "",
+        image: "",
+        rating: 5,
+        comment: "",
+      },
+    ],
+  });
+
+  const toolsArray = (tools: string) => {
+    const data = tools.split(", ");
+    return data.map((d, index) => (
+      <p
+        key={index}
+        className="text-xs bg-primary5 text-primary1 px-2 py-0.5 rounded-sm"
+      >
+        {d}
+      </p>
+    ));
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // Response ListCourses
+      const responseDetailCourse = await getDetailCourse(idKursus);
+      setDetailKursus(responseDetailCourse.data);
+    };
+    fetchData();
+  }, [idKursus]);
 
   return (
     <div className="scroll-smooth">
@@ -31,13 +78,13 @@ const DetailKursusPage = () => {
       <main className="w-full mx-auto">
         <section
           className="relative px-2 lg:px-4 py-10 lg:py-20 bg-no-repeat bg-cover"
-          style={{ backgroundImage: `url(${detail_kursus.bg})` }}
+          style={{ backgroundImage: `url(${detailKursus.image})` }}
         >
           <div className="absolute inset-0 bg-black opacity-15" />
           <div className="relative max-w-5xl mx-auto flex flex-col md:flex-row justify-between gap-6 lg:gap-10">
             <div className="lg:w-[70%] flex gap-6">
               <Image
-                src={detail_kursus.img}
+                src={detailKursus.image}
                 alt="Kursus 1"
                 width={800}
                 height={500}
@@ -58,7 +105,7 @@ const DetailKursusPage = () => {
                       <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
                     </svg>
                     <p className="text-white font-semibold">
-                      {detail_kursus.student}
+                      {detailKursus.student_count}
                     </p>
                   </div>
                   <div className="flex items-center gap-1 text-sm">
@@ -79,32 +126,21 @@ const DetailKursusPage = () => {
                       </g>
                     </svg>
                     <p className="text-white font-semibold">
-                      {detail_kursus.rating}
+                      {detailKursus.rating}
                     </p>
                   </div>
                 </div>
 
                 {/* Judul Kursus */}
-                <h1 className="text-2xl font-semibold">{detail_kursus.name}</h1>
+                <h1 className="text-2xl font-semibold">{detailKursus.title}</h1>
 
                 {/* Tools yang digunakan */}
                 <div className="flex flex-wrap gap-1">
-                  {detail_kursus.tools.map((t, index) => (
-                    <p
-                      key={index}
-                      className="text-xs font-medium bg-white text-primary1 px-2 py-0.5 rounded-sm"
-                    >
-                      {t}
-                    </p>
-                  ))}
+                  {toolsArray(detailKursus.tools)}
                 </div>
 
                 {/* Deskripsi singkat */}
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Officia labore vitae dignissimos. Magni iusto, error sint
-                  adipisci officiis asperiores at.
-                </p>
+                <p>{detailKursus.brief_description}</p>
               </div>
             </div>
 
@@ -124,11 +160,11 @@ const DetailKursusPage = () => {
                 Informasi Kursus
               </Link>
               <Link
-                href={"#kurikulum"}
-                onClick={() => setActiveSection("kurikulum")}
+                href={"#testimoni"}
+                onClick={() => setActiveSection("testimoni")}
                 className="block text-white border border-neutral5 hover:text-black hover:bg-neutral5 focus:ring-neutral4 px-5 py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
               >
-                Lihat Kurikulum
+                Lihat Testimoni
               </Link>
             </nav>
           </div>
@@ -163,7 +199,13 @@ const DetailKursusPage = () => {
               <div className="flex flex-col md:flex-row gap-10">
                 {/* Deskripsi Utama */}
                 <div id="deskripsi-utama" className="md:w-[70%] lg:w-[80%]">
-                  <h3 className="mb-1">Deskripsi</h3>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: marked(detailKursus.description),
+                    }}
+                    className="prose prose-slate"
+                  />
+                  {/* <h3 className="mb-1">Deskripsi</h3>
                   <div className="text-neutral2">
                     <p>
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -218,18 +260,20 @@ const DetailKursusPage = () => {
                         velit.
                       </li>
                     </ol>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Deskripsi Pelengkap */}
                 <div id="deskripsi-pelengkap" className="md:w-[20%]">
-                  <div className="pb-4 border-b">
+                  {/* <div className="pb-4 border-b">
                     <h4 className="mb-1">Peralatan Belajar</h4>
                     <div className="text-neutral2">Lorem ipsum dolor sit.</div>
-                  </div>
+                  </div> */}
                   <div className="py-4">
                     <h4 className="mb-1">Metode Ajar</h4>
-                    <div className="text-neutral2">Lorem ipsum dolor sit.</div>
+                    <div className="text-neutral2 flex flex-wrap gap-1">
+                      {toolsArray(detailKursus.teaching_method)}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -252,15 +296,85 @@ const DetailKursusPage = () => {
 
           {/* Asisten */}
           {activeSection === "asisten" && (
-            <div id="asisten" className="max-w-5xl mx-auto">
-              Asisten
+            <div
+              id="asisten"
+              className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4"
+            >
+              {detailKursus.assistants.map((assistant, index) => (
+                <div key={index} className="flex flex-col gap-2">
+                  <div className="w-full h-56 md:h-64 overflow-hidden rounded-xl">
+                    <Image
+                      src={assistant.image}
+                      alt={assistant.name}
+                      width={100}
+                      height={100}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-neutral2 text-xs md:text-sm lg:text-base">
+                      {assistant.nim}
+                    </p>
+                    <p className="text-neutral1 text-base md:text-lg lg:text-xl font-semibold">
+                      {assistant.name}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
           {/* Testimoi */}
           {activeSection === "testimoni" && (
-            <div id="testimoni" className="max-w-5xl mx-auto">
-              Testimoni
+            <div
+              id="testimoni"
+              className="max-w-5xl min-h-96 mx-auto grid grid-cols-2 gap-y-4 gap-x-8"
+            >
+              {detailKursus.testimonials.map((testimoni, index) => (
+                <div key={index} className="flex gap-3 items-center w-full">
+                  <div className="min-w-36 min-h-36 max-w-36 max-h-36 overflow-hidden rounded-lg">
+                    <Image
+                      src={testimoni.image}
+                      alt={testimoni.name}
+                      width={150}
+                      height={150}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <p className="text-sm md:text-base mb-2 font-medium">
+                      “{testimoni.comment}”
+                    </p>
+                    <div className="flex justify-between gap-1">
+                      <div className="flex items-center gap-1 text-sm">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          enable-background="new 0 0 24 24"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          className="fill-yellow-500"
+                        >
+                          <g>
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                          </g>
+                          <g>
+                            <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
+                          </g>
+                        </svg>
+                        <p className="text-xs md:text-sm">{testimoni.rating}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs md:text-sm font-semibold">
+                          {testimoni.name}
+                        </p>
+                        <p className="text-xs md:text-sm">{testimoni.nim}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </section>
