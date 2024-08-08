@@ -1,8 +1,11 @@
 "use client";
+import { getRole } from "@/app/api/general";
+import { loggedIn } from "@/app/api/checkAccessToken";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { logout } from "@/app/api/auth";
 
 const Header = () => {
   const url = usePathname();
@@ -23,13 +26,47 @@ const Header = () => {
     },
   ];
 
-  const login = false;
-  const user = "superadmin";
-
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const [user, setUser] = useState({
+    role: "",
+  });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const login = isMounted && loggedIn();
+
+  useEffect(() => {
+    if (login) {
+      const fetchData = async () => {
+        try {
+          // Response Role
+          const responseRole = await getRole();
+          setUser(responseRole.data);
+        } catch (error) {
+          console.error("Failed to fetch user role:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [login]);
+
+  const handleLogout = async () => {
+    if (login) {
+      try {
+        await logout();
+        window.location.href = "/";
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    }
   };
 
   return (
@@ -60,12 +97,33 @@ const Header = () => {
         </div>
         <div className="hidden md:block">
           {login ? (
-            <Link
-              href={`/dashboard/${user}`}
-              className="font-medium hover:text-primary1"
-            >
-              Dashboard
-            </Link>
+            <div className="flex gap-3 items-center">
+              <Link
+                href={`/dashboard/${user.role}`}
+                className="font-medium hover:text-primary1"
+              >
+                Dashboard
+              </Link>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                enable-background="new 0 0 24 24"
+                height="18px"
+                viewBox="0 0 24 24"
+                width="18px"
+                className="hover:fill-red1 cursor-pointer"
+                onClick={handleLogout}
+              >
+                <g>
+                  <path d="M0,0h24v24H0V0z" fill="none" />
+                </g>
+                <g>
+                  <g>
+                    <path d="M5,5h6c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h6c0.55,0,1-0.45,1-1v0 c0-0.55-0.45-1-1-1H5V5z" />
+                    <path d="M20.65,11.65l-2.79-2.79C17.54,8.54,17,8.76,17,9.21V11h-7c-0.55,0-1,0.45-1,1v0c0,0.55,0.45,1,1,1h7v1.79 c0,0.45,0.54,0.67,0.85,0.35l2.79-2.79C20.84,12.16,20.84,11.84,20.65,11.65z" />
+                  </g>
+                </g>
+              </svg>
+            </div>
           ) : (
             <Link
               href={"/masuk"}
@@ -123,12 +181,33 @@ const Header = () => {
             </div>
             <div className="border-t mt-4 pt-4 mr-2">
               {login ? (
-                <Link
-                  href={`/dashboard/${user}`}
-                  className="font-medium hover:text-primary1"
-                >
-                  Dashboard
-                </Link>
+                <div className="flex flex-col gap-2 items-end">
+                  <Link
+                    href={`/dashboard/${user.role}`}
+                    className="font-medium hover:text-primary1"
+                  >
+                    Dashboard
+                  </Link>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    enable-background="new 0 0 24 24"
+                    height="18px"
+                    viewBox="0 0 24 24"
+                    width="18px"
+                    className="hover:fill-red1 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <g>
+                      <path d="M0,0h24v24H0V0z" fill="none" />
+                    </g>
+                    <g>
+                      <g>
+                        <path d="M5,5h6c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h6c0.55,0,1-0.45,1-1v0 c0-0.55-0.45-1-1-1H5V5z" />
+                        <path d="M20.65,11.65l-2.79-2.79C17.54,8.54,17,8.76,17,9.21V11h-7c-0.55,0-1,0.45-1,1v0c0,0.55,0.45,1,1,1h7v1.79 c0,0.45,0.54,0.67,0.85,0.35l2.79-2.79C20.84,12.16,20.84,11.84,20.65,11.65z" />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
               ) : (
                 <Link
                   href={"/masuk"}
