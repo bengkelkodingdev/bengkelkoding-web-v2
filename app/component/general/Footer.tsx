@@ -14,14 +14,16 @@ const Footer = () => {
             height={150}
           />
           <div className="text-neutral3 text-xs lg:text-sm">
-            <p className="mb-1">Bengkel Koding Space:</p>
+            <p className="mb-1 text-xs lg:text-sm">Bengkel Koding Space:</p>
             <div>
-              <p>Gedung H, Lantai 6,</p>
-              <p>
+              <p className="text-xs lg:text-sm">Gedung H, Lantai 6,</p>
+              <p className="text-xs lg:text-sm">
                 Jl. Imam Bonjol No.207, Pendrikan Kidul, Kec. Semarang Tengah,
                 Kota Semarang, Jawa Tengah 50131.
               </p>
-              <p>Universitas Dian Nuswantoro Semarang.</p>
+              <p className="text-xs lg:text-sm">
+                Universitas Dian Nuswantoro Semarang.
+              </p>
             </div>
           </div>
         </div>
@@ -30,15 +32,24 @@ const Footer = () => {
             <p className="text-lg lg:text-xl">Belajar Mengubah Ide</p>
             <p className="text-lg lg:text-xl">Menjadi Kode</p>
           </div>
-          <Link href="/about" className="text-neutral3 hover:text-neutral1">
+          <Link
+            href="/about"
+            className="text-neutral3 hover:text-neutral1 text-xs lg:text-sm"
+          >
             Tentang Kami
           </Link>
         </div>
         <div className="flex flex-col gap-2">
-          <Link href="/contact" className="text-neutral3 hover:text-neutral1">
+          <Link
+            href="/contact"
+            className="text-neutral3 hover:text-neutral1 text-xs lg:text-sm"
+          >
             Hubungi Kami
           </Link>
-          <Link href="/faq" className="text-neutral3 hover:text-neutral1">
+          <Link
+            href="/faq"
+            className="text-neutral3 hover:text-neutral1 text-xs lg:text-sm"
+          >
             FAQ
           </Link>
           <div className="flex gap-2">
