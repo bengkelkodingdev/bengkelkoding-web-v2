@@ -51,16 +51,16 @@ const useSmoothScroll = (initialDirection: "right" | "left") => {
 
 const HomePage = () => {
   const scrollContainerRef = useSmoothScroll("right");
-  const scrollContainerRefTwo = useSmoothScroll("left");
+  // const scrollContainerRefTwo = useSmoothScroll("left");
 
-  useEffect(() => {
-    // Set initial scroll position for the second container
-    if (scrollContainerRefTwo.current) {
-      scrollContainerRefTwo.current.scrollLeft =
-        scrollContainerRefTwo.current.scrollWidth -
-        scrollContainerRefTwo.current.clientWidth;
-    }
-  }, [scrollContainerRefTwo]);
+  // useEffect(() => {
+  //   // Set initial scroll position for the second container
+  //   if (scrollContainerRefTwo.current) {
+  //     scrollContainerRefTwo.current.scrollLeft =
+  //       scrollContainerRefTwo.current.scrollWidth -
+  //       scrollContainerRefTwo.current.clientWidth;
+  //   }
+  // }, [scrollContainerRefTwo]);
 
   // FAQ Open and Close
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -94,6 +94,7 @@ const HomePage = () => {
       id: 0,
       name: "",
       description: "",
+      image: "",
     },
   ]);
   const [pathDetail, setPathDetail] = useState({
@@ -115,6 +116,10 @@ const HomePage = () => {
     ],
   });
   const [activeIdPath, setActiveIdPath] = useState(1);
+
+  const handleActivePath = (id: number) => {
+    setActiveIdPath(id);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -344,35 +349,77 @@ const HomePage = () => {
               <p>Workshop</p>
             </div>
           </nav> */}
-          <nav className="flex gap-4 mb-4">
+          <nav className="flex gap-2 mb-4 overflow-x-scroll no-scrollbar">
             {listPaths.map((path) => (
               <div
                 key={path.id}
-                className="min-w-48 bg-gradient-to-t from-primary4 to-white p-6 border rounded-md"
+                className={`min-w-48 hover:min-w-56 p-6 border rounded-md cursor-pointer text-white text-center font-semibold transition-all ease-in-out duration-200 ${
+                  path.id == pathDetail.id && "min-w-56"
+                }`}
+                style={{
+                  backgroundImage: `url(${path.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+                onClick={() => handleActivePath(path.id)}
               >
                 {path.name}
               </div>
             ))}
+            <Link
+              href={"/learning-path"}
+              className="min-w-48 hover:min-w-56 p-6 border rounded-md cursor-pointer text-white text-center font-semibold transition-all ease-in-out duration-200"
+              style={{
+                backgroundImage: "url(/img/landing-nav-learningpath.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              Lihat lainnya
+            </Link>
           </nav>
 
           <div className="bg-white rounded-xl px-6 py-5 flex flex-col md:flex-row">
             {/* Deskripsi Singkat */}
-            <div className="md:w-[30%] py-4 flex flex-col justify-between">
+            <div className="md:w-[28%] py-4 flex flex-col justify-between">
               <div>
                 <h4 className="text-xl font-semibold">{pathDetail.name}</h4>
-                <div className="flex gap-4">
-                  <p className="text-neutral1">
-                    <strong>{pathDetail.classroom_count}</strong> Kursus
-                  </p>
-                  <p className="text-neutral1">
-                    <strong>{pathDetail.student_count}</strong> Mahasiswa
-                  </p>
+                <div className="flex flex-col gap-1 mt-4">
+                  <div className="text-sm flex items-center gap-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="18px"
+                      viewBox="0 -960 960 960"
+                      width="18px"
+                      className="fill-neutral1"
+                    >
+                      <path d="M440-400h80q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480h-80q-17 0-28.5 11.5T400-440q0 17 11.5 28.5T440-400Zm0-120h240q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H440q-17 0-28.5 11.5T400-560q0 17 11.5 28.5T440-520Zm0-120h240q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H440q-17 0-28.5 11.5T400-680q0 17 11.5 28.5T440-640ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-520q0-17 11.5-28.5T120-720q17 0 28.5 11.5T160-680v520h520q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H160Zm160-720v480-480Z" />
+                    </svg>
+                    <p className="text-neutral1 font-medium">
+                      {pathDetail.classroom_count} Kursus
+                    </p>
+                  </div>
+                  <div className="text-sm flex items-center gap-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="18px"
+                      viewBox="0 0 24 24"
+                      width="18px"
+                      className="fill-neutral1"
+                    >
+                      <path d="M0 0h24v24H0V0z" fill="none" />
+                      <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
+                    </svg>
+                    <p className="text-neutral1 font-medium">
+                      {pathDetail.student_count} Mahasiswa
+                    </p>
+                  </div>
                 </div>
                 <p className="text-neutral1 mt-4">{pathDetail.description}</p>
               </div>
 
               {/* Navigation to Right/Left */}
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <div className="fill-neutral1 border rounded-full p-2 hover:bg-neutral5 cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -393,70 +440,84 @@ const HomePage = () => {
                     <path d="M420-308q-8 0-14-5.5t-6-14.5v-304q0-9 6-14.5t14-5.5q2 0 14 6l145 145q5 5 7 10t2 11q0 6-2 11t-7 10L434-314q-3 3-6.5 4.5T420-308Z" />
                   </svg>
                 </div>
-              </div>
+              </div> */}
             </div>
             {/* Get List Course */}
-            <div className="md:w-[70%] flex gap-4 overflow-x-auto no-scrollbar py-4">
-              {pathDetail.courses.map((course) => (
-                <Link
-                  key={course.id}
-                  href={"/kursus"}
-                  className="min-w-[250px] block border bg rounded-lg overflow-hidden hover:shadow-md transition-all ease-in-out duration-200"
-                >
-                  <Image
-                    // src={course.image}
-                    src={"/"}
-                    alt="kursus"
-                    width={250}
-                    height={250}
-                  />
-                  <div className="p-4">
-                    <strong className="font-semibold">{course.title}</strong>
-                    <div className="flex gap-4">
-                      <div className="text-sm flex items-center gap-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="18px"
-                          viewBox="0 0 24 24"
-                          width="18px"
-                          className="fill-blue-500"
-                        >
-                          <path d="M0 0h24v24H0V0z" fill="none" />
-                          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
-                        </svg>
-                        <p className="text-neutral1 text-sm font-semibold">
-                          {course.student_count}
-                        </p>
-                      </div>
-                      <div className="text-sm flex items-center gap-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          enable-background="new 0 0 24 24"
-                          height="18px"
-                          viewBox="0 0 24 24"
-                          width="18px"
-                          className="fill-yellow-500"
-                        >
-                          <g>
+            <div className="md:w-[70%] flex overflow-scroll no-scrollbar py-4">
+              <div className="flex gap-3">
+                {pathDetail.courses.map((course) => (
+                  <Link
+                    key={course.id}
+                    href={`/kursus/${course.id}`}
+                    className="w-[250px] border overflow-hidden rounded-xl transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
+                  >
+                    <Image
+                      src={course.image}
+                      alt="kursus"
+                      width={250}
+                      height={250}
+                    />
+                    <div className="p-4">
+                      <strong className="font-semibold">{course.title}</strong>
+                      <div className="flex gap-4">
+                        <div className="text-sm flex items-center gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="18px"
+                            viewBox="0 0 24 24"
+                            width="18px"
+                            className="fill-blue-500"
+                          >
                             <path d="M0 0h24v24H0V0z" fill="none" />
-                            <path d="M0 0h24v24H0V0z" fill="none" />
-                          </g>
-                          <g>
-                            <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
-                          </g>
-                        </svg>
-                        <p className="text-neutral1 text-sm font-semibold">
-                          {course.rating}
-                        </p>
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
+                          </svg>
+                          <p className="text-neutral1 text-sm font-semibold">
+                            {course.student_count}
+                          </p>
+                        </div>
+                        <div className="text-sm flex items-center gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            enable-background="new 0 0 24 24"
+                            height="18px"
+                            viewBox="0 0 24 24"
+                            width="18px"
+                            className="fill-yellow-500"
+                          >
+                            <g>
+                              <path d="M0 0h24v24H0V0z" fill="none" />
+                              <path d="M0 0h24v24H0V0z" fill="none" />
+                            </g>
+                            <g>
+                              <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
+                            </g>
+                          </svg>
+                          <p className="text-neutral1 text-sm font-semibold">
+                            {course.rating}
+                          </p>
+                        </div>
+                        <div className="text-sm flex items-center gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="18px"
+                            viewBox="0 -960 960 960"
+                            width="18px"
+                            className="fill-green-500"
+                          >
+                            <path d="M120-200q-17 0-28.5-11.5T80-240q0-17 11.5-28.5T120-280h200v-200q0-17 11.5-28.5T360-520h200v-200q0-17 11.5-28.5T600-760h240q17 0 28.5 11.5T880-720q0 17-11.5 28.5T840-680H640v200q0 17-11.5 28.5T600-440H400v200q0 17-11.5 28.5T360-200H120Z" />
+                          </svg>
+                          <p className="text-neutral1 text-sm font-semibold">
+                            {course.level}
+                          </p>
+                        </div>
                       </div>
+                      <p className="text-sm text-neutral1 mt-2">
+                        {course.brief_description}
+                      </p>
                     </div>
-                    <p className="text-sm text-neutral1 mt-2">
-                      {course.brief_description}
-                    </p>
-                    {course.level}
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </article>
@@ -504,48 +565,6 @@ const HomePage = () => {
             <div
               ref={scrollContainerRef}
               className="flex gap-3 lg:gap-4 overflow-x-auto no-scrollbar"
-            >
-              {testimonies.map((t, index) => (
-                <div
-                  key={index}
-                  className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
-                >
-                  {/* feedback */}
-                  <div className="mb-4">
-                    <strong className="text-lg">{t.title}</strong>
-                    <p className="text-sm">{t.comment}</p>
-                  </div>
-                  {/* mahasiswa */}
-                  <div className="text-xs text-right flex justify-between items-center">
-                    <strong className="flex gap-1 items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
-                        className="fill-secondary1 h-max"
-                      >
-                        <g>
-                          <path d="M0 0h24v24H0V0z" fill="none" />
-                          <path d="M0 0h24v24H0V0z" fill="none" />
-                        </g>
-                        <g>
-                          <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
-                        </g>
-                      </svg>
-                      {t.rating}
-                    </strong>
-                    <strong className="text-xs">{t.student_name}</strong>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Testimoni Bawah */}
-            <div
-              ref={scrollContainerRefTwo}
-              className="flex gap-3 lg:gap-4 overflow-x-scroll no-scrollbar"
             >
               {testimonies.map((t, index) => (
                 <div
