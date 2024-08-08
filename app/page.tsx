@@ -51,16 +51,16 @@ const useSmoothScroll = (initialDirection: "right" | "left") => {
 
 const HomePage = () => {
   const scrollContainerRef = useSmoothScroll("right");
-  const scrollContainerRefTwo = useSmoothScroll("left");
+  // const scrollContainerRefTwo = useSmoothScroll("left");
 
-  useEffect(() => {
-    // Set initial scroll position for the second container
-    if (scrollContainerRefTwo.current) {
-      scrollContainerRefTwo.current.scrollLeft =
-        scrollContainerRefTwo.current.scrollWidth -
-        scrollContainerRefTwo.current.clientWidth;
-    }
-  }, [scrollContainerRefTwo]);
+  // useEffect(() => {
+  //   // Set initial scroll position for the second container
+  //   if (scrollContainerRefTwo.current) {
+  //     scrollContainerRefTwo.current.scrollLeft =
+  //       scrollContainerRefTwo.current.scrollWidth -
+  //       scrollContainerRefTwo.current.clientWidth;
+  //   }
+  // }, [scrollContainerRefTwo]);
 
   // FAQ Open and Close
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -565,48 +565,6 @@ const HomePage = () => {
             <div
               ref={scrollContainerRef}
               className="flex gap-3 lg:gap-4 overflow-x-auto no-scrollbar"
-            >
-              {testimonies.map((t, index) => (
-                <div
-                  key={index}
-                  className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
-                >
-                  {/* feedback */}
-                  <div className="mb-4">
-                    <strong className="text-lg">{t.title}</strong>
-                    <p className="text-sm">{t.comment}</p>
-                  </div>
-                  {/* mahasiswa */}
-                  <div className="text-xs text-right flex justify-between items-center">
-                    <strong className="flex gap-1 items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
-                        className="fill-secondary1 h-max"
-                      >
-                        <g>
-                          <path d="M0 0h24v24H0V0z" fill="none" />
-                          <path d="M0 0h24v24H0V0z" fill="none" />
-                        </g>
-                        <g>
-                          <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
-                        </g>
-                      </svg>
-                      {t.rating}
-                    </strong>
-                    <strong className="text-xs">{t.student_name}</strong>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Testimoni Bawah */}
-            <div
-              ref={scrollContainerRefTwo}
-              className="flex gap-3 lg:gap-4 overflow-x-scroll no-scrollbar"
             >
               {testimonies.map((t, index) => (
                 <div
