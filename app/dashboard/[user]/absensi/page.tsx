@@ -12,11 +12,26 @@ import {
 import Cookies from "js-cookie";
 import { Absence } from "@/app/interface/Absence";
 
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
+
 const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
 
+  const [keterangan, setKeterangan] = useState("");
+  const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
+    null
+  );
+  const [selectedIdAbsence, setSelectedIdAbsence] = useState<number | null>(
+    null
+  );
+  const [approvalAction, setApprovalAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isKetModalOpen, setIsKetModalOpen] = useState(false);
+
   const [selectedMhsName, setSelectedMhsName] = useState<string | null>(null);
   const [selectedMhsNim, setSelectedMhsNim] = useState<string | null>(null);
   const [selectedMhsFile, setSelectedMhsFile] = useState<string | null>(null);
@@ -33,57 +48,60 @@ const HomeDashboardAbsensiPage = () => {
   }, [access_token]);
 
   // update status
-  const handleApprove = async (idClassroom: number, idAbsence: number) => {
-    const note = prompt("Please enter the approval note:");
-    if (note !== null) {
-      try {
-        const response = await postUpdateStatusAbsence(
-          access_token,
-          idClassroom,
-          idAbsence,
-          2, // Status 2 untuk "Approved"
-          note
-        );
-        alert("Absence approved successfully!");
-        // Optionally, update the state to reflect the changes in the UI
-        setDataAbsence((prevData) =>
-          prevData.map((izin) =>
-            izin.id === idAbsence
-              ? { ...izin, approve_status: 2, approve_note: note }
-              : izin
-          )
-        );
-      } catch (error) {
-        console.error("Error approving absence:", error);
-        alert("Failed to approve absence.");
-      }
-    }
+  const openModalForApproval = (idClassroom: number, idAbsence: number) => {
+    setSelectedIdClassroom(idClassroom);
+    setSelectedIdAbsence(idAbsence);
+    setApprovalAction("approve");
+    setIsKetModalOpen(true);
   };
 
-  const handleReject = async (idClassroom: number, idAbsence: number) => {
-    const note = prompt("Please enter the rejection note:");
-    if (note !== null) {
+  const openModalForRejection = (idClassroom: number, idAbsence: number) => {
+    setSelectedIdClassroom(idClassroom);
+    setSelectedIdAbsence(idAbsence);
+    setApprovalAction("reject");
+    setIsKetModalOpen(true);
+  };
+
+  const handleSaveKeterangan = async () => {
+    if (
+      selectedIdClassroom !== null &&
+      selectedIdAbsence !== null &&
+      approvalAction !== null
+    ) {
+      const status = approvalAction === "approve" ? 2 : 3;
+      const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
+
       try {
         const response = await postUpdateStatusAbsence(
           access_token,
-          idClassroom,
-          idAbsence,
-          3, // Status 3 untuk "Rejected"
-          note
+          selectedIdClassroom,
+          selectedIdAbsence,
+          status, // Status 2 for "Approved" and 3 for "Rejected"
+          keterangan
         );
-        alert("Absence rejected successfully!");
-        // Optionally, update the state to reflect the changes in the UI
-        setDataAbsence((prevData) =>
-          prevData.map((izin) =>
-            izin.id === idAbsence
-              ? { ...izin, approve_status: 3, approve_note: note }
-              : izin
-          )
-        );
+        toast.success(`Absen Mahasiswa ${actionText} 😁`);
+        // Update DataAbsence state
+        setDataAbsence((prevData) => {
+          const updatedData = prevData?.map((absence) =>
+            absence.id === selectedIdAbsence
+              ? {
+                  ...absence,
+                  status: status,
+                  approve_status_label: status === 2 ? "Diterima" : "Ditolak",
+                }
+              : absence
+          );
+          return updatedData;
+        });
+
+        setIsKetModalOpen(false); // Close the modal after saving
+        // Optionally update state DataAbsence if neededx`
       } catch (error) {
-        console.error("Error rejecting absence:", error);
-        alert("Failed to reject absence.");
+        console.error(`Error ${actionText} absence:`, error);
+        toast.error(`Absen Mahasiswa ${actionText} 😁`);
       }
+    } else {
+      console.error("Classroom ID, Absence ID, or Action is missing.");
     }
   };
 
@@ -166,6 +184,9 @@ const HomeDashboardAbsensiPage = () => {
               </th>
               <th scope="col" className="px-6 py-3">
                 File
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 Aksi
@@ -254,11 +275,12 @@ const HomeDashboardAbsensiPage = () => {
                       </svg>
                     </Link>
                   </td>
+                  <td className="px-6 py-4">{izin.approve_status_label}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
                       <button
                         onClick={() =>
-                          handleApprove(izin.presence?.id, izin.id)
+                          openModalForApproval(izin.presence?.id, izin.id)
                         }
                         className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
                       >
@@ -275,12 +297,10 @@ const HomeDashboardAbsensiPage = () => {
                           <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
                         </svg>
                       </button>
-                      <Link
-                        href={"/"}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleOpenKetModal();
-                        }}
+                      <button
+                        onClick={() =>
+                          openModalForRejection(izin.presence?.id, izin.id)
+                        }
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
                         <span className="sr-only">EditFormKelas</span>
@@ -296,28 +316,11 @@ const HomeDashboardAbsensiPage = () => {
                           />
                           <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
                         </svg>
-                      </Link>
+                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
-
-            {/* {DataAbsence && DataAbsence.absence && DataAbsence.absence.map((absence) => (
-            
-            {DataAbsence?.absence.map((absence) => {
-              return (
-                <div key={absence}>
-                  <p>{absence.student.name}</p>
-                </div>
-              );
-            })}
-            <p>a</p>
-            
-            
-            
-            {/* {Array.from({ length: 1 }).map((_, index) => (
-             
-            ))} */}
           </tbody>
         </table>
 
@@ -335,7 +338,10 @@ const HomeDashboardAbsensiPage = () => {
           isOpen={isKetModalOpen}
           onClose={handleCloseKetModal}
         >
-          <Keterangan />
+          <Keterangan
+            setKeterangan={setKeterangan}
+            onSave={handleSaveKeterangan}
+          />{" "}
         </Modal>
 
         {/* pagination */}
@@ -408,6 +414,7 @@ const HomeDashboardAbsensiPage = () => {
           </ul>
         </nav>
       </div>{" "}
+      <ToastContainer />
     </>
   );
 };

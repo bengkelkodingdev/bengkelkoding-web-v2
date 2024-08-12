@@ -14,10 +14,10 @@ export const postUpdateStatusAbsence = async (
   idClassroom: number,
   idAbsence: number,
   status: number,
-  note: string
+  approve_note: string
 ): Promise<AxiosResponse> =>
   createPostRequest(
     access_token,
     `/api/v1/admin/presences/${idClassroom}/absences/${idAbsence}`,
-    { approve_status: status, approve_note: note }
+    { approve_status: status, approve_note: approve_note }
   );
