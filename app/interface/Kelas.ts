@@ -77,6 +77,7 @@ export interface Presence {
   room: string;
   week: number;
   attendance_count: number;
+  absence_count: number;
   presence_date: string;
   presence_date_formatted: string;
   is_enabled: number;

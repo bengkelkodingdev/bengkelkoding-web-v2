@@ -48,7 +48,7 @@ const DetailKelasPageSesi = () => {
         }
 
         const presenceData = await getDetailQrSession(parseInt(sesi));
-
+        console.log("tes", sesi);
         setdetailClassRoom(presenceData);
       } catch (error) {
         setError(error.message); // Tangani kesalahan yang terjadi dan set pesan kesalahan
@@ -284,7 +284,6 @@ const DetailKelasPageSesi = () => {
   const today = "2024-04-04";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
 
-  console.log(detailClassRoom);
   let count = 1;
   return (
     <>

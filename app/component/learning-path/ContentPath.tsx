@@ -6,12 +6,17 @@ import {
   ListKelasPathResponse,
   PathResponse,
 } from "@/app/interface/LearningPath";
-import { getDetaiLearningPath } from "@/app/api/learning-path/getDetail-learningPath";
+
 import SkeletonLearningPath from "../skleton/SkeletonLearningPath";
-import { getListKelasLearningPath } from "@/app/api/learning-path/getListKelas-learningPath";
+// import { getListKelasLearningPath } from "@/app/api/learning-path/getListKelas-learningPath";
+import { getDetaiLearningPath } from "@/app/api/learning-path/getDetail-learningPath";
+import {
+  getDetailLearningPaths,
+  getListKelasLearningPath,
+} from "@/app/api/learning-path/API-LearningPath";
 
 const ContentPath = ({ selectedMenu }) => {
-  const [dataPath, setDataPath] = useState<PathResponse | null>(null);
+  const [dataPath, setDataPath] = useState<PathResponse | null>();
   const [kelasPath, setKelasPath] = useState<ListKelasPathResponse | null>(
     null
   );
@@ -19,24 +24,26 @@ const ContentPath = ({ selectedMenu }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPathData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getDetaiLearningPath(selectedMenu);
-      const responseKelas = await getListKelasLearningPath(selectedMenu);
-      setKelasPath(responseKelas);
-      setDataPath(response);
-      console.log("data id:", selectedMenu, " hasilnya:", response);
-    } catch (error) {
-      console.error("Error", error);
-      setError("Failed to fetch data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchPathData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // detail learning path
+        let response = await getDetailLearningPaths(selectedMenu);
+        setDataPath(response);
+
+        // list classroom
+        response = await getListKelasLearningPath(selectedMenu);
+        setKelasPath(response);
+      } catch (error) {
+        console.error("Error", error);
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (selectedMenu) {
       fetchPathData();
     }
@@ -62,15 +69,25 @@ const ContentPath = ({ selectedMenu }) => {
         </div>
         <Button text="Daftar Kelas" className="w-[12vw] mt-4" />
       </div>
-      ;{/* Path content */}
+      {/* Path content */}
       <section className=" w-full h-full flex justify-between gap-24 mt-14">
         <div className="kursus-content flex flex-col gap-10  w-full">
           {dataPath.data.roadmap.map((_, index) => (
             <div className="card-kursus border p-7 flex flex-col gap-2 ">
               <div className="flex justify-between">
-                <p className=" font-medium text-gray-500">
-                  {dataPath.data.roadmap[index].title}
-                </p>
+                {/* level */}
+                <div className="level flex">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#321D71"
+                  >
+                    <path d="M200-160v-240h120v240H200Zm240 0v-440h120v440H440Zm240 0v-640h120v640H680Z" />
+                  </svg>
+                  <p> {dataPath.data.roadmap[index].course.level}</p>
+                </div>
                 {/* rating */}
                 <div className="rating flex items-center ">
                   <svg
@@ -89,23 +106,10 @@ const ContentPath = ({ selectedMenu }) => {
                 {dataPath.data.roadmap[index].course.title}
               </p>
               <p className="title-kursus font-normal text-lg mb-2">
-                {dataPath.data.roadmap[index].description}
+                {dataPath.data.roadmap[index].course.brief_description}
               </p>
               <div className="flex flex-col">
                 <div className="infoDetail flex gap-5 justify-between w-full">
-                  {/* level */}
-                  <div className="level flex">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="24px"
-                      viewBox="0 -960 960 960"
-                      width="24px"
-                      fill="#321D71"
-                    >
-                      <path d="M200-160v-240h120v240H200Zm240 0v-440h120v440H440Zm240 0v-640h120v640H680Z" />
-                    </svg>
-                    <p> {dataPath.data.roadmap[index].course.level}</p>
-                  </div>
                   <div className="infoDetail-down flex justify-between gap-5">
                     {/* modul */}
                     <div className="flex items-center">
@@ -156,10 +160,10 @@ const ContentPath = ({ selectedMenu }) => {
           {dataPath.data.roadmap.map((_, index) => (
             <div className="card-kursus  flex flex-col gap-1">
               <p className="numberKursus font-semibold text-lg">
-                {dataPath.data.roadmap[index].course.brief_description}
+                {dataPath.data.roadmap[index].title}
               </p>
               <p className="title-kursus text-justify">
-                {dataPath.data.roadmap[index].course.description}
+                {dataPath.data.roadmap[index].description}
               </p>
             </div>
           ))}
@@ -168,7 +172,7 @@ const ContentPath = ({ selectedMenu }) => {
           {/* end card */}
         </div>
       </section>
-      ;{/* daftar kelas */}
+      {/* daftar kelas */}
       <section className="list-kelas my-12">
         <h2 className="text-center mb-4">Daftar kelas</h2>
         <div className="info-kelas">
@@ -233,7 +237,6 @@ const ContentPath = ({ selectedMenu }) => {
           </div>
         </div>
       </section>
-      ;
     </>
   );
 };

@@ -2,17 +2,22 @@
 
 import React, { useEffect, useState } from "react";
 import Header from "../component/general/Header";
-import { menuData, MenuPath } from "../data/LearningPath-Dummy";
-import Button from "../component/general/Button";
 import Footer from "../component/general/Footer";
 import ContentPath from "../component/learning-path/ContentPath";
+import { MenuPath, ResponMenuPath } from "../interface/LearningPath";
+import { getMenuLearningPath } from "../api/learning-path/getMenu-learningpaths";
 
 export default function LearningPathPage() {
   const [menusPath, setMenusPath] = useState<MenuPath[]>([]);
   const [selectedMenu, setSelectedMenu] = useState<MenuPath | null>(null);
 
+  const fetchMenuPathList = async () => {
+    const response = await getMenuLearningPath();
+    setMenusPath(response);
+  };
+
   useEffect(() => {
-    setMenusPath(menuData);
+    fetchMenuPathList();
   }, []);
 
   useEffect(() => {
