@@ -15,6 +15,33 @@ import { Absence } from "@/app/interface/Absence";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 
+// dropdown
+const StatusFilterDropdown = ({
+  onFilterChange,
+}: {
+  onFilterChange: (status: string) => void;
+}) => {
+  const [selectedStatus, setSelectedStatus] = useState<string>("menunggu");
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedStatus(value);
+    onFilterChange(value);
+  };
+
+  return (
+    <select
+      value={selectedStatus}
+      onChange={handleStatusChange}
+      className="block w-1/6 p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+    >
+      <option value="menunggu">Menunggu</option>
+      <option value="approved">Diterima</option>
+      <option value="rejected">Ditolak</option>
+    </select>
+  );
+};
+
 const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
 
@@ -28,6 +55,10 @@ const HomeDashboardAbsensiPage = () => {
   const [approvalAction, setApprovalAction] = useState<
     "approve" | "reject" | null
   >(null);
+  const [filteredStatus, setFilteredStatus] = useState<string>("menunggu");
+
+  const [totalApproved, setTotalApproved] = useState(0);
+  const [totalRejected, setTotalRejected] = useState(0);
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isKetModalOpen, setIsKetModalOpen] = useState(false);
@@ -38,14 +69,26 @@ const HomeDashboardAbsensiPage = () => {
   // state api
   const [DataAbsence, setDataAbsence] = useState<Absence[]>();
 
+  const fetchData = async () => {
+    // get All data
+    let response = await getAllAbsence(access_token);
+    setDataAbsence(response.data);
+    countStatus(response.data);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      // get All data
-      let response = await getAllAbsence(access_token);
-      setDataAbsence(response.data);
-    };
     fetchData();
   }, [access_token]);
+
+  const countStatus = (data: Absence[] | undefined) => {
+    const totalApproved =
+      data?.filter((izin) => izin.approve_status === 2).length || 0;
+    const totalRejected =
+      data?.filter((izin) => izin.approve_status === 3).length || 0;
+
+    setTotalApproved(totalApproved);
+    setTotalRejected(totalRejected);
+  };
 
   // update status
   const openModalForApproval = (idClassroom: number, idAbsence: number) => {
@@ -80,22 +123,11 @@ const HomeDashboardAbsensiPage = () => {
           keterangan
         );
         toast.success(`Absen Mahasiswa ${actionText} 😁`);
-        // Update DataAbsence state
-        setDataAbsence((prevData) => {
-          const updatedData = prevData?.map((absence) =>
-            absence.id === selectedIdAbsence
-              ? {
-                  ...absence,
-                  status: status,
-                  approve_status_label: status === 2 ? "Diterima" : "Ditolak",
-                }
-              : absence
-          );
-          return updatedData;
-        });
 
-        setIsKetModalOpen(false); // Close the modal after saving
-        // Optionally update state DataAbsence if neededx`
+        // mari dapatkan datanya lagi
+        fetchData();
+
+        setIsKetModalOpen(false);
       } catch (error) {
         console.error(`Error ${actionText} absence:`, error);
         toast.error(`Absen Mahasiswa ${actionText} 😁`);
@@ -124,6 +156,21 @@ const HomeDashboardAbsensiPage = () => {
     setIsKetModalOpen(false);
   };
 
+  const handleFilterChange = (status: string) => {
+    setFilteredStatus(status);
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "Diterima";
+      case "rejected":
+        return "Ditolak";
+      default:
+        return "Menunggu";
+    }
+  };
+
   return (
     <>
       <div className=" overflow-x-auto">
@@ -137,19 +184,17 @@ const HomeDashboardAbsensiPage = () => {
             placeholder="Cari Mahasiswa"
           />
 
-          <Link
-            href={`absensi/tolak`}
-            className="box-tolak text-white w-[10%] p-1 rounded-md flex justify-center items-center bg-red-500 from-red-700 to-red-600 focus:ring-red-100"
-          >
-            <div>Ditolak</div>
-          </Link>
+          <StatusFilterDropdown onFilterChange={handleFilterChange} />
 
-          <Link
-            href={`absensi/terima`}
-            className="box-tolak text-white w-[10%] p-1 rounded-md flex justify-center items-center bg-green-500 from-green-700 to-green-600 focus:ring-red-100"
-          >
+          <div className="box-tolak text-white w-[10%] p-1 rounded-md flex justify-center items-center bg-red-500 from-red-700 to-red-600 focus:ring-red-100">
+            <span className="font-semibold pr-1 text-xl">{totalRejected}</span>{" "}
+            Ditolak
+          </div>
+
+          <div className="box-tolak text-white w-[10%] p-1 rounded-md flex justify-center items-center bg-green-500 from-green-700 to-green-600 focus:ring-red-100">
+            <span className="font-semibold pr-1 text-xl">{totalApproved}</span>{" "}
             Diterima
-          </Link>
+          </div>
         </div>
 
         {/* Table */}
@@ -186,6 +231,9 @@ const HomeDashboardAbsensiPage = () => {
                 File
               </th>
               <th scope="col" className="px-6 py-3">
+                Pesan
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Status
               </th>
               <th scope="col" className="px-6 py-3">
@@ -195,7 +243,24 @@ const HomeDashboardAbsensiPage = () => {
           </thead>
           <tbody>
             {DataAbsence &&
-              DataAbsence.map((izin) => (
+            DataAbsence.filter((izin) => {
+              if (filteredStatus === "approved") {
+                return izin.approve_status === 2;
+              }
+              if (filteredStatus === "rejected") {
+                return izin.approve_status === 3;
+              }
+              return izin.approve_status === 1; // Default "Menunggu"
+            }).length > 0 ? (
+              DataAbsence.filter((izin) => {
+                if (filteredStatus === "approved") {
+                  return izin.approve_status === 2;
+                }
+                if (filteredStatus === "rejected") {
+                  return izin.approve_status === 3;
+                }
+                return izin.approve_status === 1; // Default "Menunggu"
+              }).map((izin) => (
                 <tr
                   key={izin.id}
                   className="bg-white border-b hover:bg-gray-50"
@@ -212,7 +277,7 @@ const HomeDashboardAbsensiPage = () => {
                   </td>
                   <th scope="row" className="px-6 py-4 whitespace-nowrap ">
                     <div className="text-xs flex flex-col gap-1">
-                      <p className="font-medium text-neutral2">
+                      <p className="font-medium text-sm text-neutral2">
                         {izin.student?.name}
                       </p>
                       <p className="font-normal text-xs">
@@ -275,6 +340,7 @@ const HomeDashboardAbsensiPage = () => {
                       </svg>
                     </Link>
                   </td>
+                  <td className="px-6 py-4">{izin.approve_note}</td>
                   <td className="px-6 py-4">{izin.approve_status_label}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
@@ -320,7 +386,14 @@ const HomeDashboardAbsensiPage = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={9} className="text-center py-4">
+                  {`Data ${getStatusLabel(filteredStatus)} kosong`}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 
