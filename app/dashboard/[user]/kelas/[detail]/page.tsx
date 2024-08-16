@@ -28,6 +28,7 @@ import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import Cookies from "js-cookie";
+import { updatePresence } from "@/app/api/admin/api-kelas/presensi/updatePresence";
 //
 
 const DashboardDetailKelasPage = () => {
@@ -50,8 +51,20 @@ const DashboardDetailKelasPage = () => {
     setSelectedMeeting(null);
   };
 
-  const handleSaveMeeting = (updatedMeeting: Presence) => {
-    handleCloseModal();
+  const handleSaveMeeting = async (updatedMeeting: Presence) => {
+    console.log("kelas id", updatedMeeting.id);
+    try {
+      const updatedData = await updatePresence(
+        updatedMeeting.id,
+        updatedMeeting
+      );
+      console.log("Data berhasil diperbarui!", updatedData);
+
+      handleCloseModal(); // Menutup modal setelah berhasil menyimpan
+      // Tambahkan logika untuk memperbarui data di UI jika perlu
+    } catch (error) {
+      console.error("Gagal memperbarui data", error);
+    }
   };
 
   // end modal --
@@ -63,43 +76,43 @@ const DashboardDetailKelasPage = () => {
 
   console.log("kelas", parts[4]);
 
-  useEffect(() => {
-    const fetchClassrooms = async () => {
-      try {
-        let getClassroomDetails, getAssignments;
+  const fetchClassrooms = async () => {
+    try {
+      let getClassroomDetails, getAssignments;
 
-        if (role_user === "superadmin" || role_user === "admin") {
-          getClassroomDetails = getDetailClassroom(parts[4]);
-          getAssignments = getAssigment(parts[4]);
-        } else if (role_user === "lecture" || role_user === "assistant") {
-          getClassroomDetails = getDetailClassroomLecture(parts[4]);
-          // getAssignments = getAssigmentLecture(parts[4]);
-        }
-
-        const [response, responseAssigment] = await Promise.all([
-          getClassroomDetails,
-          getAssignments,
-        ]);
-
-        const formatData = (data) => {
-          if (Array.isArray(data)) {
-            return data;
-          } else if (data && typeof data === "object") {
-            return [data]; // Convert single object to array
-          } else {
-            throw new Error("Unexpected response format");
-          }
-        };
-
-        setKelas(formatData(response.data));
-        // setTugas(formatData(responseAssigment.data));
-      } catch (error) {
-        setError("Failed to fetch classrooms");
-      } finally {
-        setLoading(false);
+      if (role_user === "superadmin" || role_user === "admin") {
+        getClassroomDetails = getDetailClassroom(parts[4]);
+        getAssignments = getAssigment(parts[4]);
+      } else if (role_user === "lecture" || role_user === "assistant") {
+        getClassroomDetails = getDetailClassroomLecture(parts[4]);
+        // getAssignments = getAssigmentLecture(parts[4]);
       }
-    };
 
+      const [response, responseAssigment] = await Promise.all([
+        getClassroomDetails,
+        getAssignments,
+      ]);
+
+      const formatData = (data) => {
+        if (Array.isArray(data)) {
+          return data;
+        } else if (data && typeof data === "object") {
+          return [data]; // Convert single object to array
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      };
+
+      setKelas(formatData(response.data));
+      // setTugas(formatData(responseAssigment.data));
+    } catch (error) {
+      setError("Failed to fetch classrooms");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchClassrooms();
   }, []);
 
@@ -779,12 +792,6 @@ const DashboardDetailKelasPage = () => {
                                     Masuk
                                   </Link>
                                 </span>
-
-                                {/* <StatusLabel
-                                  presence={presence}
-                                  kelas={kelasItem}
-                                  index={presence.id}
-                                /> */}
                               </td>
                               <td className="px-6 py-3">
                                 <div className="flex gap-1">

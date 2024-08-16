@@ -473,26 +473,42 @@ const DetailKelasPageSesi = () => {
                         </td>
 
                         <td className="px-6 py-4">
-                          <div className="flex gap-1">
-                            <Link
-                              href={"/"}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleOpenModal();
-                              }}
-                              className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="18px"
-                                viewBox="0 0 24 24"
-                                width="18px"
+                          {listMhs.is_present ? (
+                            <div className="flex gap-1">
+                              <div className="block bg-neutral3 p-1 rounded-md fill-white transition-all ease-in-out duration-150">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="24px"
+                                  viewBox="0 -960 960 960"
+                                  width="24px"
+                                  fill="#e8eaed"
+                                >
+                                  <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
+                                </svg>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1">
+                              <Link
+                                href={"/"}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleOpenModal();
+                                }}
+                                className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                               >
-                                <path d="M0 0h24v24H0V0z" fill="none" />
-                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                              </svg>
-                            </Link>
-                          </div>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path d="M0 0h24v24H0V0z" fill="none" />
+                                  <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                </svg>
+                              </Link>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
