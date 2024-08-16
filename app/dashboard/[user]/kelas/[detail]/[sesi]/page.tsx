@@ -10,7 +10,8 @@ import { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditFormKelas from "@/app/component/general/EditFormKelas";
 import EditFormStatus from "@/app/component/general/EditFormStatus";
-import { detailSesi } from "@/app/interface/DetailSesi";
+import { detailSesi, Student } from "@/app/interface/DetailSesi";
+import { postManualPresence } from "@/app/api/admin/api-kelas/presensi/postManualPresence";
 
 const DetailKelasPageSesi = () => {
   // const router = useRouter();
@@ -19,15 +20,6 @@ const DetailKelasPageSesi = () => {
 
   const detail = params.detail;
   // const { kelas } = router.query;
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   // state qr
   const [qrText, setQrText] = useState<string>("");
@@ -38,25 +30,51 @@ const DetailKelasPageSesi = () => {
   const [error, setError] = useState(null); // State untuk menangani kesalahan
 
   const [shouldRefresh, setShouldRefresh] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
-  useEffect(() => {
-    const fetchDetailSession = async () => {
-      try {
-        //  get detail session for qr
-        if (typeof sesi !== "string") {
-          throw new Error("sesi harus bertipe string");
-        }
+  const handleOpenModal = (student: Student) => {
+    setSelectedStudent(student);
+    setIsModalOpen(true);
+  };
 
-        const presenceData = await getDetailQrSession(parseInt(sesi));
-        console.log("tes", sesi);
-        setdetailClassRoom(presenceData);
-      } catch (error) {
-        setError(error.message); // Tangani kesalahan yang terjadi dan set pesan kesalahan
-      } finally {
-        setLoading(false); // Set loading menjadi false setelah pengambilan data selesai
-      }
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedStudent(null);
+  };
+
+  const handleSaveStatus = async (student: Student) => {
+    const updatedStatus: Student = {
+      ...student,
     };
+    console.log("id mhs", updatedStatus.id);
+    console.log("Data yang dikirim:", { student_id: updatedStatus.id });
+    try {
+      const updatedData = await postManualPresence(Number(sesi), updatedStatus);
+      console.log("Data berhasil diperbarui!", updatedData);
+      fetchDetailSession();
+    } catch (error) {
+      console.error("Gagal memperbarui data", error);
+    }
+  };
 
+  const fetchDetailSession = async () => {
+    try {
+      //  get detail session for qr
+      if (typeof sesi !== "string") {
+        throw new Error("sesi harus bertipe string");
+      }
+
+      const presenceData = await getDetailQrSession(parseInt(sesi));
+
+      setdetailClassRoom(presenceData);
+    } catch (error) {
+      setError(error.message); // Tangani kesalahan yang terjadi dan set pesan kesalahan
+    } finally {
+      setLoading(false); // Set loading menjadi false setelah pengambilan data selesai
+    }
+  };
+  useEffect(() => {
     if (sesi && sesi.length > 0) {
       fetchDetailSession();
     }
@@ -362,6 +380,7 @@ const DetailKelasPageSesi = () => {
               {isDateMatching ? "Generate QR" : "Terkunci"}
             </button>
           </div>
+
           {/* kanan */}
           <div className="up-right lg:w-1/3">
             <div className="canvas-qr">
@@ -387,6 +406,7 @@ const DetailKelasPageSesi = () => {
             {/* <p className="font-semi text-2xl">List</p> */}
             <div className="search-key">
               <label className="sr-only">Search</label>
+
               <div className="relative ml-2">
                 <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
                   <svg
@@ -414,6 +434,7 @@ const DetailKelasPageSesi = () => {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-3">
+            {/* List Mhs */}
             <div className="left-belumabsen w-full lg:w-[70%]">
               <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">
                 <div className="text-center w-full flex justify-left ">
@@ -489,24 +510,19 @@ const DetailKelasPageSesi = () => {
                             </div>
                           ) : (
                             <div className="flex gap-1">
-                              <Link
-                                href={"/"}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleOpenModal();
-                                }}
-                                className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                              <button
+                                onClick={() => handleSaveStatus(listMhs)}
+                                className="block bg-green2 p-1 rounded-md fill-white "
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
-                                  height="18px"
-                                  viewBox="0 0 24 24"
-                                  width="18px"
+                                  height="24px"
+                                  viewBox="0 -960 960 960"
+                                  width="24px"
                                 >
-                                  <path d="M0 0h24v24H0V0z" fill="none" />
-                                  <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                  <path d="M720-120H320v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h218q32 0 56 24t24 56v80q0 7-1.5 15t-4.5 15L794-168q-9 20-30 34t-44 14ZM240-640v520H80v-520h160Z" />
                                 </svg>
-                              </Link>
+                              </button>
                             </div>
                           )}
                         </td>
@@ -516,13 +532,18 @@ const DetailKelasPageSesi = () => {
                 </table>
               </div>
 
-              <Modal
+              {/* <Modal
                 title="Status Kehadiran"
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
               >
-                <EditFormStatus />
-              </Modal>
+                {selectedStudent && (
+                  <EditFormStatus
+                    user={selectedStudent}
+                    onSave={handleSaveStatus}
+                  />
+                )}
+              </Modal> */}
 
               <nav
                 className="flex items-center flex-column flex-wrap md:flex-row justify-start pt-4"
@@ -692,125 +713,21 @@ const DetailKelasPageSesi = () => {
                             </div>
                           </div>
                         </th>
-                        {/* <td className="px-6 py-4">file</td> */}
-
-                        {/* <td className="px-6 py-4">
-                          {listMhs.is_present ? (
-                            <p className="w-max text-sm rounded-xl px-4 text-green-600 bg-green-100">
-                              Konfirmasi
-                            </p>
-                          ) : (
-                            <p className="w-max text-sm rounded-xl px-4 text-red-600 bg-red-100">
-                              Belum dikonfirmasi
-                            </p>
-                          )}
-                        </td> */}
-
-                        {/* <td className="px-6 py-4">
-                          <div className="flex gap-1">
-                            <Link
-                              href={"/"}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleOpenModal();
-                              }}
-                              className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="18px"
-                                viewBox="0 0 24 24"
-                                width="18px"
-                              >
-                                <path d="M0 0h24v24H0V0z" fill="none" />
-                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                              </svg>
-                            </Link>
-                          </div>
-                        </td> */}
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
-              <Modal
+              {/* IZIN PERLU DI PERBAIKI */}
+
+              {/* <Modal
                 title="Status Kehadiran"
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
               >
                 <EditFormStatus />
-              </Modal>
-
-              {/* <nav
-                className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-                aria-label="Table navigation"
-              >
-                <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-                  Showing{" "}
-                  <span className="font-semibold text-gray-900">1-10</span> of{" "}
-                  <span className="font-semibold text-gray-900">1000</span>
-                </span>
-                <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      Sebelumnya
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      1
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      2
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      aria-current="page"
-                      className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-                    >
-                      3
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      4
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      5
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      Selanjutnya
-                    </a>
-                  </li>
-                </ul>
-              </nav> */}
+              </Modal> */}
             </div>
 
             {/* --- */}

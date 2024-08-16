@@ -24,7 +24,7 @@ interface Presence {
   qr_expired_at: string;
 }
 
-interface Student {
+export interface Student {
   id: number;
   identity_code: string;
   name: string;

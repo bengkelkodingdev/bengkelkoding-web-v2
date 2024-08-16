@@ -52,7 +52,6 @@ const DashboardDetailKelasPage = () => {
   };
 
   const handleSaveMeeting = async (updatedMeeting: Presence) => {
-    console.log("kelas id", updatedMeeting.id);
     try {
       const updatedData = await updatePresence(
         updatedMeeting.id,
@@ -60,8 +59,7 @@ const DashboardDetailKelasPage = () => {
       );
       console.log("Data berhasil diperbarui!", updatedData);
 
-      handleCloseModal(); // Menutup modal setelah berhasil menyimpan
-      // Tambahkan logika untuk memperbarui data di UI jika perlu
+      handleCloseModal();
     } catch (error) {
       console.error("Gagal memperbarui data", error);
     }
