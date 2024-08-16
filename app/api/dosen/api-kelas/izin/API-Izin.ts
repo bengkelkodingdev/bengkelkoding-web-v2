@@ -7,11 +7,6 @@ export const getAllAbsence = async (
 ): Promise<AxiosResponse> =>
   createRequest(access_token, `/api/v1/admin/presences/absences`);
 
-export const getAllAbsenceLecture = async (
-  access_token: string
-): Promise<AxiosResponse> =>
-  createRequest(access_token, `/api/v1/lecture/presences/absences`);
-
 // post update status in absence
 export const postUpdateStatusAbsence = async (
   access_token: string,

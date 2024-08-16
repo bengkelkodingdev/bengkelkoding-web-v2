@@ -15,18 +15,25 @@ import {
   Kelas,
   Presence,
 } from "@/app/interface/Kelas";
-import { getDetailClassroom } from "@/app/api/admin/api-kelas/getDetail-kelas";
+import {
+  getDetailClassroom,
+  getDetailClassroomLecture,
+} from "@/app/api/admin/api-kelas/getDetail-kelas";
 import StatusLabel from "@/app/component/kelas/StatusSesi";
-import { getAssigment } from "@/app/api/admin/api-kelas/tugas/getAll-Assigment";
+import {
+  getAssigment,
+  getAssigmentLecture,
+} from "@/app/api/admin/api-kelas/tugas/getAll-Assigment";
 import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-
+import Cookies from "js-cookie";
 //
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
   const parts = url.split("/");
+  const role_user = Cookies.get("user_role");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
@@ -54,32 +61,38 @@ const DashboardDetailKelasPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log("kelas", parts[4]);
+
   useEffect(() => {
     const fetchClassrooms = async () => {
       try {
-        const response = await getDetailClassroom(parts[4]);
-        const responseAssigment = await getAssigment(parts[4]);
+        let getClassroomDetails, getAssignments;
 
-        // Check if response.data is an object, convert to array if necessary
-        if (Array.isArray(response.data)) {
-          setKelas(response.data);
-        } else if (response.data && typeof response.data === "object") {
-          setKelas([response.data]); // Convert single object to array
-        } else {
-          throw new Error("Unexpected response format");
+        if (role_user === "superadmin" || role_user === "admin") {
+          getClassroomDetails = getDetailClassroom(parts[4]);
+          getAssignments = getAssigment(parts[4]);
+        } else if (role_user === "lecture" || role_user === "assistant") {
+          getClassroomDetails = getDetailClassroomLecture(parts[4]);
+          // getAssignments = getAssigmentLecture(parts[4]);
         }
 
-        // --- assigment
-        if (Array.isArray(responseAssigment.data)) {
-          setTugas(responseAssigment.data);
-        } else if (
-          responseAssigment.data &&
-          typeof responseAssigment.data === "object"
-        ) {
-          setTugas([responseAssigment.data]); // Convert single object to array
-        } else {
-          throw new Error("Unexpected response format");
-        }
+        const [response, responseAssigment] = await Promise.all([
+          getClassroomDetails,
+          getAssignments,
+        ]);
+
+        const formatData = (data) => {
+          if (Array.isArray(data)) {
+            return data;
+          } else if (data && typeof data === "object") {
+            return [data]; // Convert single object to array
+          } else {
+            throw new Error("Unexpected response format");
+          }
+        };
+
+        setKelas(formatData(response.data));
+        // setTugas(formatData(responseAssigment.data));
       } catch (error) {
         setError("Failed to fetch classrooms");
       } finally {
@@ -981,83 +994,91 @@ const DashboardDetailKelasPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {tugas.map((tugasItem, index = 0) => {
-                        return (
-                          <tr
-                            key={tugasItem.id}
-                            className="bg-white border-b hover:bg-gray-50"
-                          >
-                            <td className="w-4 p-4">{index + 1}</td>
-                            <td className="px-6 py-4 font-semibold">
-                              {tugasItem.title}
-                            </td>
-                            <td className="px-6 py-4">
-                              {tugasItem.description}
-                            </td>
-                            <td className="px-6 py-4">
-                              <div>
-                                {dayNameStart} - {timeStart}
-                              </div>
-                              <div>{dateStart}</div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div>
-                                {dayNameEnd} - {timeEnd}
-                              </div>
-                              <div>{dateEnd}</div>
-                            </td>
-                            <td className="px-6 py-4">
-                              {/* "file": null, jika tidak null maka tugasItem.file */}
-                              {tugasItem.file == null ? (
-                                <p>Tidak ada file</p>
-                              ) : (
-                                <a href={tugasItem.file}>icon</a>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 flex items-center justify-center">
-                              <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
-                                {tugasItem.type}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-center font-semibold">
-                              {index + 3}/12
-                            </td>
+                      {tugas.length === 0 ? (
+                        <tr>
+                          <td colSpan={9} className="px-6 py-4 text-center ">
+                            Tidak ada tugas diberikan
+                          </td>
+                        </tr>
+                      ) : (
+                        tugas.map((tugasItem, index = 0) => {
+                          return (
+                            <tr
+                              key={tugasItem.id}
+                              className="bg-white border-b hover:bg-gray-50"
+                            >
+                              <td className="w-4 p-4">{index + 1}</td>
+                              <td className="px-6 py-4 font-semibold">
+                                {tugasItem.title}
+                              </td>
+                              <td className="px-6 py-4">
+                                {tugasItem.description}
+                              </td>
+                              <td className="px-6 py-4">
+                                <div>
+                                  {dayNameStart} - {timeStart}
+                                </div>
+                                <div>{dateStart}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div>
+                                  {dayNameEnd} - {timeEnd}
+                                </div>
+                                <div>{dateEnd}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                {/* "file": null, jika tidak null maka tugasItem.file */}
+                                {tugasItem.file == null ? (
+                                  <p>Tidak ada file</p>
+                                ) : (
+                                  <a href={tugasItem.file}>icon</a>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 flex items-center justify-center">
+                                <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
+                                  {tugasItem.type}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-center font-semibold">
+                                {index + 3}/12
+                              </td>
 
-                            <td className="px-6 py-4">
-                              <div className="flex gap-1">
-                                <Link
-                                  href="/"
-                                  className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    height="18px"
-                                    viewBox="0 0 24 24"
-                                    width="18px"
+                              <td className="px-6 py-4">
+                                <div className="flex gap-1">
+                                  <Link
+                                    href="/"
+                                    className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                                   >
-                                    <path d="M0 0h24v24H0V0z" fill="none" />
-                                    <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                  </svg>
-                                </Link>
-                                <Link
-                                  href="/"
-                                  className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    height="18px"
-                                    viewBox="0 0 24 24"
-                                    width="18px"
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="18px"
+                                      viewBox="0 0 24 24"
+                                      width="18px"
+                                    >
+                                      <path d="M0 0h24v24H0V0z" fill="none" />
+                                      <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                    </svg>
+                                  </Link>
+                                  <Link
+                                    href="/"
+                                    className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                                   >
-                                    <path d="M0 0h24v24H0V0z" fill="none" />
-                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                                  </svg>
-                                </Link>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="18px"
+                                      viewBox="0 0 24 24"
+                                      width="18px"
+                                    >
+                                      <path d="M0 0h24v24H0V0z" fill="none" />
+                                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                    </svg>
+                                  </Link>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
                     </tbody>
                   </table>
                 </div>

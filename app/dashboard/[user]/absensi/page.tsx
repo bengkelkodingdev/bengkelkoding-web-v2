@@ -7,6 +7,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
   getAllAbsence,
+  getAllAbsenceLecture,
   postUpdateStatusAbsence,
 } from "@/app/api/admin/api-kelas/izin/API-Izin";
 import Cookies from "js-cookie";
@@ -44,6 +45,7 @@ const StatusFilterDropdown = ({
 
 const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
+  const role_user = Cookies.get("user_role");
 
   const [keterangan, setKeterangan] = useState("");
   const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
@@ -71,9 +73,16 @@ const HomeDashboardAbsensiPage = () => {
 
   const fetchData = async () => {
     // get All data
-    let response = await getAllAbsence(access_token);
-    setDataAbsence(response.data);
-    countStatus(response.data);
+
+    if (role_user === "superadmin" || role_user === "admin") {
+      let response = await getAllAbsence(access_token);
+      setDataAbsence(response.data);
+      countStatus(response.data);
+    } else if (role_user === "lecture" || role_user === "assistent") {
+      let response = await getAllAbsenceLecture(access_token);
+      setDataAbsence(response.data);
+      countStatus(response.data);
+    }
   };
 
   useEffect(() => {

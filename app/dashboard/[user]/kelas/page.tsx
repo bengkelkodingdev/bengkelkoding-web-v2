@@ -1,19 +1,28 @@
 "use client";
-import { getAllClassroom } from "@/app/api/admin/api-kelas/getAll-kelas";
+import {
+  getAllClassroomAdmin,
+  getAllClassroomLecture,
+} from "@/app/api/admin/api-kelas/getAll-kelas";
 import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditFormKelas from "@/app/component/general/EditFormKelas";
 
+import Cookies from "js-cookie";
+
 const HomeDashboardKelasPage = () => {
-  // const router = useRouter();
-  // const { user } = router.query;
+  // token
+  const access_token = Cookies.get("access_token");
+  const role_user = Cookies.get("user_role");
+
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // admin tes console
+  const [ListClassroom, setListClassroom] = useState<Kelas[]>([]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -23,11 +32,29 @@ const HomeDashboardKelasPage = () => {
     setIsModalOpen(false);
   };
 
+  // gagal-------
+
+  // const fetchData = async () => {
+  //   let response = await getAllClassroomAdmin(access_token);
+  //   setListClassroom(response.data);
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [access_token]);
+
+  // --------------
+
   useEffect(() => {
     const fetchClassrooms = async () => {
       try {
-        const response = await getAllClassroom();
-        setKelas(response.data);
+        if (role_user === "superadmin" || role_user === "admin") {
+          const response = await getAllClassroomAdmin();
+          setKelas(response.data);
+        } else if (role_user === "lecture" || role_user === "assistant") {
+          const response = await getAllClassroomLecture();
+          setKelas(response.data);
+        }
       } catch (error) {
         setError("Failed to fetch classrooms");
       } finally {
@@ -37,7 +64,8 @@ const HomeDashboardKelasPage = () => {
 
     fetchClassrooms();
   }, []);
-  console.log("tes:", kelas);
+
+  console.log("ini rolenya", role_user);
 
   if (loading)
     return (
