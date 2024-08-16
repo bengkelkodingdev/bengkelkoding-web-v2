@@ -333,7 +333,11 @@ const DetailKelasPageSesi = () => {
               </dl>
               <dl className="bg-gradient-to-r from-red-700 to-red-600 focus:ring-red-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
                 <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">
-                  {detailClassRoom.absence_students.length}
+                  {
+                    detailClassRoom.absence_students.filter(
+                      (student) => student.approve_status === 2
+                    ).length
+                  }
                 </dt>
                 <dd className="text-neutral5  text-sm font-medium">Izin</dd>
               </dl>
@@ -615,11 +619,11 @@ const DetailKelasPageSesi = () => {
                                 {" "}
                                 {absen.identity_code}
                               </p>
-                              {absen.approve_status_label === "Diterima" ? (
+                              {absen.approve_status === 2 ? (
                                 <p className="text-xs rounded-xl px-4 text-green-600 bg-green-100">
                                   Diterima
                                 </p>
-                              ) : absen.approve_status_label === "Ditolak" ? (
+                              ) : absen.approve_status === 3 ? (
                                 <p className="text-xs text-center rounded-xl px-4 text-red-600 bg-red-100">
                                   Ditolak
                                 </p>
