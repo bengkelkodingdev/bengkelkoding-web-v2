@@ -19,7 +19,7 @@ export const postManualPresence = async (
     const response = await axios.post(
       `${API_URL}/api/v1/admin/presences/${id}/attendances/store`,
       {
-        student_id: student.id, // Kirimkan hanya `student_id`
+        student_id: student.id,
       },
       {
         headers: {

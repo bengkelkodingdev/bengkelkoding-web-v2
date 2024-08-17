@@ -2,11 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import meetings, { Meeting } from "./data";
 import Modal from "@/app/component/general/Modal";
 import EditForm from "@/app/component/general/EditForm";
-import { useRouter } from "next/router";
-import { useParams } from "react-router-dom";
+
 import { usePathname } from "next/navigation";
 import {
   Assignment,
@@ -19,7 +17,7 @@ import {
   getDetailClassroom,
   getDetailClassroomLecture,
 } from "@/app/api/admin/api-kelas/getDetail-kelas";
-import StatusLabel from "@/app/component/kelas/StatusSesi";
+
 import {
   getAssigment,
   getAssigmentLecture,
@@ -29,6 +27,8 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import Cookies from "js-cookie";
 import { updatePresence } from "@/app/api/admin/api-kelas/presensi/updatePresence";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 //
 
 const DashboardDetailKelasPage = () => {
@@ -53,15 +53,32 @@ const DashboardDetailKelasPage = () => {
 
   const handleSaveMeeting = async (updatedMeeting: Presence) => {
     try {
+      const presences = kelas.flatMap((item) => item.presences);
+
+      const duplicatePresence = presences.find(
+        (presence) =>
+          presence.presence_date === updatedMeeting.presence_date &&
+          presence.id !== updatedMeeting.id
+      );
+
+      if (duplicatePresence) {
+        toast.error(
+          `Tanggal pertemuan telah digunakan pada pertemuan week ${duplicatePresence.week}`
+        );
+        return;
+      }
       const updatedData = await updatePresence(
         updatedMeeting.id,
-        updatedMeeting
+        updatedMeeting.presence_date
       );
-      console.log("Data berhasil diperbarui!", updatedData);
+      console.log("data tanggalnya", updatedData.presence_date);
 
       handleCloseModal();
+      fetchClassrooms();
+      toast.success(`Tanggal berhasil dirubah 😁`);
     } catch (error) {
-      console.error("Gagal memperbarui data", error);
+      console.log("Data berhasil diperbarui!", updatedMeeting.presence_date);
+      toast.error(`Tanggal gagal dirubah`, error);
     }
   };
 
@@ -122,22 +139,6 @@ const DashboardDetailKelasPage = () => {
     { id: "tugas", label: "Tugas" },
     { id: "kursus", label: "Kursus" },
   ];
-
-  // contoh
-
-  const contoh1 = [
-    {
-      presences: [
-        { week: 1, attendance_count: 10 },
-        { week: 2, attendance_count: 15 },
-        { week: 3, attendance_count: 12 },
-        { week: 4, attendance_count: 20 },
-        { week: 5, attendance_count: 12 },
-      ],
-    },
-  ];
-
-  // -- end contoh
 
   const chartOptions: ApexCharts.ApexOptions = {
     series: [
@@ -1127,6 +1128,7 @@ const DashboardDetailKelasPage = () => {
               )}
             </section>
           </article>
+          <ToastContainer />
         </div>
       ))}
     </>

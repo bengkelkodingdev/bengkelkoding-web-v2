@@ -8,18 +8,24 @@ import { useParams } from "next/navigation";
 import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
-import EditFormKelas from "@/app/component/general/EditFormKelas";
-import EditFormStatus from "@/app/component/general/EditFormStatus";
+
+import Keterangan from "@/app/component/general/Keterangan";
 import { detailSesi, Student } from "@/app/interface/DetailSesi";
 import { postManualPresence } from "@/app/api/admin/api-kelas/presensi/postManualPresence";
+import { postUpdateStatusAbsence } from "@/app/api/admin/api-kelas/izin/API-Izin";
+import Cookies from "js-cookie";
+
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 
 const DetailKelasPageSesi = () => {
   // const router = useRouter();
   const params = useParams();
   const sesi = params.sesi;
-
   const detail = params.detail;
-  // const { kelas } = router.query;
+
+  const access_token = Cookies.get("access_token");
+  const role_user = Cookies.get("user_role");
 
   // state qr
   const [qrText, setQrText] = useState<string>("");
@@ -33,22 +39,81 @@ const DetailKelasPageSesi = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
-  const handleOpenModal = (student: Student) => {
-    setSelectedStudent(student);
-    setIsModalOpen(true);
+  // izin modal
+  const [keterangan, setKeterangan] = useState("");
+  const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
+    null
+  );
+  const [selectedIdAbsence, setSelectedIdAbsence] = useState<number | null>(
+    null
+  );
+  const [approvalAction, setApprovalAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isKetModalOpen, setIsKetModalOpen] = useState(false);
+
+  // modal open
+  const openModalForApproval = (idClassroom: number, idAbsence: number) => {
+    setSelectedIdClassroom(idClassroom);
+    setSelectedIdAbsence(idAbsence);
+    setApprovalAction("approve");
+    setIsKetModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedStudent(null);
+  const openModalForRejection = (idClassroom: number, idAbsence: number) => {
+    setSelectedIdClassroom(idClassroom);
+    setSelectedIdAbsence(idAbsence);
+    setApprovalAction("reject");
+    setIsKetModalOpen(true);
   };
+
+  // modal close
+
+  // save keterangan izin
+  const handleSaveKeterangan = async () => {
+    if (
+      selectedIdClassroom !== null &&
+      selectedIdAbsence !== null &&
+      approvalAction !== null
+    ) {
+      const status = approvalAction === "approve" ? 2 : 3;
+      const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
+
+      try {
+        const response = await postUpdateStatusAbsence(
+          access_token,
+          selectedIdClassroom,
+          selectedIdAbsence,
+          status, // Status 2 for "Approved" and 3 for "Rejected"
+          keterangan
+        );
+        toast.success(`Absen Mahasiswa ${actionText} 😁`);
+
+        // mari dapatkan datanya lagi
+        fetchDetailSession();
+
+        setIsKetModalOpen(false);
+      } catch (error) {
+        console.error(`Error ${actionText} absence:`, error);
+        toast.error(`Absen Mahasiswa ${actionText} 😁`);
+      }
+    } else {
+      console.error("Classroom ID, Absence ID, or Action is missing.");
+    }
+  };
+
+  const handleCloseKetModal = () => {
+    setIsKetModalOpen(false);
+  };
+
+  // end list izin confirm
 
   const handleSaveStatus = async (student: Student) => {
     const updatedStatus: Student = {
       ...student,
     };
-    console.log("id mhs", updatedStatus.id);
-    console.log("Data yang dikirim:", { student_id: updatedStatus.id });
+
     try {
       const updatedData = await postManualPresence(Number(sesi), updatedStatus);
       console.log("Data berhasil diperbarui!", updatedData);
@@ -301,7 +366,7 @@ const DetailKelasPageSesi = () => {
   // const today = new Date().toISOString().split("T")[0];
   const today = "2024-04-04";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
-
+  console.log("sesi sekarang", sesi);
   let count = 1;
   return (
     <>
@@ -532,19 +597,6 @@ const DetailKelasPageSesi = () => {
                 </table>
               </div>
 
-              {/* <Modal
-                title="Status Kehadiran"
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-              >
-                {selectedStudent && (
-                  <EditFormStatus
-                    user={selectedStudent}
-                    onSave={handleSaveStatus}
-                  />
-                )}
-              </Modal> */}
-
               <nav
                 className="flex items-center flex-column flex-wrap md:flex-row justify-start pt-4"
                 aria-label="Table navigation"
@@ -637,12 +689,12 @@ const DetailKelasPageSesi = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {detailClassRoom.absence_students.map((absen) => (
+                    {detailClassRoom.absence_students.map((absen, index) => (
                       <tr
                         key={absen.id}
                         className="bg-white border-b hover:bg-gray-50"
                       >
-                        <td className="w-4 p-4">{count++}</td>
+                        <td className="w-4 p-4">{index + 1}</td>
                         <th
                           scope="row"
                           className="px-6 py-4 whitespace-nowrap "
@@ -672,8 +724,10 @@ const DetailKelasPageSesi = () => {
                             </div>
                             <div className="flex gap-3 items-center">
                               <Link href={absen.attachment}>File</Link>
-                              <Link
-                                href={"/"}
+                              <button
+                                onClick={() =>
+                                  openModalForApproval(Number(sesi), absen.id)
+                                }
                                 className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
                               >
                                 <svg
@@ -688,12 +742,11 @@ const DetailKelasPageSesi = () => {
                                   />
                                   <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
                                 </svg>
-                              </Link>
-                              <Link
-                                href={"/"}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                }}
+                              </button>
+                              <button
+                                onClick={() =>
+                                  openModalForRejection(Number(sesi), absen.id)
+                                }
                                 className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                               >
                                 <span className="sr-only">EditFormKelas</span>
@@ -709,7 +762,7 @@ const DetailKelasPageSesi = () => {
                                   />
                                   <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
                                 </svg>
-                              </Link>
+                              </button>
                             </div>
                           </div>
                         </th>
@@ -721,19 +774,23 @@ const DetailKelasPageSesi = () => {
 
               {/* IZIN PERLU DI PERBAIKI */}
 
-              {/* <Modal
-                title="Status Kehadiran"
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
+              <Modal
+                title="Keterangan"
+                isOpen={isKetModalOpen}
+                onClose={handleCloseKetModal}
               >
-                <EditFormStatus />
-              </Modal> */}
+                <Keterangan
+                  setKeterangan={setKeterangan}
+                  onSave={handleSaveKeterangan}
+                />{" "}
+              </Modal>
             </div>
 
             {/* --- */}
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };

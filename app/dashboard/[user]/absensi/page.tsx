@@ -73,7 +73,6 @@ const HomeDashboardAbsensiPage = () => {
 
   const fetchData = async () => {
     // get All data
-
     if (role_user === "superadmin" || role_user === "admin") {
       let response = await getAllAbsence(access_token);
       setDataAbsence(response.data);
@@ -155,10 +154,6 @@ const HomeDashboardAbsensiPage = () => {
 
   const handleCloseViewModal = () => {
     setIsViewModalOpen(false);
-  };
-
-  const handleOpenKetModal = () => {
-    setIsKetModalOpen(true);
   };
 
   const handleCloseKetModal = () => {

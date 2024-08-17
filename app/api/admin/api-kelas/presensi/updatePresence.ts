@@ -6,7 +6,7 @@ const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
 export const updatePresence = async (
   id: number,
-  updatedPresence: Presence
+  updatedPresence: string
 ): Promise<Presence> => {
   const access_token = Cookies.get("access_token");
 
@@ -17,7 +17,9 @@ export const updatePresence = async (
   try {
     const response = await axios.put(
       `${API_URL}/api/v1/admin/presences/${id}/update`,
-      updatedPresence,
+      {
+        presence_date: updatedPresence,
+      },
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
