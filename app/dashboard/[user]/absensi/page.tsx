@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import {
   getAllAbsence,
   getAllAbsenceLecture,
-  postUpdateStatusAbsence,
+  postUpdateStatusAbsenceAdmin,
 } from "@/app/api/admin/api-kelas/izin/API-Izin";
 import Cookies from "js-cookie";
 import { Absence } from "@/app/interface/Absence";
@@ -123,7 +123,7 @@ const HomeDashboardAbsensiPage = () => {
       const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
 
       try {
-        const response = await postUpdateStatusAbsence(
+        const response = await postUpdateStatusAbsenceAdmin(
           access_token,
           selectedIdClassroom,
           selectedIdAbsence,

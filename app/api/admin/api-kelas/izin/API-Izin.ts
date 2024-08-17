@@ -13,7 +13,7 @@ export const getAllAbsenceLecture = async (
   createRequest(access_token, `/api/v1/lecture/presences/absences`);
 
 // post update status in absence
-export const postUpdateStatusAbsence = async (
+export const postUpdateStatusAbsenceAdmin = async (
   access_token: string,
   idClassroom: number,
   idAbsence: number,

@@ -12,7 +12,7 @@ import Modal from "@/app/component/general/Modal";
 import Keterangan from "@/app/component/general/Keterangan";
 import { detailSesi, Student } from "@/app/interface/DetailSesi";
 import { postManualPresence } from "@/app/api/admin/api-kelas/presensi/postManualPresence";
-import { postUpdateStatusAbsence } from "@/app/api/admin/api-kelas/izin/API-Izin";
+import { postUpdateStatusAbsenceAdmin } from "@/app/api/admin/api-kelas/izin/API-Izin";
 import Cookies from "js-cookie";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -81,7 +81,7 @@ const DetailKelasPageSesi = () => {
       const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
 
       try {
-        const response = await postUpdateStatusAbsence(
+        const response = await postUpdateStatusAbsenceAdmin(
           access_token,
           selectedIdClassroom,
           selectedIdAbsence,
