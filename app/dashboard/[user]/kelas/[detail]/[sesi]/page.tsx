@@ -1,7 +1,13 @@
 "use client";
 
-import { getDetailQrSession } from "@/app/api/admin/api-kelas/presensi/getDetailPresensi";
-import { getGenerateQr } from "@/app/api/admin/api-kelas/presensi/getGenerateQr";
+import {
+  getDetailQrSessionAdmin,
+  getDetailQrSessionLecture,
+} from "@/app/api/admin/api-kelas/presensi/getDetailPresensi";
+import {
+  getGenerateQrAdmin,
+  getGenerateQrLecture,
+} from "@/app/api/admin/api-kelas/presensi/getGenerateQr";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -11,8 +17,14 @@ import Modal from "@/app/component/general/Modal";
 
 import Keterangan from "@/app/component/general/Keterangan";
 import { detailSesi, Student } from "@/app/interface/DetailSesi";
-import { postManualPresence } from "@/app/api/admin/api-kelas/presensi/postManualPresence";
-import { postUpdateStatusAbsenceAdmin } from "@/app/api/admin/api-kelas/izin/API-Izin";
+import {
+  postManualPresenceAdmin,
+  postManualPresenceLecture,
+} from "@/app/api/admin/api-kelas/presensi/postManualPresence";
+import {
+  postUpdateStatusAbsenceAdmin,
+  postUpdateStatusAbsenceLecture,
+} from "@/app/api/admin/api-kelas/izin/API-Izin";
 import Cookies from "js-cookie";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -68,8 +80,6 @@ const DetailKelasPageSesi = () => {
     setIsKetModalOpen(true);
   };
 
-  // modal close
-
   // save keterangan izin
   const handleSaveKeterangan = async () => {
     if (
@@ -81,19 +91,35 @@ const DetailKelasPageSesi = () => {
       const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
 
       try {
-        const response = await postUpdateStatusAbsenceAdmin(
-          access_token,
-          selectedIdClassroom,
-          selectedIdAbsence,
-          status, // Status 2 for "Approved" and 3 for "Rejected"
-          keterangan
-        );
-        toast.success(`Absen Mahasiswa ${actionText} 😁`);
+        if (role_user == "superadmin" || role_user == "admin") {
+          const response = await postUpdateStatusAbsenceAdmin(
+            access_token,
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+          toast.success(`Absen Mahasiswa ${actionText} 😁`);
 
-        // mari dapatkan datanya lagi
-        fetchDetailSession();
+          // mari dapatkan datanya lagi
+          fetchDetailSession();
 
-        setIsKetModalOpen(false);
+          setIsKetModalOpen(false);
+        } else if (role_user == "lecture" || role_user == "assistent") {
+          const response = await postUpdateStatusAbsenceLecture(
+            access_token,
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+          toast.success(`Absen Mahasiswa ${actionText} 😁`);
+
+          // mari dapatkan datanya lagi
+          fetchDetailSession();
+
+          setIsKetModalOpen(false);
+        }
       } catch (error) {
         console.error(`Error ${actionText} absence:`, error);
         toast.error(`Absen Mahasiswa ${actionText} 😁`);
@@ -115,9 +141,17 @@ const DetailKelasPageSesi = () => {
     };
 
     try {
-      const updatedData = await postManualPresence(Number(sesi), updatedStatus);
-      console.log("Data berhasil diperbarui!", updatedData);
-      fetchDetailSession();
+      let updateData;
+      if (role_user == "superadmin" || role_user == "admin") {
+        updateData = await postManualPresenceAdmin(Number(sesi), updatedStatus);
+        fetchDetailSession();
+      } else if (role_user == "lecture" || role_user == "assistent") {
+        updateData = await postManualPresenceLecture(
+          Number(sesi),
+          updatedStatus
+        );
+        fetchDetailSession();
+      }
     } catch (error) {
       console.error("Gagal memperbarui data", error);
     }
@@ -125,14 +159,20 @@ const DetailKelasPageSesi = () => {
 
   const fetchDetailSession = async () => {
     try {
+      let presenceData;
       //  get detail session for qr
       if (typeof sesi !== "string") {
         throw new Error("sesi harus bertipe string");
       }
 
-      const presenceData = await getDetailQrSession(parseInt(sesi));
+      if (role_user == "superadmin" || role_user == "admin") {
+        presenceData = await getDetailQrSessionAdmin(parseInt(sesi));
 
-      setdetailClassRoom(presenceData);
+        setdetailClassRoom(presenceData);
+      } else if (role_user == "lecture" || role_user == "assistent") {
+        presenceData = await getDetailQrSessionLecture(parseInt(sesi));
+        setdetailClassRoom(presenceData);
+      }
     } catch (error) {
       setError(error.message); // Tangani kesalahan yang terjadi dan set pesan kesalahan
     } finally {
@@ -151,10 +191,14 @@ const DetailKelasPageSesi = () => {
       if (typeof sesi !== "string") {
         throw new Error("sesi harus bertipe string");
       }
-      const presenceQr = await getGenerateQr(sesi);
-      let coba = presenceQr;
-      setQrText(presenceQr.qr_code);
-      console.log("qr session:", presenceQr.qr_code);
+
+      if (role_user == "superadmin" || role_user == "admin") {
+        const presenceQr = await getGenerateQrAdmin(sesi);
+        setQrText(presenceQr.qr_code);
+      } else if (role_user == "lecture" || role_user == "assistent") {
+        const presenceQr = await getGenerateQrLecture(sesi);
+        setQrText(presenceQr.qr_code);
+      }
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
@@ -364,7 +408,7 @@ const DetailKelasPageSesi = () => {
 
   // test 2024-04-05
   // const today = new Date().toISOString().split("T")[0];
-  const today = "2024-04-04";
+  const today = "2024-04-12";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
   console.log("sesi sekarang", sesi);
   let count = 1;

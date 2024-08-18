@@ -5,7 +5,9 @@ import { detailSesi } from "@/app/interface/DetailSesi";
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
-export const getDetailQrSession = async (id: number): Promise<detailSesi> => {
+export const getDetailQrSessionLecture = async (
+  id: number
+): Promise<detailSesi> => {
   const access_token = Cookies.get("access_token");
 
   if (!access_token) {

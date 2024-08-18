@@ -25,3 +25,16 @@ export const postUpdateStatusAbsenceAdmin = async (
     `/api/v1/admin/presences/${idClassroom}/absences/${idAbsence}`,
     { approve_status: status, approve_note: approve_note }
   );
+
+export const postUpdateStatusAbsenceLecture = async (
+  access_token: string,
+  idClassroom: number,
+  idAbsence: number,
+  status: number,
+  approve_note: string
+): Promise<AxiosResponse> =>
+  createPostRequest(
+    access_token,
+    `/api/v1/lecture/presences/${idClassroom}/absences/${idAbsence}`,
+    { approve_status: status, approve_note: approve_note }
+  );

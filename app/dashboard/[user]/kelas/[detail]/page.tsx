@@ -26,7 +26,10 @@ import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import Cookies from "js-cookie";
-import { updatePresence } from "@/app/api/admin/api-kelas/presensi/updatePresence";
+import {
+  updatePresenceAdmin,
+  updatePresenceLecture,
+} from "@/app/api/admin/api-kelas/presensi/updatePresence";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 //
@@ -52,6 +55,7 @@ const DashboardDetailKelasPage = () => {
   };
 
   const handleSaveMeeting = async (updatedMeeting: Presence) => {
+    let updatedData;
     try {
       const presences = kelas.flatMap((item) => item.presences);
 
@@ -67,11 +71,18 @@ const DashboardDetailKelasPage = () => {
         );
         return;
       }
-      const updatedData = await updatePresence(
-        updatedMeeting.id,
-        updatedMeeting.presence_date
-      );
-      console.log("data tanggalnya", updatedData.presence_date);
+
+      if (role_user === "superadmin" || role_user === "admin") {
+        updatedData = await updatePresenceAdmin(
+          updatedMeeting.id,
+          updatedMeeting.presence_date
+        );
+      } else if (role_user === "lecture" || role_user === "assistant") {
+        updatedData = await updatePresenceLecture(
+          updatedMeeting.id,
+          updatedMeeting.presence_date
+        );
+      }
 
       handleCloseModal();
       fetchClassrooms();
@@ -89,8 +100,6 @@ const DashboardDetailKelasPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log("kelas", parts[4]);
-
   const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
@@ -100,6 +109,8 @@ const DashboardDetailKelasPage = () => {
         getAssignments = getAssigment(parts[4]);
       } else if (role_user === "lecture" || role_user === "assistant") {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
+
+        // KALO UDAH ADA APINYA PERLU GANTI
         // getAssignments = getAssigmentLecture(parts[4]);
       }
 
@@ -119,6 +130,7 @@ const DashboardDetailKelasPage = () => {
       };
 
       setKelas(formatData(response.data));
+      // KALO UDAH ADA APINYA PERLU GANTI
       // setTugas(formatData(responseAssigment.data));
     } catch (error) {
       setError("Failed to fetch classrooms");
