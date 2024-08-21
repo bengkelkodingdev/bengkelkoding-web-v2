@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Header from "../component/general/Header";
 import Footer from "../component/general/Footer";
@@ -34,21 +33,21 @@ export default function LearningPathPage() {
   return (
     <div className="bg-[#f7f9fa]">
       <Header />
-      <div className="box-path max-w-7xl mx-auto px-2 lg:px-4 py-4 flex items-center ">
+      <div className="box-path max-w-7xl mx-auto px-2 lg:px-4 py-4 flex gap-3 items-center ">
         {/* konsum disini */}
         {menusPath.map((menu, index) => (
           <button
             key={index}
-            className="menu-item px-4 py-2"
+            className="menu-item px-4 py-2 text-sm "
             onClick={() => handleMenuClick(menu)}
           >
             {menu.name}
           </button>
         ))}
       </div>
-      <main className="max-w-5xl mx-auto px-2 lg:px-4 py-4 min-h-screen">
+      <main className="w-full mx-auto px-2 lg:px-4 py-4 min-h-screen">
         {selectedMenu && (
-          <div>
+          <div className=" flex justify-center items-center flex-col">
             <ContentPath selectedMenu={selectedMenu.id} />
           </div>
         )}
