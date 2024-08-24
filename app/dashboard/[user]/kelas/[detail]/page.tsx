@@ -28,7 +28,10 @@ import {
 } from "@/app/api/admin/api-kelas/presensi/updatePresence";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import { getAssigmentAdmin } from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
+import {
+  deleteAssigmentAdmin,
+  getAssigmentAdmin,
+} from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -38,108 +41,17 @@ const DashboardDetailKelasPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
 
-  // modal --
-  const handleOpenModal = (presence: Presence) => {
-    setSelectedMeeting(presence);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedMeeting(null);
-  };
-
-  const handleSaveMeeting = async (updatedMeeting: Presence) => {
-    let updatedData;
-    try {
-      const presences = kelas.flatMap((item) => item.presences);
-
-      const duplicatePresence = presences.find(
-        (presence) =>
-          presence.presence_date === updatedMeeting.presence_date &&
-          presence.id !== updatedMeeting.id
-      );
-
-      if (duplicatePresence) {
-        toast.error(
-          `Tanggal pertemuan telah digunakan pada pertemuan week ${duplicatePresence.week}`
-        );
-        return;
-      }
-
-      if (role_user === "superadmin" || role_user === "admin") {
-        updatedData = await updatePresenceAdmin(
-          updatedMeeting.id,
-          updatedMeeting.presence_date
-        );
-      } else if (role_user === "lecture" || role_user === "assistant") {
-        updatedData = await updatePresenceLecture(
-          updatedMeeting.id,
-          updatedMeeting.presence_date
-        );
-      }
-
-      handleCloseModal();
-      fetchClassrooms();
-      toast.success(`Tanggal berhasil dirubah 😁`);
-    } catch (error) {
-      console.log("Data berhasil diperbarui!", updatedMeeting.presence_date);
-      toast.error(`Tanggal gagal dirubah`, error);
-    }
-  };
-
-  // end modal --
-
   const [kelas, setKelas] = useState<ClassroomData[]>([]);
   const [tugas, setTugas] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchClassrooms = async () => {
-    try {
-      let getClassroomDetails, getAssignments;
-
-      if (role_user === "superadmin" || role_user === "admin") {
-        getClassroomDetails = getDetailClassroom(parts[4]);
-        getAssignments = getAssigmentAdmin(parts[4]);
-      } else if (role_user === "lecture" || role_user === "assistant") {
-        getClassroomDetails = getDetailClassroomLecture(parts[4]);
-
-        // KALO UDAH ADA APINYA PERLU GANTI
-        // getAssignments = getAssigmentLecture(parts[4]);
-      }
-
-      const [response, responseAssigment] = await Promise.all([
-        getClassroomDetails,
-        getAssignments,
-      ]);
-
-      const formatData = (data) => {
-        if (Array.isArray(data)) {
-          return data;
-        } else if (data && typeof data === "object") {
-          return [data]; // Convert single object to array
-        } else {
-          throw new Error("Unexpected response format");
-        }
-      };
-
-      setKelas(formatData(response.data));
-      // KALO UDAH ADA APINYA PERLU GANTI
-      setTugas(formatData(responseAssigment.data));
-    } catch (error) {
-      setError("Failed to fetch classrooms");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchClassrooms();
-  }, []);
-
   const [activeSection, setActiveSection] = useState("pertemuan");
 
+  const { dayNameStart, timeStart, dateStart } = formatDateStart();
+  const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
+
+  // chart
   const sections = [
     { id: "pertemuan", label: "Pertemuan" },
     { id: "mahasiswa", label: "Mahasiswa" },
@@ -187,6 +99,109 @@ const DashboardDetailKelasPage = () => {
         kelasItem.presences.map((presence) => `Pertemuan ${presence.week}`)
       ),
     },
+  };
+
+  // end chart
+
+  // modal --
+  const handleOpenModal = (presence: Presence) => {
+    setSelectedMeeting(presence);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMeeting(null);
+  };
+
+  const handleSaveMeeting = async (updatedMeeting: Presence) => {
+    let updatedData;
+    try {
+      const presences = kelas.flatMap((item) => item.presences);
+
+      const duplicatePresence = presences.find(
+        (presence) =>
+          presence.presence_date === updatedMeeting.presence_date &&
+          presence.id !== updatedMeeting.id
+      );
+
+      if (duplicatePresence) {
+        toast.error(
+          `Tanggal pertemuan telah digunakan pada pertemuan week ${duplicatePresence.week}`
+        );
+        return;
+      }
+
+      if (role_user === "superadmin" || role_user === "admin") {
+        updatedData = await updatePresenceAdmin(
+          updatedMeeting.id,
+          updatedMeeting.presence_date
+        );
+      } else if (role_user === "lecture" || role_user === "assistant") {
+        updatedData = await updatePresenceLecture(
+          updatedMeeting.id,
+          updatedMeeting.presence_date
+        );
+      }
+
+      handleCloseModal();
+      fetchClassrooms();
+      toast.success(`Tanggal berhasil dirubah 😁`);
+    } catch (error) {
+      toast.error(`Tanggal gagal dirubah`, error);
+    }
+  };
+
+  const handleDelete = async (idClassroom, idAssignment) => {
+    try {
+      await deleteAssigmentAdmin(idClassroom, idAssignment);
+      toast.success(`Berhasil menghapus tugas 😁`);
+      fetchClassrooms();
+    } catch (error) {
+      console.error("Gagal menghapus tugas:", error);
+      toast.error(`Gagal menghapus tugas`);
+    }
+  };
+
+  // end modal --
+
+  const fetchClassrooms = async () => {
+    try {
+      let getClassroomDetails, getAssignments;
+
+      if (role_user === "superadmin" || role_user === "admin") {
+        getClassroomDetails = getDetailClassroom(parts[4]);
+        getAssignments = getAssigmentAdmin(parts[4]);
+      } else if (role_user === "lecture" || role_user === "assistant") {
+        getClassroomDetails = getDetailClassroomLecture(parts[4]);
+
+        // KALO UDAH ADA APINYA PERLU GANTI
+        // getAssignments = getAssigmentLecture(parts[4]);
+      }
+
+      const [response, responseAssigment] = await Promise.all([
+        getClassroomDetails,
+        getAssignments,
+      ]);
+
+      const formatData = (data) => {
+        if (Array.isArray(data)) {
+          return data;
+        } else if (data && typeof data === "object") {
+          return [data]; // Convert single object to array
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      };
+
+      setKelas(formatData(response.data));
+      // KALO UDAH ADA APINYA PERLU GANTI
+      setTugas(formatData(responseAssigment.data));
+    } catch (error) {
+      setError("Failed to fetch classrooms");
+    } finally {
+      setLoading(false);
+    }
   };
 
   function formatDateStart() {
@@ -246,8 +261,10 @@ const DashboardDetailKelasPage = () => {
       dateEnd: `${day}-${month}-${year}`,
     };
   }
-  const { dayNameStart, timeStart, dateStart } = formatDateStart();
-  const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
+
+  useEffect(() => {
+    fetchClassrooms();
+  }, []);
 
   if (loading)
     return (
@@ -581,6 +598,7 @@ const DashboardDetailKelasPage = () => {
         </article>
       </div>
     );
+
   if (error) return <p>Kelas Tidak ditemukan</p>;
 
   return (
@@ -980,20 +998,20 @@ const DashboardDetailKelasPage = () => {
                   </div>
                   <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden mt-5 ">
                     <thead className="text-sm text-neutral2 bg-gray-100">
-                      <tr>
+                      <tr className="text-center">
                         <th scope="col" className="p-4">
                           No
                         </th>
                         <th scope="col" className="px-6 py-3">
                           Nama Tugas
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-left">
                           Deskripsi
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center ">
                           Tanggal Mulai
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center ">
                           Tanggal Selesai
                         </th>
                         <th scope="col" className="px-6 py-3">
@@ -1032,27 +1050,37 @@ const DashboardDetailKelasPage = () => {
                               <td className="px-6 py-4">
                                 {tugasItem.description}
                               </td>
-                              <td className="px-6 py-4">
+                              <td className="px-2 py-4  text-center">
                                 <div>
                                   {dayNameStart} - {timeStart}
                                 </div>
-                                <div>{dateStart}</div>
+                                <div className="font-semibold">{dateStart}</div>
                               </td>
-                              <td className="px-6 py-4">
+                              <td className="px-2 py-4  text-center">
                                 <div>
                                   {dayNameEnd} - {timeEnd}
                                 </div>
-                                <div>{dateEnd}</div>
+                                <div className="font-semibold">{dateEnd}</div>
                               </td>
                               <td className="px-6 py-4">
                                 {/* "file": null, jika tidak null maka tugasItem.file */}
                                 {tugasItem.file == null ? (
                                   <p>Tidak ada file</p>
                                 ) : (
-                                  <a href={tugasItem.file}>icon</a>
+                                  <a href={tugasItem.file}>
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="24px"
+                                      viewBox="0 -960 960 960"
+                                      width="24px"
+                                      fill="#2014c8"
+                                    >
+                                      <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+                                    </svg>
+                                  </a>
                                 )}
                               </td>
-                              <td className="px-6 py-4 flex items-center justify-center">
+                              <td className="px-6 py-4 ">
                                 <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
                                   {tugasItem.type}
                                 </span>
@@ -1063,6 +1091,7 @@ const DashboardDetailKelasPage = () => {
 
                               <td className="px-6 py-4">
                                 <div className="flex gap-1">
+                                  {/* edit */}
                                   <Link
                                     href="/"
                                     className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
@@ -1077,8 +1106,14 @@ const DashboardDetailKelasPage = () => {
                                       <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                                     </svg>
                                   </Link>
-                                  <Link
-                                    href="/"
+                                  {/* delete */}
+                                  <button
+                                    onClick={() =>
+                                      handleDelete(
+                                        kelasItem.classroom.id,
+                                        tugasItem.id
+                                      )
+                                    }
                                     className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                                   >
                                     <svg
@@ -1090,13 +1125,20 @@ const DashboardDetailKelasPage = () => {
                                       <path d="M0 0h24v24H0V0z" fill="none" />
                                       <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                                     </svg>
-                                  </Link>
-                                  <span className="flex justify-center items-center text-xs font-medium w-full h-[2rem] rounded-full text-center  text-blue-800 bg-blue-100">
+                                  </button>
+                                  <span className="block bg-green-800 p-1 rounded-md fill-white hover:bg-green-700 transition-all ease-in-out duration-150">
                                     <Link
-                                      className="flex items-center justify-center text-center"
                                       href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
                                     >
-                                      Penilaian
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="18px"
+                                        viewBox="0 -960 960 960"
+                                        width="18px"
+                                        fill="#F3F3F3"
+                                      >
+                                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm80-160h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790Z" />
+                                      </svg>
                                     </Link>
                                   </span>
                                 </div>
