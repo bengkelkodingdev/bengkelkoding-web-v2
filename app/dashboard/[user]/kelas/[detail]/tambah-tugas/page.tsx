@@ -1,10 +1,20 @@
 "use client";
-import React, { useState, DragEvent, ChangeEvent, useRef } from "react";
+import React, {
+  useState,
+  DragEvent,
+  ChangeEvent,
+  useRef,
+  useEffect,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import Input from "@/app/component/general/Input";
 import Button from "@/app/component/general/Button";
 import { AssignmentData } from "@/app/interface/Assigment";
-import { createAssigment } from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
+import {
+  createAssigment,
+  getDetailAssignmentAdmin,
+  updateAssignmentAdmin,
+} from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -12,6 +22,7 @@ import { toast, ToastContainer } from "react-toastify";
 export default function DetailTambahKelas() {
   const searchParams = useSearchParams();
   const IdClassroom = searchParams.get("idClassroom");
+  const idAssignment = searchParams.get("idAssignment"); // Cek apakah ada idAssignment
   // State untuk input
   const [judul, setJudul] = useState<string>("");
   const [jenis, setJenis] = useState<string>("");
@@ -29,45 +40,6 @@ export default function DetailTambahKelas() {
   const [formattedStartDateTime, setFormattedStartDateTime] =
     useState<string>("");
   const [formattedEndDateTime, setFormattedEndDateTime] = useState<string>("");
-
-  // const handleDateTimeChange = (
-  //   e: React.ChangeEvent<HTMLInputElement>,
-  //   type: "start" | "end"
-  // ) => {
-  //   const selectedDateTime = e.target.value;
-  //   const formatted = formatDateTime(selectedDateTime);
-
-  //   if (type === "start") {
-  //     setStartTime(formatted);
-  //     console.log("Formatted Start Date and Time:", formatted);
-  //   } else {
-  //     setDeadline(formatted);
-  //     console.log("Formatted End Date and Time:", formatted);
-  //   }
-  // };
-
-  // const formatDateTime = (dateTime: string): string => {
-  //   const days = [
-  //     "Minggu",
-  //     "Senin",
-  //     "Selasa",
-  //     "Rabu",
-  //     "Kamis",
-  //     "Jumat",
-  //     "Sabtu",
-  //   ];
-
-  //   const date = new Date(dateTime);
-  //   const dayName = days[date.getDay()];
-  //   const time = date.toTimeString().slice(0, 5); // Get HH:MM
-  //   const formattedDate = date.toLocaleDateString("id-ID", {
-  //     day: "2-digit",
-  //     month: "2-digit",
-  //     year: "numeric",
-  //   });
-
-  //   return `${dayName} - ${time} ${formattedDate}`;
-  // };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -127,6 +99,23 @@ export default function DetailTambahKelas() {
       setDescriptionCharCount(value.length);
     }
   };
+  useEffect(() => {
+    if (idAssignment && IdClassroom) {
+      getDetailAssignmentAdmin(IdClassroom, idAssignment)
+        .then((data) => {
+          setJudul(data.title);
+          setJenis(data.type);
+          setDescription(data.description);
+          setStartTime(data.start_time);
+          setDeadline(data.deadline);
+          // Tambahkan data lainnya jika diperlukan
+        })
+        .catch((error) => {
+          console.error("Error fetching assignment details:", error);
+          toast.error("Gagal memuat detail tugas", error);
+        });
+    }
+  }, [idAssignment, IdClassroom]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -141,28 +130,74 @@ export default function DetailTambahKelas() {
     formData.append("type", jenis);
     formData.append("description", description);
     if (file) {
-      console.log("File selected:", file);
       formData.append("file", file);
     }
     formData.append("start_time", start_time);
     formData.append("deadline", deadline);
-    formData.append("created_at", new Date().toISOString());
-    formData.append("updated_at", new Date().toISOString());
 
     try {
-      const response = await createAssigment(formData, IdClassroom); // Kirim FormData
-      toast.success(`Berhasil menambahkan tugas 😁`);
+      if (idAssignment) {
+        // Update tugas jika dalam mode edit
+        console.log("data terinput", formData);
+        // Loop untuk memastikan formData terisi
+        console.log("FormData yang akan dikirim:");
+        formData.forEach((value, key) => {
+          console.log(`${key}: ${value}`);
+        });
+        await updateAssignmentAdmin(formData, IdClassroom, idAssignment);
+        toast.success("Tugas berhasil diperbarui");
+      } else {
+        // Tambah tugas baru jika tidak dalam mode edit
+        await createAssigment(formData, IdClassroom);
+        toast.success("Tugas berhasil ditambahkan");
+      }
       window.location.href = `./`;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error response data:", error.response.data);
-        toast.error(`Gagal menambahkan tugas`);
+        toast.error("Gagal menyimpan tugas");
       } else {
-        console.error("Failed to create assignment:", error);
-        toast.error(`Gagal menambahkan tugas`);
+        console.error("Failed to save assignment:", error);
+        toast.error("Gagal menyimpan tugas");
       }
     }
   };
+
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+
+  //   if (!IdClassroom) {
+  //     console.error("Classroom ID not found");
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append("title", judul);
+  //   formData.append("type", jenis);
+  //   formData.append("description", description);
+  //   if (file) {
+  //     console.log("File selected:", file);
+  //     formData.append("file", file);
+  //   }
+  //   formData.append("start_time", start_time);
+  //   formData.append("deadline", deadline);
+  //   formData.append("created_at", new Date().toISOString());
+  //   formData.append("updated_at", new Date().toISOString());
+
+  //   try {
+  //     const response = await createAssigment(formData, IdClassroom); // Kirim FormData
+  //     toast.success(`Berhasil menambahkan tugas 😁`);
+  //     window.location.href = `./`;
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error) && error.response) {
+  //       console.error("Error response data:", error.response.data);
+  //       toast.error(`Gagal menambahkan tugas`);
+  //     } else {
+  //       console.error("Failed to create assignment:", error);
+  //       toast.error(`Gagal menambahkan tugas`);
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -172,7 +207,10 @@ export default function DetailTambahKelas() {
         encType="multipart/form-data"
       >
         <div>
-          <p className="font-semibold text-neutral2">Tambah Tugas</p>
+          <p className="font-semibold text-neutral2">
+            {" "}
+            {idAssignment ? "Edit Tugas" : "Tambah Tugas"}
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-x-4 mt-2">
           {/* judul tugas  */}
@@ -181,6 +219,7 @@ export default function DetailTambahKelas() {
               type="text"
               label="Judul"
               name="judul"
+              value={judul}
               onChange={(e) => setJudul(e.target.value)}
               required
             />
@@ -209,6 +248,7 @@ export default function DetailTambahKelas() {
               type="text"
               label="Jenis"
               name="Jenis"
+              value={jenis}
               onChange={(e) => setJenis(e.target.value)}
               required
             />
@@ -236,6 +276,7 @@ export default function DetailTambahKelas() {
                 className="h-[82%] mt-1 relative shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
                 onChange={handleChange}
                 maxLength={maxDescriptionLength}
+                value={description}
                 required
               ></textarea>
             </div>
@@ -275,7 +316,10 @@ export default function DetailTambahKelas() {
           </div>
         </div>
         <div className="text-start">
-          <Button text="Tambah Tugas" type="submit" />
+          <Button
+            text={idAssignment ? "Update Tugas" : "Tambah Tugas"}
+            type="submit"
+          />
         </div>
       </form>
       <ToastContainer />

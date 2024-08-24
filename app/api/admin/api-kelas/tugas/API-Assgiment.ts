@@ -61,6 +61,39 @@ export const getAssigmentAdmin = async (
   }
 };
 
+export const getDetailAssignmentAdmin = async (
+  classroomId: string,
+  assignmentId: string
+): Promise<AssignmentData> => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/v1/admin/classrooms/${classroomId}/assignments/${assignmentId}/detail`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("Error response data:", error.response.data);
+      throw new Error(
+        error.response.data.message || "Failed to fetch assignment details"
+      );
+    } else {
+      console.error("Error fetching assignment details:", error);
+      throw new Error("An unexpected error occurred");
+    }
+  }
+};
+
 export const deleteAssigmentAdmin = async (
   idClassroom: string,
   idAssigment: string
@@ -84,6 +117,42 @@ export const deleteAssigmentAdmin = async (
   } catch (error) {
     console.error("Error deleting assignment:", error);
     throw error;
+  }
+};
+
+export const updateAssignmentAdmin = async (
+  data: FormData,
+  classroomId: string,
+  assignmentId: string
+) => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/v1/admin/classrooms/${classroomId}/assignments/${assignmentId}?_method=PUT`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log("Response dari server:", response.data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("Error response data:", error.response.data);
+      throw new Error(
+        error.response.data.message || "Failed to update assignment"
+      );
+    } else {
+      console.error("Error updating assignment:", error);
+      throw new Error("An unexpected error occurred");
+    }
   }
 };
 

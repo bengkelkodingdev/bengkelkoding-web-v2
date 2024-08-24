@@ -1093,7 +1093,13 @@ const DashboardDetailKelasPage = () => {
                                 <div className="flex gap-1">
                                   {/* edit */}
                                   <Link
-                                    href="/"
+                                    href={{
+                                      pathname: `${kelasItem.classroom.id}/tambah-tugas`, // atau halaman yang sesuai jika berbeda
+                                      query: {
+                                        idClassroom: kelasItem.classroom.id,
+                                        idAssignment: tugasItem.id, // Parameter untuk mode edit
+                                      },
+                                    }}
                                     className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                                   >
                                     <svg

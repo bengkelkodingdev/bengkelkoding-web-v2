@@ -33,17 +33,19 @@ export default function LearningPathPage() {
   return (
     <div className="bg-[#f7f9fa]">
       <Header />
-      <div className="box-path max-w-7xl mx-auto px-2 lg:px-4 py-4 flex gap-3 items-center ">
+      <div className="box-path px-2 py-2 flex gap-3 items-center border-b">
         {/* konsum disini */}
-        {menusPath.map((menu, index) => (
-          <button
-            key={index}
-            className="menu-item px-4 py-2 text-sm "
-            onClick={() => handleMenuClick(menu)}
-          >
-            {menu.name}
-          </button>
-        ))}
+        <div className="max-w-7xl mx-auto ">
+          {menusPath.map((menu, index) => (
+            <button
+              key={index}
+              className="menu-item px-4 py-2 text-lg "
+              onClick={() => handleMenuClick(menu)}
+            >
+              {menu.name}
+            </button>
+          ))}
+        </div>
       </div>
       <main className="w-full mx-auto px-2 lg:px-4 py-4 min-h-screen">
         {selectedMenu && (

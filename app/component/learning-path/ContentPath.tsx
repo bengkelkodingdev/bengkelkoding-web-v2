@@ -83,7 +83,7 @@ const ContentPath = ({ selectedMenu }) => {
                 <div className="flex justify-between">
                   {/* Level */}
                   <div className="level flex items-center">
-                    <svg
+                    {/* <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="24px"
                       viewBox="0 -960 960 960"
@@ -91,6 +91,16 @@ const ContentPath = ({ selectedMenu }) => {
                       fill="#321D71"
                     >
                       <path d="M200-160v-240h120v240H200Zm240 0v-440h120v440H440Zm240 0v-640h120v640H680Z" />
+                    </svg> */}
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="18px"
+                      viewBox="0 -960 960 960"
+                      width="18px"
+                      className="fill-green-500"
+                    >
+                      <path d="M120-200q-17 0-28.5-11.5T80-240q0-17 11.5-28.5T120-280h200v-200q0-17 11.5-28.5T360-520h200v-200q0-17 11.5-28.5T600-760h240q17 0 28.5 11.5T880-720q0 17-11.5 28.5T840-680H640v200q0 17-11.5 28.5T600-440H400v200q0 17-11.5 28.5T360-200H120Z" />
                     </svg>
                     <p className="ml-2">
                       {dataPath.data.roadmap[index].course.level}
