@@ -36,8 +36,6 @@ export const createAssigment = async (data: FormData, id: string) => {
   }
 };
 
-//
-
 export const getAssigmentAdmin = async (
   id: string
 ): Promise<AssignmentResponse> => {
@@ -58,11 +56,38 @@ export const getAssigmentAdmin = async (
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching classroom details:", error);
+    console.error("Error fetching Assigment :", error);
     throw error;
   }
 };
 
+export const deleteAssigmentAdmin = async (
+  idClassroom: string,
+  idAssigment: string
+): Promise<AssignmentResponse> => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/v1/admin/classrooms/${idClassroom}/assignments/${idAssigment}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting assignment:", error);
+    throw error;
+  }
+};
+
+// --- hapus nanti
 export const getAssigmentLecture = async (
   id: string
 ): Promise<AssignmentResponse> => {
