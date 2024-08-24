@@ -18,10 +18,6 @@ import {
   getDetailClassroomLecture,
 } from "@/app/api/admin/api-kelas/getDetail-kelas";
 
-import {
-  getAssigment,
-  getAssigmentLecture,
-} from "@/app/api/admin/api-kelas/tugas/getAll-Assigment";
 import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
@@ -32,7 +28,7 @@ import {
 } from "@/app/api/admin/api-kelas/presensi/updatePresence";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-//
+import { getAssigmentAdmin } from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -43,7 +39,6 @@ const DashboardDetailKelasPage = () => {
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
 
   // modal --
-
   const handleOpenModal = (presence: Presence) => {
     setSelectedMeeting(presence);
     setIsModalOpen(true);
@@ -106,7 +101,7 @@ const DashboardDetailKelasPage = () => {
 
       if (role_user === "superadmin" || role_user === "admin") {
         getClassroomDetails = getDetailClassroom(parts[4]);
-        getAssignments = getAssigment(parts[4]);
+        getAssignments = getAssigmentAdmin(parts[4]);
       } else if (role_user === "lecture" || role_user === "assistant") {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
 
@@ -131,7 +126,7 @@ const DashboardDetailKelasPage = () => {
 
       setKelas(formatData(response.data));
       // KALO UDAH ADA APINYA PERLU GANTI
-      // setTugas(formatData(responseAssigment.data));
+      setTugas(formatData(responseAssigment.data));
     } catch (error) {
       setError("Failed to fetch classrooms");
     } finally {
@@ -972,7 +967,12 @@ const DashboardDetailKelasPage = () => {
                       />
                     </div>
                     <Link
-                      href={`${kelasItem.classroom.id}/tambah-tugas`}
+                      href={{
+                        pathname: `${kelasItem.classroom.id}/tambah-tugas`,
+                        query: {
+                          idClassroom: `${kelasItem.classroom.id}`,
+                        },
+                      }}
                       className="w-max bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
                     >
                       + Tambah Tugas
@@ -1091,6 +1091,14 @@ const DashboardDetailKelasPage = () => {
                                       <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                                     </svg>
                                   </Link>
+                                  <span className="flex justify-center items-center text-xs font-medium w-full h-[2rem] rounded-full text-center  text-blue-800 bg-blue-100">
+                                    <Link
+                                      className="flex items-center justify-center text-center"
+                                      href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
+                                    >
+                                      Penilaian
+                                    </Link>
+                                  </span>
                                 </div>
                               </td>
                             </tr>

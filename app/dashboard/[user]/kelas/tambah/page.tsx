@@ -180,8 +180,6 @@ const DashboardTambahKelasPage: React.FC = () => {
     }
   };
 
-  // console.log("Form data to be submitted:", formData);
-
   return (
     <>
       <form className="max-w-5xl flex flex-col gap-4" onSubmit={handleSubmit}>
