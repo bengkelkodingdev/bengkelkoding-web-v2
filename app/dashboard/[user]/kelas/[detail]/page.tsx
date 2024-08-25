@@ -51,12 +51,12 @@ const DashboardDetailKelasPage = () => {
   const { dayNameStart, timeStart, dateStart } = formatDateStart();
   const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
 
-  // chart
   const sections = [
     { id: "pertemuan", label: "Pertemuan" },
     { id: "mahasiswa", label: "Mahasiswa" },
     { id: "tugas", label: "Tugas" },
     { id: "kursus", label: "Kursus" },
+    { id: "informasi", label: "Informasi" },
   ];
 
   const chartOptions: ApexCharts.ApexOptions = {
@@ -100,8 +100,6 @@ const DashboardDetailKelasPage = () => {
       ),
     },
   };
-
-  // end chart
 
   // modal --
   const handleOpenModal = (presence: Presence) => {
@@ -1161,6 +1159,43 @@ const DashboardDetailKelasPage = () => {
               {/* Kursus */}
               {activeSection === "kursus" && (
                 <div id="kursus" className="mx-auto">
+                  {/* list kursus */}
+                  <div className="col-span-2">
+                    <div className="flex flex-col gap-2">
+                      {/* list kursus */}
+                      {kelasItem.courses.map((courses, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
+                        >
+                          <Image
+                            src={"/img/kursus-image-1.png"}
+                            alt={""}
+                            width={180}
+                            height={140}
+                            loading="lazy"
+                          />
+                          <div className="py-3 px-4">
+                            <h4 className="text-primary1 font-medium">
+                              {courses.title}
+                            </h4>
+                            <p className="text-neutral3 text-sm">
+                              {courses.author}
+                            </p>
+                            <p className="text-neutral2 text-sm mt-2">
+                              {courses.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Informasi Kelas */}
+              {activeSection === "informasi" && (
+                <div id="informasi" className="mx-auto">
                   {/* list kursus */}
                   <div className="col-span-2">
                     <div className="flex flex-col gap-2">
