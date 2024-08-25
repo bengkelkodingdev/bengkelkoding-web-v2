@@ -1,4 +1,5 @@
 import { logout } from "@/app/api/auth";
+import { getProfile } from "@/app/api/general";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
@@ -36,6 +37,23 @@ const StudentHeader = () => {
     };
   }, []); // Attach event listener once on mount
 
+  const [profile, setProfile] = useState({
+    id: 0,
+    identity_code: "",
+    name: "",
+    email: "",
+    role: "",
+    image: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const responseProfile = await getProfile();
+      setProfile(responseProfile.data);
+    };
+    fetchData();
+  }, []);
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -63,18 +81,26 @@ const StudentHeader = () => {
             className="w-10 h-10 rounded-full overflow-hidden cursor-pointer"
             onClick={toggleDropdown}
           >
-            <Image src={"/"} alt="Photo Profile" width={100} height={100} />
+            <Image
+              src={profile.image}
+              alt="Photo Profile"
+              width={100}
+              height={100}
+            />
           </div>
           {/* Dropdown Menu */}
           {dropdownVisible && (
             <div
               id="userDropdown"
-              className="absolute right-0 mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow overflow-hidden"
+              className="absolute right-0 mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow overflow-hidden min-w-48"
             >
-              <div className="px-4 py-3 text-sm text-gray-900">
-                <p className="text-xs md:text-sm">Bonnie Green</p>
-                <p className="text-xs md:text-sm font-medium">
-                  name@flowbite.com
+              <div className="px-4 py-3 text-sm text-gray-900 flex flex-col gap-1">
+                <p className="text-xs md:text-sm font-medium">{profile.name}</p>
+                <p className="text-xs md:text-sm">
+                  {profile.email}
+                </p>
+                <p className="text-xs md:text-sm">
+                  {profile.identity_code}
                 </p>
               </div>
               <ul
