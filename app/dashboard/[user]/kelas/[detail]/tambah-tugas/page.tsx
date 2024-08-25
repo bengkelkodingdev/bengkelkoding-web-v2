@@ -41,6 +41,9 @@ export default function DetailTambahKelas() {
     useState<string>("");
   const [formattedEndDateTime, setFormattedEndDateTime] = useState<string>("");
 
+  // status upload data
+  const [isStatus, setIsStatus] = useState(false);
+
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
@@ -134,7 +137,7 @@ export default function DetailTambahKelas() {
     }
     formData.append("start_time", start_time);
     formData.append("deadline", deadline);
-
+    setIsStatus(true);
     try {
       if (idAssignment) {
         // Update tugas jika dalam mode edit
@@ -160,44 +163,10 @@ export default function DetailTambahKelas() {
         console.error("Failed to save assignment:", error);
         toast.error("Gagal menyimpan tugas");
       }
+    } finally {
+      setIsStatus(false);
     }
   };
-
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   if (!IdClassroom) {
-  //     console.error("Classroom ID not found");
-  //     return;
-  //   }
-
-  //   const formData = new FormData();
-  //   formData.append("title", judul);
-  //   formData.append("type", jenis);
-  //   formData.append("description", description);
-  //   if (file) {
-  //     console.log("File selected:", file);
-  //     formData.append("file", file);
-  //   }
-  //   formData.append("start_time", start_time);
-  //   formData.append("deadline", deadline);
-  //   formData.append("created_at", new Date().toISOString());
-  //   formData.append("updated_at", new Date().toISOString());
-
-  //   try {
-  //     const response = await createAssigment(formData, IdClassroom); // Kirim FormData
-  //     toast.success(`Berhasil menambahkan tugas 😁`);
-  //     window.location.href = `./`;
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error) && error.response) {
-  //       console.error("Error response data:", error.response.data);
-  //       toast.error(`Gagal menambahkan tugas`);
-  //     } else {
-  //       console.error("Failed to create assignment:", error);
-  //       toast.error(`Gagal menambahkan tugas`);
-  //     }
-  //   }
-  // };
 
   return (
     <>
@@ -315,11 +284,22 @@ export default function DetailTambahKelas() {
             />
           </div>
         </div>
-        <div className="text-start">
+        <div className="text-start flex gap-12">
           <Button
             text={idAssignment ? "Update Tugas" : "Tambah Tugas"}
             type="submit"
+            disabled={isStatus}
           />
+          {isStatus ? (
+            <div className="flex space-x-2 justify-center items-center">
+              <span className="sr-only">Loading...</span>
+              <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       </form>
       <ToastContainer />
