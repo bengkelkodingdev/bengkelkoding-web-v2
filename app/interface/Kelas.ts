@@ -60,7 +60,7 @@ export interface ClassFormData {
   uas_percent: number;
   start_date: string;
   max_absent: number;
-  jml_pertemuan: number;
+  total_class_session: number;
 }
 
 export interface Presence {
@@ -102,6 +102,10 @@ export interface Assignment {
   start_time: string;
   file: string | null;
   deadline: string;
+  student: {
+    total_submitted: number;
+    student_need_to_submit: number;
+  };
 }
 
 export interface AssignmentResponse {

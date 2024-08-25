@@ -6,4 +6,4 @@ import { createRequest } from "../request";
 export const getAllClassroomAdmin1 = async (
   access_token: string
 ): Promise<AxiosResponse> =>
-  createRequest(access_token, `api/v2/admin/classrooms`);
+  createRequest(access_token, `api/v1/admin/classrooms`);

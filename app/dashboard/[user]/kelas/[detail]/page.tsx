@@ -1084,7 +1084,8 @@ const DashboardDetailKelasPage = () => {
                                 </span>
                               </td>
                               <td className="px-6 py-4 text-center font-semibold">
-                                {index + 3}/12
+                                {tugasItem.student.total_submitted} /{" "}
+                                {tugasItem.student.student_need_to_submit}
                               </td>
 
                               <td className="px-6 py-4">

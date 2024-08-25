@@ -14,7 +14,7 @@ export const getAllClassroom = async (): Promise<KelasRespon> => {
   }
 
   try {
-    const response = await axios.get(`${API_URL}/api/v2/admin/classrooms`, {
+    const response = await axios.get(`${API_URL}/api/v1/admin/classrooms`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },

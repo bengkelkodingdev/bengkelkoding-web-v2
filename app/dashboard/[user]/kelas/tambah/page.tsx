@@ -32,7 +32,7 @@ const DashboardTambahKelasPage: React.FC = () => {
     uas_percent: undefined,
     start_date: "",
     max_absent: undefined,
-    jml_pertemuan: undefined,
+    total_class_session: undefined,
   });
 
   const [selectedDosenId, setSelectedDosenId] = useState<number | undefined>(
@@ -151,7 +151,7 @@ const DashboardTambahKelasPage: React.FC = () => {
           name === "uts_percent" ||
           name === "uas_percent" ||
           name === "max_absent" ||
-          name === "jml_pertemuan"
+          name === "total_class_session"
             ? value === ""
               ? undefined
               : Number(value)
@@ -417,8 +417,8 @@ const DashboardTambahKelasPage: React.FC = () => {
             <Input
               type="number"
               label="Jumlah Pertemuan"
-              name="jml_pertemuan"
-              value={formData.jml_pertemuan}
+              name="total_class_session"
+              value={formData.total_class_session}
               onChange={handleChange}
               required
             />

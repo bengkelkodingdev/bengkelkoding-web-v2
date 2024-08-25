@@ -15,7 +15,7 @@ export const getDetailClassroom = async (
 
   try {
     const response = await axios.get(
-      `${API_URL}/api/v2/admin/classrooms/${id}/detail`,
+      `${API_URL}/api/v1/admin/classrooms/${id}/detail`,
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
