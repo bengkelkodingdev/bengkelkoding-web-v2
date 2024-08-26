@@ -1,33 +1,22 @@
 "use client";
-import Nav from "@/app/component/dashboard/admin/Nav";  // makek admin dulu
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import StudentFooter from "@/app/component/dashboard/student/Footer";
+import StudentHeader from "@/app/component/dashboard/student/Header";
+import React from "react";
 
-const StudentDashboard = ({ children }: { children: React.ReactNode }) => {
-  const url = usePathname();
-  const parts = url.split("/");
-  const userRole = parts[2];
-  
-  const validRoles = ["student"];
-  const accessed = validRoles.includes(userRole);
+interface LayoutProps {
+  children: React.ReactNode;
+}
 
-  const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setSidebarIsOpen(!sidebarIsOpen);
-  };
-
-  return accessed ? (
+const Layout = ({ children }: LayoutProps) => {
+  return (
     <div>
-      <Nav open={sidebarIsOpen} setOpen={toggleSidebar} />
-
-      <div className="min-h-screen px-2 py-4 lg:p-4">
-        <main className="mt-14">{children}</main>
-      </div>
+      <StudentHeader />
+      <main className="min-h-screen mt-4 max-w-6xl mx-auto px-2 lg:px-4 py-4">
+        {children}
+      </main>
+      <StudentFooter />
     </div>
-  ) : (
-    <div>Page Not Found</div>
   );
 };
 
-export default StudentDashboard;
+export default Layout;
