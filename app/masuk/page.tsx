@@ -24,7 +24,7 @@ const MasukPage = () => {
   const roleToPath = {
     student: "/dashboard/student",
     assistant: "/dashboard/assistant",
-    lecture: "/dashboard/lecture",
+    lecture: "/dashboard/dosen",
     admin: "/dashboard/admin",
     superadmin: "/dashboard/superadmin",
   };
@@ -45,6 +45,7 @@ const MasukPage = () => {
       if (response.meta.success) {
         // set cookie
         Cookies.set("access_token", response.token);
+        Cookies.set("user", response.data.role);
         // push to dashboard
         const path =
           roleToPath[response.data.role as keyof typeof roleToPath] || "/";

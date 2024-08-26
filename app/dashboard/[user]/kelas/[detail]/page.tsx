@@ -36,7 +36,7 @@ import {
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
   const parts = url.split("/");
-  const role_user = Cookies.get("user_role");
+  const role_user = Cookies.get("user");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
@@ -177,10 +177,12 @@ const DashboardDetailKelasPage = () => {
         // getAssignments = getAssigmentLecture(parts[4]);
       }
 
-      const [response, responseAssigment] = await Promise.all([
-        getClassroomDetails,
-        getAssignments,
-      ]);
+      const [response] = await Promise.all([getClassroomDetails]);
+
+      // const [response, responseAssigment] = await Promise.all([
+      //   getClassroomDetails,
+      //   getAssignments,
+      // ]);
 
       const formatData = (data) => {
         if (Array.isArray(data)) {
@@ -194,7 +196,7 @@ const DashboardDetailKelasPage = () => {
 
       setKelas(formatData(response.data));
       // KALO UDAH ADA APINYA PERLU GANTI
-      setTugas(formatData(responseAssigment.data));
+      // setTugas(formatData(responseAssigment.data));
     } catch (error) {
       setError("Failed to fetch classrooms");
     } finally {

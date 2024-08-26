@@ -15,7 +15,7 @@ import SkletonListKelas from "@/app/component/skleton/SkletonListKelas";
 const HomeDashboardKelasPage = () => {
   // token
   const access_token = Cookies.get("access_token");
-  const role_user = Cookies.get("user_role");
+  const role_user = Cookies.get("user");
 
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -70,6 +70,7 @@ const HomeDashboardKelasPage = () => {
     fetchClassrooms();
   }, []);
 
+  console.log("ini rolenya", role_user);
   useEffect(() => {
     // Jika searchTerm kosong, gunakan semua data kelas
     if (!searchTerm) {

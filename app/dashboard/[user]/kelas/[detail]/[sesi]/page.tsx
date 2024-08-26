@@ -37,7 +37,7 @@ const DetailKelasPageSesi = () => {
   const detail = params.detail;
 
   const access_token = Cookies.get("access_token");
-  const role_user = Cookies.get("user_role");
+  const role_user = Cookies.get("user");
 
   // state qr
   const [qrText, setQrText] = useState<string>("");

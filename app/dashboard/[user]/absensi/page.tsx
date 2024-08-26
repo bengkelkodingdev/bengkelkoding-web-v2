@@ -45,7 +45,7 @@ const StatusFilterDropdown = ({
 
 const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
-  const role_user = Cookies.get("user_role");
+  const role_user = Cookies.get("user");
 
   const [keterangan, setKeterangan] = useState("");
   const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
