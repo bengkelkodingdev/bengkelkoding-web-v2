@@ -4,6 +4,7 @@ import {
   getStudentClassrooms,
   getStudentStatistics,
 } from "@/app/api/student/dashboard";
+import { formatDate } from "@/app/lib/formatDate";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -70,25 +71,6 @@ const StudentPage = () => {
     };
     fetchData();
   }, []);
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) {
-      return "N/A";
-    }
-
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return "Invalid Date";
-    }
-
-    return new Intl.DateTimeFormat("id-ID", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-6">
