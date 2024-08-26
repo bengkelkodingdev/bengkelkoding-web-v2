@@ -19,7 +19,6 @@ export const createRequest = async (url: string): Promise<AxiosResponse> => {
 
 // post request
 export const createPostRequest = async (
-  access_token: string,
   url: string,
   data: any
 ): Promise<AxiosResponse> => {

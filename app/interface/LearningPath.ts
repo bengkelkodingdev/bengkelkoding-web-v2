@@ -61,7 +61,6 @@ export interface ListKelasPathResponse {
 // Define the main response interface
 export interface PathResponse {
   data: DataPath;
-  meta: Meta;
 }
 
 export interface MenuPath {

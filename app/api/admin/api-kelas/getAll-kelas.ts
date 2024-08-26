@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import { KelasRespon } from "@/app/interface/Kelas";
-import { createRequest } from "../../request";
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 

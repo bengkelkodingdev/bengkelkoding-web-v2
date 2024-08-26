@@ -74,11 +74,11 @@ const HomeDashboardAbsensiPage = () => {
   const fetchData = async () => {
     // get All data
     if (role_user === "superadmin" || role_user === "admin") {
-      let response = await getAllAbsence(access_token);
+      let response = await getAllAbsence();
       setDataAbsence(response.data);
       countStatus(response.data);
     } else if (role_user === "lecture" || role_user === "assistent") {
-      let response = await getAllAbsenceLecture(access_token);
+      let response = await getAllAbsenceLecture();
       setDataAbsence(response.data);
       countStatus(response.data);
     }
@@ -124,7 +124,6 @@ const HomeDashboardAbsensiPage = () => {
 
       try {
         const response = await postUpdateStatusAbsenceAdmin(
-          access_token,
           selectedIdClassroom,
           selectedIdAbsence,
           status, // Status 2 for "Approved" and 3 for "Rejected"

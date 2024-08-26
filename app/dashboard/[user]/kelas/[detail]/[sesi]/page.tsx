@@ -93,7 +93,6 @@ const DetailKelasPageSesi = () => {
       try {
         if (role_user == "superadmin" || role_user == "admin") {
           const response = await postUpdateStatusAbsenceAdmin(
-            access_token,
             selectedIdClassroom,
             selectedIdAbsence,
             status, // Status 2 for "Approved" and 3 for "Rejected"
@@ -107,7 +106,6 @@ const DetailKelasPageSesi = () => {
           setIsKetModalOpen(false);
         } else if (role_user == "lecture" || role_user == "assistent") {
           const response = await postUpdateStatusAbsenceLecture(
-            access_token,
             selectedIdClassroom,
             selectedIdAbsence,
             status, // Status 2 for "Approved" and 3 for "Rejected"
