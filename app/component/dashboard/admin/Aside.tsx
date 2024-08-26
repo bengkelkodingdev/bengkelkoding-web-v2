@@ -531,7 +531,7 @@ const Aside = ({ user, open, setOpen }: asideProps) => {
     const token = access_token;
     if (token) {
       try {
-        await apiLogout(token);
+        await apiLogout();
         Cookies.remove("access_token");
         window.location.href = "/";
       } catch (error) {
