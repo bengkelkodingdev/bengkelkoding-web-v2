@@ -142,6 +142,46 @@ const HomePage = () => {
     fetchData();
   }, [activeIdPath]);
 
+  const pathNavRef = useRef<HTMLDivElement>(null);
+
+  const pathNavScrollLeft = () => {
+    if (pathNavRef.current) {
+      pathNavRef.current.scrollBy({
+        left: -224,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const pathNavScrollRight = () => {
+    if (pathNavRef.current) {
+      pathNavRef.current.scrollBy({
+        left: 224,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const courseRef = useRef<HTMLDivElement>(null);
+
+  const courseScrollLeft = () => {
+    if (courseRef.current) {
+      courseRef.current.scrollBy({
+        left: -224,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const courseScrollRight = () => {
+    if (courseRef.current) {
+      courseRef.current.scrollBy({
+        left: 224,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <div className="bg-[#f7f9fa] z-50">
       <Header />
@@ -233,7 +273,7 @@ const HomePage = () => {
                 viewBox="0 -960 960 960"
                 width="40px"
               >
-                <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80H240Zm0-80h480v-640h-80v245q0 12-10 17.5t-20-.5l-49-30q-10-6-20.5-6t-20.5 6l-49 30q-10 6-20.5.5T440-555v-245H240v640Zm0 0v-640 640Zm200-395q0 12 10.5 17.5t20.5-.5l49-30q10-6 20.5-6t20.5 6l49 30q10 6 20 .5t10-17.5q0 12-10 17.5t-20-.5l-49-30q-10-6-20.5-6t-20.5 6l-49 30q-10 6-20.5.5T440-555Z" />
+                <path d="M440-400h80q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480h-80q-17 0-28.5 11.5T400-440q0 17 11.5 28.5T440-400Zm0-120h240q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H440q-17 0-28.5 11.5T400-560q0 17 11.5 28.5T440-520Zm0-120h240q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H440q-17 0-28.5 11.5T400-680q0 17 11.5 28.5T440-640ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-520q0-17 11.5-28.5T120-720q17 0 28.5 11.5T160-680v520h520q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H160Zm160-720v480-480Z" />
               </svg>
             </div>
             <div>
@@ -340,21 +380,46 @@ const HomePage = () => {
 
         {/* Overview Kursus di Bengkel Koding */}
         <article className="max-w-5xl py-10 mx-auto">
-          {/* Navigasi untuk Filter Konten */}
-          {/* <nav className="ml-10 flex">
-            <div className="bg-white text-primary1 font-medium px-4 py-2 rounded-t-md cursor-pointer">
-              <p>Kursus</p>
-            </div>
-            <div className="bg-gray-100 font-medium px-4 py-2 rounded-t-md cursor-pointer hover:bg-white hover:text-primary1">
-              <p>Workshop</p>
-            </div>
-          </nav> */}
-          <nav className="flex gap-2 mb-4 overflow-x-scroll no-scrollbar">
+          {/* Next Prev Navigation Path */}
+          <div className="hidden lg:block">
+            <button
+              className="fill-neutral3 hover:fill-neutral1"
+              onClick={pathNavScrollLeft}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="32px"
+                viewBox="0 -960 960 960"
+                width="32px"
+              >
+                <path d="M472-440h128q17 0 28.5-11.5T640-480q0-17-11.5-28.5T600-520H472l36-36q11-11 11-28t-11-28q-11-11-28-11t-28 11L348-508q-12 12-12 28t12 28l104 104q11 11 28 11t28-11q11-11 11-28t-11-28l-36-36Zm8 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+              </svg>
+            </button>
+            <button
+              className="fill-neutral3 hover:fill-neutral1"
+              onClick={pathNavScrollRight}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="32px"
+                viewBox="0 -960 960 960"
+                width="32px"
+              >
+                <path d="m488-440-36 36q-11 11-11 28t11 28q11 11 28 11t28-11l104-104q12-12 12-28t-12-28L508-612q-11-11-28-11t-28 11q-11 11-11 28t11 28l36 36H360q-17 0-28.5 11.5T320-480q0 17 11.5 28.5T360-440h128Zm-8 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+              </svg>
+            </button>
+          </div>
+          {/* Navigation Path */}
+          <nav
+            ref={pathNavRef}
+            className="flex gap-1 md:gap-2 mb-2 md:mb-4 overflow-x-scroll no-scrollbar"
+          >
             {listPaths.map((path) => (
               <div
                 key={path.id}
-                className={`min-w-48 hover:min-w-56 p-6 border rounded-md cursor-pointer text-white text-center font-semibold transition-all ease-in-out duration-200 ${
-                  path.id == pathDetail.id && "min-w-56"
+                className={`min-w-40 md:min-w-52 lg:min-w-56 flex items-center justify-center hover:min-w-44 md:hover:min-w-56 lg:hover:min-w-60 opacity-80 hover:opacity-100 p-4 md:p-6 border rounded-md cursor-pointer text-white text-center text-sm md:text-base font-semibold transition-all ease-in-out duration-200 ${
+                  path.id == pathDetail.id &&
+                  "min-w-44 md:min-w-56 lg:min-w-60 opacity-[1]"
                 }`}
                 style={{
                   backgroundImage: `url(${path.image})`,
@@ -368,7 +433,7 @@ const HomePage = () => {
             ))}
             <Link
               href={"/learning-path"}
-              className="min-w-48 hover:min-w-56 p-6 border rounded-md cursor-pointer text-white text-center font-semibold transition-all ease-in-out duration-200"
+              className="min-w-44 flex items-center justify-center hover:min-w-60 p-6 border rounded-md cursor-pointer text-white text-center font-semibold transition-all ease-in-out duration-200"
               style={{
                 backgroundImage: "url(/img/landing-nav-learningpath.png)",
                 backgroundSize: "cover",
@@ -379,13 +444,15 @@ const HomePage = () => {
             </Link>
           </nav>
 
-          <div className="bg-white rounded-xl px-6 py-5 flex flex-col md:flex-row">
+          <div className="bg-white rounded-xl p-4 md:px-6 md:py-5 flex flex-col md:flex-row gap-2 md:gap-4">
             {/* Deskripsi Singkat */}
-            <div className="md:w-[28%] py-4 flex flex-col justify-between">
+            <div className="md:w-[30%] py-2 md:py-4 flex flex-col justify-between">
               <div>
-                <h4 className="text-xl font-semibold">{pathDetail.name}</h4>
-                <div className="flex flex-col gap-1 mt-4">
-                  <div className="text-sm flex items-center gap-1">
+                <h4 className="text-lg md:text-xl font-semibold">
+                  {pathDetail.name}
+                </h4>
+                <div className="flex flex-col gap-2 mt-3 md:mt-4">
+                  <div className="flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="18px"
@@ -395,11 +462,11 @@ const HomePage = () => {
                     >
                       <path d="M440-400h80q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480h-80q-17 0-28.5 11.5T400-440q0 17 11.5 28.5T440-400Zm0-120h240q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H440q-17 0-28.5 11.5T400-560q0 17 11.5 28.5T440-520Zm0-120h240q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H440q-17 0-28.5 11.5T400-680q0 17 11.5 28.5T440-640ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-520q0-17 11.5-28.5T120-720q17 0 28.5 11.5T160-680v520h520q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H160Zm160-720v480-480Z" />
                     </svg>
-                    <p className="text-neutral1 font-medium">
+                    <p className="text-neutral1 font-medium text-xs md:text-sm">
                       {pathDetail.classroom_count} Kursus
                     </p>
                   </div>
-                  <div className="text-sm flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="18px"
@@ -410,41 +477,53 @@ const HomePage = () => {
                       <path d="M0 0h24v24H0V0z" fill="none" />
                       <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
                     </svg>
-                    <p className="text-neutral1 font-medium">
+                    <p className="text-neutral1 font-medium text-xs md:text-sm ">
                       {pathDetail.student_count} Mahasiswa
                     </p>
                   </div>
                 </div>
-                <p className="text-neutral1 mt-4">{pathDetail.description}</p>
+                <p className="text-neutral1 mt-3 md:mt-4 text-xs md:text-sm">
+                  {pathDetail.description}
+                </p>
               </div>
 
               {/* Navigation to Right/Left */}
-              {/* <div className="flex gap-2">
-                <div className="fill-neutral1 border rounded-full p-2 hover:bg-neutral5 cursor-pointer">
+              <div className="hidden lg:flex">
+                <button
+                  className="fill-neutral3 hover:fill-neutral1"
+                  onClick={courseScrollLeft}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
+                    height="32px"
                     viewBox="0 -960 960 960"
-                    width="24px"
+                    width="32px"
                   >
-                    <path d="M526-314 381-459q-5-5-7-10t-2-11q0-6 2-11t7-10l145-145q3-3 6.5-4.5t7.5-1.5q8 0 14 5.5t6 14.5v304q0 9-6 14.5t-14 5.5q-2 0-14-6Z" />
+                    <path d="M472-440h128q17 0 28.5-11.5T640-480q0-17-11.5-28.5T600-520H472l36-36q11-11 11-28t-11-28q-11-11-28-11t-28 11L348-508q-12 12-12 28t12 28l104 104q11 11 28 11t28-11q11-11 11-28t-11-28l-36-36Zm8 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
                   </svg>
-                </div>
-                <div className="fill-neutral1 border rounded-full p-2 hover:bg-neutral5 cursor-pointer">
+                </button>
+                <button
+                  className="fill-neutral3 hover:fill-neutral1"
+                  onClick={courseScrollRight}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
+                    height="32px"
                     viewBox="0 -960 960 960"
-                    width="24px"
+                    width="32px"
                   >
-                    <path d="M420-308q-8 0-14-5.5t-6-14.5v-304q0-9 6-14.5t14-5.5q2 0 14 6l145 145q5 5 7 10t2 11q0 6-2 11t-7 10L434-314q-3 3-6.5 4.5T420-308Z" />
+                    <path d="m488-440-36 36q-11 11-11 28t11 28q11 11 28 11t28-11l104-104q12-12 12-28t-12-28L508-612q-11-11-28-11t-28 11q-11 11-11 28t11 28l36 36H360q-17 0-28.5 11.5T320-480q0 17 11.5 28.5T360-440h128Zm-8 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
                   </svg>
-                </div>
-              </div> */}
+                </button>
+              </div>
             </div>
+
             {/* Get List Course */}
-            <div className="md:w-[70%] flex overflow-scroll no-scrollbar py-4">
-              <div className="flex gap-3">
+            <div
+              ref={courseRef}
+              className="md:w-[70%] flex overflow-scroll no-scrollbar py-1 md:py-4"
+            >
+              <div className="flex gap-2 md:gap-3">
                 {pathDetail.courses.map((course) => (
                   <Link
                     key={course.id}
@@ -458,9 +537,11 @@ const HomePage = () => {
                       height={250}
                     />
                     <div className="p-4">
-                      <strong className="font-semibold">{course.title}</strong>
-                      <div className="flex gap-4">
-                        <div className="text-sm flex items-center gap-1">
+                      <strong className="block font-semibold text-sm md:text-base mb-1">
+                        {course.title}
+                      </strong>
+                      <div className="flex gap-3 md:gap-4">
+                        <div className="text-xs md:text-sm flex items-center gap-1">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             height="18px"
@@ -471,11 +552,11 @@ const HomePage = () => {
                             <path d="M0 0h24v24H0V0z" fill="none" />
                             <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
                           </svg>
-                          <p className="text-neutral1 text-sm font-semibold">
+                          <p className="text-neutral1 text-xs md:text-sm font-semibold">
                             {course.student_count}
                           </p>
                         </div>
-                        <div className="text-sm flex items-center gap-1">
+                        <div className="text-xs md:text-sm flex items-center gap-1">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             enable-background="new 0 0 24 24"
@@ -492,11 +573,11 @@ const HomePage = () => {
                               <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
                             </g>
                           </svg>
-                          <p className="text-neutral1 text-sm font-semibold">
+                          <p className="text-neutral1 text-xs md:text-sm font-semibold">
                             {course.rating}
                           </p>
                         </div>
-                        <div className="text-sm flex items-center gap-1">
+                        <div className="text-xs md:text-sm flex items-center gap-1">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             height="18px"
@@ -506,12 +587,12 @@ const HomePage = () => {
                           >
                             <path d="M120-200q-17 0-28.5-11.5T80-240q0-17 11.5-28.5T120-280h200v-200q0-17 11.5-28.5T360-520h200v-200q0-17 11.5-28.5T600-760h240q17 0 28.5 11.5T880-720q0 17-11.5 28.5T840-680H640v200q0 17-11.5 28.5T600-440H400v200q0 17-11.5 28.5T360-200H120Z" />
                           </svg>
-                          <p className="text-neutral1 text-sm font-semibold">
+                          <p className="text-neutral1 text-xs md:text-sm font-semibold">
                             {course.level}
                           </p>
                         </div>
                       </div>
-                      <p className="text-sm text-neutral1 mt-2">
+                      <p className="text-xs md:text-sm text-neutral1 mt-2">
                         {course.brief_description}
                       </p>
                     </div>
@@ -536,10 +617,10 @@ const HomePage = () => {
                 height={100}
               />
             </div>
-            <strong className="text-xl font-semibold">
+            <strong className="text-lg md:text-xl font-semibold">
               Kenal lebih dekat dengan Bengkel Koding!
             </strong>
-            <p>
+            <p className="text-sm md:text-base">
               Program ini adalah inisiatif dari{" "}
               <i>
                 Program Studi Teknik Informatika Universitas Dian Nuswantoro
@@ -569,12 +650,12 @@ const HomePage = () => {
               {testimonies.map((t, index) => (
                 <div
                   key={index}
-                  className="min-w-80 text-neutral1 bg-white p-4 rounded-lg"
+                  className="min-w-80 text-neutral1 bg-white p-4 rounded-lg flex flex-col justify-between"
                 >
                   {/* feedback */}
                   <div className="mb-4">
-                    <strong className="text-lg">{t.title}</strong>
-                    <p className="text-sm">{t.comment}</p>
+                    <strong className="text-sm md:text-lg">{t.title}</strong>
+                    <p className="text-xs md:text-sm">{t.comment}</p>
                   </div>
                   {/* mahasiswa */}
                   <div className="text-xs text-right flex justify-between items-center">
@@ -595,7 +676,7 @@ const HomePage = () => {
                           <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
                         </g>
                       </svg>
-                      {t.rating}
+                      <p className="text-xs">{t.rating}</p>
                     </strong>
                     <strong className="text-xs">{t.student_name}</strong>
                   </div>
@@ -607,7 +688,7 @@ const HomePage = () => {
 
         {/* FAQ */}
         <article className="max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col justify-between items-center py-10 2xl:py-20 gap-6">
-          <h3 className="text-xl lg:text-2xl font-semibold">
+          <h3 className="text-xl lg:text-2xl font-semibold text-center">
             Pertanyaan yang Sering Ditanyakan
           </h3>
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-2">

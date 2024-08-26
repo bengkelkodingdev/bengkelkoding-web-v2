@@ -22,13 +22,14 @@ const KelasPage = () => {
       background_image: "",
       tools: "",
       rating: 0,
+      level: "",
       student_count: 0,
     },
   ]);
 
   const toolsArray = (tools: string) => {
-    const data = tools.split(", ");
-    return data.map((d, index) => (
+    const data = tools?.split(", ");
+    return data?.map((d, index) => (
       <p
         key={index}
         className="text-xs bg-primary5 text-primary1 px-2 py-0.5 rounded-sm"
@@ -120,7 +121,7 @@ const KelasPage = () => {
                   />
                   <div className="mt-2 flex flex-col justify-between gap-1">
                     {/* Judul Kursus */}
-                    <p className="font-semibold text-primary1 text-lg">
+                    <p className="font-semibold text-base md:text-lg">
                       {k.title}
                     </p>
 
@@ -137,7 +138,7 @@ const KelasPage = () => {
                           <path d="M0 0h24v24H0V0z" fill="none" />
                           <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z" />
                         </svg>
-                        <p className="text-neutral1 font-semibold">
+                        <p className="text-neutral1 font-semibold text-sm md:text-base">
                           {k.student_count}
                         </p>
                       </div>
@@ -158,7 +159,7 @@ const KelasPage = () => {
                             <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z" />
                           </g>
                         </svg>
-                        <p className="text-neutral1 font-semibold">
+                        <p className="text-neutral1 font-semibold text-sm md:text-base">
                           {k.rating}
                         </p>
                       </div>
@@ -172,8 +173,8 @@ const KelasPage = () => {
                         >
                           <path d="M120-200q-17 0-28.5-11.5T80-240q0-17 11.5-28.5T120-280h200v-200q0-17 11.5-28.5T360-520h200v-200q0-17 11.5-28.5T600-760h240q17 0 28.5 11.5T880-720q0 17-11.5 28.5T840-680H640v200q0 17-11.5 28.5T600-440H400v200q0 17-11.5 28.5T360-200H120Z" />
                         </svg>
-                        <p className="text-neutral1 font-semibold">
-                          {k.rating}
+                        <p className="text-neutral1 font-semibold text-sm md:text-base">
+                          {k.level}
                         </p>
                       </div>
                     </div>
@@ -188,7 +189,7 @@ const KelasPage = () => {
             ))
           ) : (
             <div className="w-full mx-auto col-span-3 text-center">
-              <p className="text-3xl my-4">😔</p>
+              <p className="text-2xl md:text-3xl my-4">😔</p>
               <h2 className="font-semibold text-lg md:text-xl">
                 Upss, kursus tidak ditemukan
               </h2>

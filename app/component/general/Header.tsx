@@ -22,7 +22,7 @@ const Header = () => {
     },
     {
       link: "kursus",
-      text: "Kursus",
+      text: "Semua Kursus",
     },
   ];
 

@@ -15,7 +15,32 @@ export const getDetailClassroom = async (
 
   try {
     const response = await axios.get(
-      `${API_URL}/api/v2/admin/classrooms/${id}/detail`,
+      `${API_URL}/api/v1/admin/classrooms/${id}/detail`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching classroom details:", error);
+    throw error;
+  }
+};
+
+export const getDetailClassroomLecture = async (
+  id: string
+): Promise<ClassRoomRespon> => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/v1/lecture/classrooms/${id}/detail`,
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
