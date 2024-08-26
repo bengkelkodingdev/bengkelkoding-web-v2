@@ -1,19 +1,31 @@
 "use client";
-import { getAllClassroom } from "@/app/api/admin/api-kelas/getAll-kelas";
+import {
+  getAllClassroomAdmin,
+  getAllClassroomLecture,
+} from "@/app/api/admin/api-kelas/getAll-kelas";
 import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditFormKelas from "@/app/component/general/EditFormKelas";
 
+import Cookies from "js-cookie";
+import SkletonListKelas from "@/app/component/skleton/SkletonListKelas";
+
 const HomeDashboardKelasPage = () => {
-  // const router = useRouter();
-  // const { user } = router.query;
+  // token
+  const access_token = Cookies.get("access_token");
+  const role_user = Cookies.get("user_role");
+
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [allClassrooms, setAllClassrooms] = useState<Kelas[]>([]);
+  const [filteredClassrooms, setFilteredClassrooms] = useState<Kelas[]>([]);
+  // search feature
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -23,11 +35,31 @@ const HomeDashboardKelasPage = () => {
     setIsModalOpen(false);
   };
 
+  // gagal-------
+
+  // const fetchData = async () => {
+  //   let response = await getAllClassroomAdmin(access_token);
+  //   setListClassroom(response.data);
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [access_token]);
+
+  // --------------
+
   useEffect(() => {
     const fetchClassrooms = async () => {
       try {
-        const response = await getAllClassroom();
-        setKelas(response.data);
+        let response;
+        if (role_user === "superadmin" || role_user === "admin") {
+          response = await getAllClassroomAdmin();
+        } else if (role_user === "lecture" || role_user === "assistant") {
+          response = await getAllClassroomLecture();
+        }
+
+        setAllClassrooms(response.data); // Simpan semua data kelas
+        setKelas(response.data); // Inisialisasi kelas dengan semua data
       } catch (error) {
         setError("Failed to fetch classrooms");
       } finally {
@@ -37,88 +69,49 @@ const HomeDashboardKelasPage = () => {
 
     fetchClassrooms();
   }, []);
-  console.log("tes:", kelas);
 
-  if (loading)
-    return (
-      <>
-        <div className="relative overflow-x-auto">
-          {/* Searching + Button */}
-          <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-            {/* Search */}
-            <div className="relative ml-2">
-              <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                <div className="w-5 h-5 bg-gray-200 animate-pulse"></div>
-              </div>
-              <input
-                type="text"
-                className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                placeholder="Cari kelas"
-                disabled
-              />
-            </div>
-            <div className="flex items-center gap-2 bg-gray-200 animate-pulse w-32 h-10 rounded-lg"></div>
-          </div>
+  useEffect(() => {
+    // Jika searchTerm kosong, gunakan semua data kelas
+    if (!searchTerm) {
+      setKelas(allClassrooms); // Set kelas ke semua data kelas jika searchTerm kosong
+    }
+  }, [searchTerm, allClassrooms]);
 
-          {/* Table */}
-          <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-            <thead className="text-sm text-neutral2 bg-gray-100">
-              <tr>
-                <th scope="col" className="p-4">
-                  <div className="flex items-center">
-                    <div className="w-4 h-4 bg-gray-200 animate-pulse rounded"></div>
-                  </div>
-                </th>
-                {Array.from({ length: 9 }).map((_, index) => (
-                  <th key={index} scope="col" className="px-6 py-3">
-                    <div className="h-4 bg-gray-200 animate-pulse w-full"></div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gray-200 animate-pulse rounded"></div>
-                    </div>
-                  </td>
-                  {Array.from({ length: 9 }).map((_, subIndex) => (
-                    <td key={subIndex} className="px-6 py-4">
-                      <div className="h-4 bg-gray-200 animate-pulse w-full"></div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  const handleSearch = async () => {
+    try {
+      setLoading(true); // Set loading state
+      let response;
 
-        <nav
-          className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-          aria-label="Table navigation"
-        >
-          <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-            Showing <span className="font-semibold text-gray-900">1-10</span> of{" "}
-            <span className="font-semibold text-gray-900">1000</span>
-          </span>
-          <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-            <li>
-              <div className="flex items-center justify-center px-3 h-8 bg-gray-200 animate-pulse rounded-s-lg w-24"></div>
-            </li>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <li key={index}>
-                <div className="flex items-center justify-center px-3 h-8 bg-gray-200 animate-pulse w-8"></div>
-              </li>
-            ))}
-            <li>
-              <div className="flex items-center justify-center px-3 h-8 bg-gray-200 animate-pulse rounded-e-lg w-24"></div>
-            </li>
-          </ul>
-        </nav>
-      </>
-    );
+      // Cek jika searchTerm kosong
+      if (searchTerm.trim() === "") {
+        // Panggil API tanpa parameter pencarian untuk mendapatkan semua kelas
+        if (role_user === "superadmin" || role_user === "admin") {
+          response = await getAllClassroomAdmin(); // Panggil tanpa searchTerm
+        } else if (role_user === "lecture" || role_user === "assistant") {
+          response = await getAllClassroomLecture(); // Panggil tanpa searchTerm
+        }
+      } else {
+        // Jika ada searchTerm, panggil API dengan parameter pencarian
+        if (role_user === "superadmin" || role_user === "admin") {
+          response = await getAllClassroomAdmin(searchTerm);
+        } else if (role_user === "lecture" || role_user === "assistant") {
+          response = await getAllClassroomLecture(searchTerm);
+        }
+      }
+
+      setKelas(response.data); // Update state kelas dengan hasil pencarian atau semua data
+    } catch (error) {
+      setError("Failed to fetch classrooms");
+    } finally {
+      setLoading(false); // Set loading state kembali ke false
+    }
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, []);
+
+  if (loading) return SkletonListKelas();
   if (error) return <p>{error}</p>;
   return (
     <>
@@ -127,7 +120,7 @@ const HomeDashboardKelasPage = () => {
         <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
           {/* Search */}
           <label className="sr-only">Search</label>
-          <div className="relative ml-2">
+          <div className="relative w-auto flex  ml-2">
             <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
               <svg
                 className="w-5 h-5 text-neutral3"
@@ -143,12 +136,22 @@ const HomeDashboardKelasPage = () => {
                 ></path>
               </svg>
             </div>
+
             <input
               type="text"
               id="table-search"
               className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               placeholder="Cari kelas"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
+
+            <button
+              onClick={handleSearch}
+              className="ml-2 px-4 py-2 bg-primary1 text-white rounded-md"
+            >
+              Search
+            </button>
           </div>
           <Link
             href={"kelas/tambah"}

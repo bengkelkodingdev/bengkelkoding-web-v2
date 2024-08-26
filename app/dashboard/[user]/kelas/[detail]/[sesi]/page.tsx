@@ -1,33 +1,43 @@
 "use client";
 
-import { getDetailQrSession } from "@/app/api/admin/api-kelas/presensi/getDetailPresensi";
-import { getGenerateQr } from "@/app/api/admin/api-kelas/presensi/getGenerateQr";
+import {
+  getDetailQrSessionAdmin,
+  getDetailQrSessionLecture,
+} from "@/app/api/admin/api-kelas/presensi/getDetailPresensi";
+import {
+  getGenerateQrAdmin,
+  getGenerateQrLecture,
+} from "@/app/api/admin/api-kelas/presensi/getGenerateQr";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
-import EditFormKelas from "@/app/component/general/EditFormKelas";
-import EditFormStatus from "@/app/component/general/EditFormStatus";
-import { detailSesi } from "@/app/interface/DetailSesi";
+
+import Keterangan from "@/app/component/general/Keterangan";
+import { detailSesi, Student } from "@/app/interface/DetailSesi";
+import {
+  postManualPresenceAdmin,
+  postManualPresenceLecture,
+} from "@/app/api/admin/api-kelas/presensi/postManualPresence";
+import {
+  postUpdateStatusAbsenceAdmin,
+  postUpdateStatusAbsenceLecture,
+} from "@/app/api/admin/api-kelas/izin/API-Izin";
+import Cookies from "js-cookie";
+
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 
 const DetailKelasPageSesi = () => {
   // const router = useRouter();
   const params = useParams();
   const sesi = params.sesi;
-
   const detail = params.detail;
-  // const { kelas } = router.query;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const access_token = Cookies.get("access_token");
+  const role_user = Cookies.get("user_role");
 
   // state qr
   const [qrText, setQrText] = useState<string>("");
@@ -38,25 +48,138 @@ const DetailKelasPageSesi = () => {
   const [error, setError] = useState(null); // State untuk menangani kesalahan
 
   const [shouldRefresh, setShouldRefresh] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
-  useEffect(() => {
-    const fetchDetailSession = async () => {
+  // izin modal
+  const [keterangan, setKeterangan] = useState("");
+  const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
+    null
+  );
+  const [selectedIdAbsence, setSelectedIdAbsence] = useState<number | null>(
+    null
+  );
+  const [approvalAction, setApprovalAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isKetModalOpen, setIsKetModalOpen] = useState(false);
+
+  // modal open
+  const openModalForApproval = (idClassroom: number, idAbsence: number) => {
+    setSelectedIdClassroom(idClassroom);
+    setSelectedIdAbsence(idAbsence);
+    setApprovalAction("approve");
+    setIsKetModalOpen(true);
+  };
+
+  const openModalForRejection = (idClassroom: number, idAbsence: number) => {
+    setSelectedIdClassroom(idClassroom);
+    setSelectedIdAbsence(idAbsence);
+    setApprovalAction("reject");
+    setIsKetModalOpen(true);
+  };
+
+  // save keterangan izin
+  const handleSaveKeterangan = async () => {
+    if (
+      selectedIdClassroom !== null &&
+      selectedIdAbsence !== null &&
+      approvalAction !== null
+    ) {
+      const status = approvalAction === "approve" ? 2 : 3;
+      const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
+
       try {
-        //  get detail session for qr
-        if (typeof sesi !== "string") {
-          throw new Error("sesi harus bertipe string");
+        if (role_user == "superadmin" || role_user == "admin") {
+          const response = await postUpdateStatusAbsenceAdmin(
+            access_token,
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+          toast.success(`Absen Mahasiswa ${actionText} 😁`);
+
+          // mari dapatkan datanya lagi
+          fetchDetailSession();
+
+          setIsKetModalOpen(false);
+        } else if (role_user == "lecture" || role_user == "assistent") {
+          const response = await postUpdateStatusAbsenceLecture(
+            access_token,
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+          toast.success(`Absen Mahasiswa ${actionText} 😁`);
+
+          // mari dapatkan datanya lagi
+          fetchDetailSession();
+
+          setIsKetModalOpen(false);
         }
-
-        const presenceData = await getDetailQrSession(parseInt(sesi));
-
-        setdetailClassRoom(presenceData);
       } catch (error) {
-        setError(error.message); // Tangani kesalahan yang terjadi dan set pesan kesalahan
-      } finally {
-        setLoading(false); // Set loading menjadi false setelah pengambilan data selesai
+        console.error(`Error ${actionText} absence:`, error);
+        toast.error(`Absen Mahasiswa ${actionText} 😁`);
       }
+    } else {
+      console.error("Classroom ID, Absence ID, or Action is missing.");
+    }
+  };
+
+  const handleCloseKetModal = () => {
+    setIsKetModalOpen(false);
+  };
+
+  // end list izin confirm
+
+  const handleSaveStatus = async (student: Student) => {
+    const updatedStatus: Student = {
+      ...student,
     };
 
+    try {
+      let updateData;
+      if (role_user == "superadmin" || role_user == "admin") {
+        updateData = await postManualPresenceAdmin(Number(sesi), updatedStatus);
+        fetchDetailSession();
+      } else if (role_user == "lecture" || role_user == "assistent") {
+        updateData = await postManualPresenceLecture(
+          Number(sesi),
+          updatedStatus
+        );
+        fetchDetailSession();
+      }
+    } catch (error) {
+      console.error("Gagal memperbarui data", error);
+    }
+  };
+
+  const fetchDetailSession = async () => {
+    try {
+      let presenceData;
+      //  get detail session for qr
+      if (typeof sesi !== "string") {
+        throw new Error("sesi harus bertipe string");
+      }
+
+      if (role_user == "superadmin" || role_user == "admin") {
+        presenceData = await getDetailQrSessionAdmin(parseInt(sesi));
+
+        setdetailClassRoom(presenceData);
+      } else if (role_user == "lecture" || role_user == "assistent") {
+        presenceData = await getDetailQrSessionLecture(parseInt(sesi));
+        setdetailClassRoom(presenceData);
+      }
+    } catch (error) {
+      setError(error.message); // Tangani kesalahan yang terjadi dan set pesan kesalahan
+    } finally {
+      setLoading(false); // Set loading menjadi false setelah pengambilan data selesai
+    }
+  };
+  useEffect(() => {
     if (sesi && sesi.length > 0) {
       fetchDetailSession();
     }
@@ -68,10 +191,14 @@ const DetailKelasPageSesi = () => {
       if (typeof sesi !== "string") {
         throw new Error("sesi harus bertipe string");
       }
-      const presenceQr = await getGenerateQr(sesi);
-      let coba = presenceQr;
-      setQrText(presenceQr.qr_code);
-      console.log("qr session:", presenceQr.qr_code);
+
+      if (role_user == "superadmin" || role_user == "admin") {
+        const presenceQr = await getGenerateQrAdmin(sesi);
+        setQrText(presenceQr.qr_code);
+      } else if (role_user == "lecture" || role_user == "assistent") {
+        const presenceQr = await getGenerateQrLecture(sesi);
+        setQrText(presenceQr.qr_code);
+      }
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
@@ -281,10 +408,9 @@ const DetailKelasPageSesi = () => {
 
   // test 2024-04-05
   // const today = new Date().toISOString().split("T")[0];
-  const today = "2024-04-04";
+  const today = "2024-04-12";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
-
-  console.log(detailClassRoom);
+  console.log("sesi sekarang", sesi);
   let count = 1;
   return (
     <>
@@ -334,7 +460,11 @@ const DetailKelasPageSesi = () => {
               </dl>
               <dl className="bg-gradient-to-r from-red-700 to-red-600 focus:ring-red-100  rounded-lg flex flex-col items-center justify-center h-[78px]">
                 <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">
-                  {detailClassRoom.absence_students.length}
+                  {
+                    detailClassRoom.absence_students.filter(
+                      (student) => student.approve_status === 2
+                    ).length
+                  }
                 </dt>
                 <dd className="text-neutral5  text-sm font-medium">Izin</dd>
               </dl>
@@ -359,6 +489,7 @@ const DetailKelasPageSesi = () => {
               {isDateMatching ? "Generate QR" : "Terkunci"}
             </button>
           </div>
+
           {/* kanan */}
           <div className="up-right lg:w-1/3">
             <div className="canvas-qr">
@@ -384,6 +515,7 @@ const DetailKelasPageSesi = () => {
             {/* <p className="font-semi text-2xl">List</p> */}
             <div className="search-key">
               <label className="sr-only">Search</label>
+
               <div className="relative ml-2">
                 <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
                   <svg
@@ -411,6 +543,7 @@ const DetailKelasPageSesi = () => {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-3">
+            {/* List Mhs */}
             <div className="left-belumabsen w-full lg:w-[70%]">
               <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">
                 <div className="text-center w-full flex justify-left ">
@@ -470,40 +603,43 @@ const DetailKelasPageSesi = () => {
                         </td>
 
                         <td className="px-6 py-4">
-                          <div className="flex gap-1">
-                            <Link
-                              href={"/"}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleOpenModal();
-                              }}
-                              className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="18px"
-                                viewBox="0 0 24 24"
-                                width="18px"
+                          {listMhs.is_present ? (
+                            <div className="flex gap-1">
+                              <div className="block bg-neutral3 p-1 rounded-md fill-white transition-all ease-in-out duration-150">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="24px"
+                                  viewBox="0 -960 960 960"
+                                  width="24px"
+                                  fill="#e8eaed"
+                                >
+                                  <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
+                                </svg>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleSaveStatus(listMhs)}
+                                className="block bg-green2 p-1 rounded-md fill-white "
                               >
-                                <path d="M0 0h24v24H0V0z" fill="none" />
-                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                              </svg>
-                            </Link>
-                          </div>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="24px"
+                                  viewBox="0 -960 960 960"
+                                  width="24px"
+                                >
+                                  <path d="M720-120H320v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h218q32 0 56 24t24 56v80q0 7-1.5 15t-4.5 15L794-168q-9 20-30 34t-44 14ZM240-640v520H80v-520h160Z" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-
-              <Modal
-                title="Status Kehadiran"
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-              >
-                <EditFormStatus />
-              </Modal>
 
               <nav
                 className="flex items-center flex-column flex-wrap md:flex-row justify-start pt-4"
@@ -597,12 +733,12 @@ const DetailKelasPageSesi = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {detailClassRoom.absence_students.map((absen) => (
+                    {detailClassRoom.absence_students.map((absen, index) => (
                       <tr
                         key={absen.id}
                         className="bg-white border-b hover:bg-gray-50"
                       >
-                        <td className="w-4 p-4">{count++}</td>
+                        <td className="w-4 p-4">{index + 1}</td>
                         <th
                           scope="row"
                           className="px-6 py-4 whitespace-nowrap "
@@ -616,11 +752,11 @@ const DetailKelasPageSesi = () => {
                                 {" "}
                                 {absen.identity_code}
                               </p>
-                              {absen.approve_status_label === "Diterima" ? (
+                              {absen.approve_status === 2 ? (
                                 <p className="text-xs rounded-xl px-4 text-green-600 bg-green-100">
                                   Diterima
                                 </p>
-                              ) : absen.approve_status_label === "Ditolak" ? (
+                              ) : absen.approve_status === 3 ? (
                                 <p className="text-xs text-center rounded-xl px-4 text-red-600 bg-red-100">
                                   Ditolak
                                 </p>
@@ -632,8 +768,10 @@ const DetailKelasPageSesi = () => {
                             </div>
                             <div className="flex gap-3 items-center">
                               <Link href={absen.attachment}>File</Link>
-                              <Link
-                                href={"/"}
+                              <button
+                                onClick={() =>
+                                  openModalForApproval(Number(sesi), absen.id)
+                                }
                                 className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
                               >
                                 <svg
@@ -648,12 +786,11 @@ const DetailKelasPageSesi = () => {
                                   />
                                   <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
                                 </svg>
-                              </Link>
-                              <Link
-                                href={"/"}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                }}
+                              </button>
+                              <button
+                                onClick={() =>
+                                  openModalForRejection(Number(sesi), absen.id)
+                                }
                                 className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                               >
                                 <span className="sr-only">EditFormKelas</span>
@@ -669,135 +806,35 @@ const DetailKelasPageSesi = () => {
                                   />
                                   <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
                                 </svg>
-                              </Link>
+                              </button>
                             </div>
                           </div>
                         </th>
-                        {/* <td className="px-6 py-4">file</td> */}
-
-                        {/* <td className="px-6 py-4">
-                          {listMhs.is_present ? (
-                            <p className="w-max text-sm rounded-xl px-4 text-green-600 bg-green-100">
-                              Konfirmasi
-                            </p>
-                          ) : (
-                            <p className="w-max text-sm rounded-xl px-4 text-red-600 bg-red-100">
-                              Belum dikonfirmasi
-                            </p>
-                          )}
-                        </td> */}
-
-                        {/* <td className="px-6 py-4">
-                          <div className="flex gap-1">
-                            <Link
-                              href={"/"}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleOpenModal();
-                              }}
-                              className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="18px"
-                                viewBox="0 0 24 24"
-                                width="18px"
-                              >
-                                <path d="M0 0h24v24H0V0z" fill="none" />
-                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                              </svg>
-                            </Link>
-                          </div>
-                        </td> */}
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
-              <Modal
-                title="Status Kehadiran"
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-              >
-                <EditFormStatus />
-              </Modal>
+              {/* IZIN PERLU DI PERBAIKI */}
 
-              {/* <nav
-                className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-                aria-label="Table navigation"
+              <Modal
+                title="Keterangan"
+                isOpen={isKetModalOpen}
+                onClose={handleCloseKetModal}
               >
-                <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-                  Showing{" "}
-                  <span className="font-semibold text-gray-900">1-10</span> of{" "}
-                  <span className="font-semibold text-gray-900">1000</span>
-                </span>
-                <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      Sebelumnya
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      1
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      2
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      aria-current="page"
-                      className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-                    >
-                      3
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      4
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      5
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
-                    >
-                      Selanjutnya
-                    </a>
-                  </li>
-                </ul>
-              </nav> */}
+                <Keterangan
+                  setKeterangan={setKeterangan}
+                  onSave={handleSaveKeterangan}
+                />{" "}
+              </Modal>
             </div>
 
             {/* --- */}
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };

@@ -42,8 +42,6 @@ export interface ClassroomData {
   assignments: Assignment[];
 }
 
-// types.ts
-
 export interface ClassFormData {
   name: string;
   lecture_id: number;
@@ -60,7 +58,7 @@ export interface ClassFormData {
   uas_percent: number;
   start_date: string;
   max_absent: number;
-  jml_pertemuan: number;
+  total_class_session: number;
 }
 
 export interface Presence {
@@ -77,6 +75,7 @@ export interface Presence {
   room: string;
   week: number;
   attendance_count: number;
+  absence_count: number;
   presence_date: string;
   presence_date_formatted: string;
   is_enabled: number;
@@ -101,6 +100,10 @@ export interface Assignment {
   start_time: string;
   file: string | null;
   deadline: string;
+  student: {
+    total_submitted: number;
+    student_need_to_submit: number;
+  };
 }
 
 export interface AssignmentResponse {

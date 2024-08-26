@@ -26,26 +26,3 @@ export const getGenerateQrAdmin = async (id: string): Promise<Presence> => {
     throw error;
   }
 };
-
-export const getGenerateQrLecture = async (id: string): Promise<Presence> => {
-  const access_token = Cookies.get("access_token");
-
-  if (!access_token) {
-    throw new Error("Access token not found");
-  }
-
-  try {
-    const response = await axios.get(
-      `${API_URL}/api/v1/lecture/presences/${id}/generate-qr`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
-    return response.data.data.presence;
-  } catch (error) {
-    console.error("Error fetching details:", error);
-    throw error;
-  }
-};

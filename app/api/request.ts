@@ -17,6 +17,25 @@ export const createRequest = async (url: string): Promise<AxiosResponse> => {
   }
 };
 
+// post request
+export const createPostRequest = async (
+  access_token: string,
+  url: string,
+  data: any
+): Promise<AxiosResponse> => {
+  try {
+    const config = { headers: { Authorization: `Bearer ${access_token}` } };
+    const response: AxiosResponse = await Axios.post(
+      `${API_URL}${url}`,
+      data,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(`API POST Request for ${url} failed: ${error.message}`);
+  }
+};
+
 // No Auth
 export const createRequestNoAuth = async (
   url: string
