@@ -273,7 +273,7 @@ const HomePage = () => {
                 viewBox="0 -960 960 960"
                 width="40px"
               >
-                <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80H240Zm0-80h480v-640h-80v245q0 12-10 17.5t-20-.5l-49-30q-10-6-20.5-6t-20.5 6l-49 30q-10 6-20.5.5T440-555v-245H240v640Zm0 0v-640 640Zm200-395q0 12 10.5 17.5t20.5-.5l49-30q10-6 20.5-6t20.5 6l49 30q10 6 20 .5t10-17.5q0 12-10 17.5t-20-.5l-49-30q-10-6-20.5-6t-20.5 6l-49 30q-10 6-20.5.5T440-555Z" />
+                <path d="M440-400h80q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480h-80q-17 0-28.5 11.5T400-440q0 17 11.5 28.5T440-400Zm0-120h240q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H440q-17 0-28.5 11.5T400-560q0 17 11.5 28.5T440-520Zm0-120h240q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H440q-17 0-28.5 11.5T400-680q0 17 11.5 28.5T440-640ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-520q0-17 11.5-28.5T120-720q17 0 28.5 11.5T160-680v520h520q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H160Zm160-720v480-480Z" />
               </svg>
             </div>
             <div>
@@ -419,7 +419,7 @@ const HomePage = () => {
                 key={path.id}
                 className={`min-w-40 md:min-w-52 lg:min-w-56 flex items-center justify-center hover:min-w-44 md:hover:min-w-56 lg:hover:min-w-60 opacity-80 hover:opacity-100 p-4 md:p-6 border rounded-md cursor-pointer text-white text-center text-sm md:text-base font-semibold transition-all ease-in-out duration-200 ${
                   path.id == pathDetail.id &&
-                  "min-w-44 md:min-w-56 lg:min-w-60 opacity-100"
+                  "min-w-44 md:min-w-56 lg:min-w-60 opacity-[1]"
                 }`}
                 style={{
                   backgroundImage: `url(${path.image})`,
