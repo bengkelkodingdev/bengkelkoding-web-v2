@@ -1,12 +1,10 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { KelasRespon } from "@/app/interface/Kelas";
-import { createRequest } from "../../request";
+import Cookies from "js-cookie";
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
-import Cookies from "js-cookie";
-
-export const getAllClassroom = async (): Promise<KelasRespon> => {
+export const getAllClassroom = async (page: number): Promise<KelasRespon> => {
   const access_token = Cookies.get("access_token");
 
   if (!access_token) {
@@ -17,6 +15,9 @@ export const getAllClassroom = async (): Promise<KelasRespon> => {
     const response = await axios.get(`${API_URL}/api/v2/admin/classrooms`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
+      },
+      params: {
+        page: page, // Include the page parameter in the request
       },
     });
     return response.data;
