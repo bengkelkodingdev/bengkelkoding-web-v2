@@ -26,6 +26,9 @@ const HomeDashboardKelasPage = () => {
   const [filteredClassrooms, setFilteredClassrooms] = useState<Kelas[]>([]);
   // search feature
   const [searchTerm, setSearchTerm] = useState<string>("");
+  // pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -48,29 +51,97 @@ const HomeDashboardKelasPage = () => {
 
   // --------------
 
-  useEffect(() => {
-    const fetchClassrooms = async () => {
-      try {
-        let response;
-        if (role_user === "superadmin" || role_user === "admin") {
-          response = await getAllClassroomAdmin();
-        } else if (role_user === "lecture" || role_user === "assistant") {
-          response = await getAllClassroomLecture();
-        }
+  // useEffect(() => {
+  //   const fetchClassrooms = async () => {
+  //     try {
+  //       let response;
+  //       if (role_user === "superadmin" || role_user === "admin") {
+  //         response = await getAllClassroomAdmin();
+  //       } else if (role_user === "lecture" || role_user === "assistant") {
+  //         response = await getAllClassroomLecture();
+  //       }
 
-        setAllClassrooms(response.data); // Simpan semua data kelas
-        setKelas(response.data); // Inisialisasi kelas dengan semua data
-      } catch (error) {
-        setError("Failed to fetch classrooms");
-      } finally {
-        setLoading(false);
+  //       setAllClassrooms(response.data); // Simpan semua data kelas
+  //       setKelas(response.data); // Inisialisasi kelas dengan semua data
+  //     } catch (error) {
+  //       setError("Failed to fetch classrooms");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchClassrooms();
+  // }, []);
+
+  // useEffect(() => {
+  //   // Jika searchTerm kosong, gunakan semua data kelas
+  //   if (!searchTerm) {
+  //     setKelas(allClassrooms); // Set kelas ke semua data kelas jika searchTerm kosong
+  //   }
+  // }, [searchTerm, allClassrooms]);
+
+  // const handleSearch = async () => {
+  //   try {
+  //     setLoading(true); // Set loading state
+  //     let response;
+
+  //     // Cek jika searchTerm kosong
+  //     if (searchTerm.trim() === "") {
+  //       // Panggil API tanpa parameter pencarian untuk mendapatkan semua kelas
+  //       if (role_user === "superadmin" || role_user === "admin") {
+  //         response = await getAllClassroomAdmin(); // Panggil tanpa searchTerm
+  //       } else if (role_user === "lecture" || role_user === "assistant") {
+  //         response = await getAllClassroomLecture(); // Panggil tanpa searchTerm
+  //       }
+  //     } else {
+  //       // Jika ada searchTerm, panggil API dengan parameter pencarian
+  //       if (role_user === "superadmin" || role_user === "admin") {
+  //         response = await getAllClassroomAdmin(searchTerm);
+  //       } else if (role_user === "lecture" || role_user === "assistant") {
+  //         response = await getAllClassroomLecture(searchTerm);
+  //       }
+  //     }
+
+  //     setKelas(response.data); // Update state kelas dengan hasil pencarian atau semua data
+  //   } catch (error) {
+  //     setError("Failed to fetch classrooms");
+  //   } finally {
+  //     setLoading(false); // Set loading state kembali ke false
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   handleSearch();
+  // }, []);
+
+  //  eksperimen
+  const fetchClassrooms = async (page: number = 1, searchTerm: string = "") => {
+    setLoading(true);
+    try {
+      let response;
+
+      if (role_user === "superadmin" || role_user === "admin") {
+        response = await getAllClassroomAdmin(searchTerm, page);
+      } else if (role_user === "lecture" || role_user === "assistant") {
+        response = await getAllClassroomLecture(searchTerm, page);
+        // Tambahkan kondisi lainnya jika ada role tambahan dengan API berbeda
       }
-    };
 
-    fetchClassrooms();
-  }, []);
+      const data = response.data;
+      setKelas(data); // Set state 'kelas' dengan hasil pencarian atau semua data
+      setAllClassrooms(data); // Simpan data untuk referensi pencarian yang kosong
+      setTotalPages(response.meta.pagination.total_pages);
+    } catch (error) {
+      setError("Failed to fetch classrooms");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  console.log("ini rolenya", role_user);
+  useEffect(() => {
+    fetchClassrooms(currentPage, searchTerm);
+  }, [currentPage]);
+
   useEffect(() => {
     // Jika searchTerm kosong, gunakan semua data kelas
     if (!searchTerm) {
@@ -78,39 +149,23 @@ const HomeDashboardKelasPage = () => {
     }
   }, [searchTerm, allClassrooms]);
 
-  const handleSearch = async () => {
-    try {
-      setLoading(true); // Set loading state
-      let response;
+  const handleSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    setCurrentPage(1); // Reset ke halaman 1 setiap kali pencarian baru dilakukan
+    fetchClassrooms(1, searchTerm);
+  };
 
-      // Cek jika searchTerm kosong
-      if (searchTerm.trim() === "") {
-        // Panggil API tanpa parameter pencarian untuk mendapatkan semua kelas
-        if (role_user === "superadmin" || role_user === "admin") {
-          response = await getAllClassroomAdmin(); // Panggil tanpa searchTerm
-        } else if (role_user === "lecture" || role_user === "assistant") {
-          response = await getAllClassroomLecture(); // Panggil tanpa searchTerm
-        }
-      } else {
-        // Jika ada searchTerm, panggil API dengan parameter pencarian
-        if (role_user === "superadmin" || role_user === "admin") {
-          response = await getAllClassroomAdmin(searchTerm);
-        } else if (role_user === "lecture" || role_user === "assistant") {
-          response = await getAllClassroomLecture(searchTerm);
-        }
-      }
-
-      setKelas(response.data); // Update state kelas dengan hasil pencarian atau semua data
-    } catch (error) {
-      setError("Failed to fetch classrooms");
-    } finally {
-      setLoading(false); // Set loading state kembali ke false
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  useEffect(() => {
-    handleSearch();
-  }, []);
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   if (loading) return SkletonListKelas();
   if (error) return <p>{error}</p>;
@@ -175,15 +230,8 @@ const HomeDashboardKelasPage = () => {
         <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
           <thead className="text-sm text-neutral2 bg-gray-100">
             <tr>
-              <th scope="col" className="p-4">
-                <div className="flex items-center">
-                  <input
-                    id="checkbox-all-search"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <label className="sr-only">checkbox</label>
-                </div>
+              <th scope="col" className="text-center py-3">
+                No
               </th>
               <th scope="col" className="px-6 py-3">
                 Nama Kelas
@@ -213,22 +261,13 @@ const HomeDashboardKelasPage = () => {
             </tr>
           </thead>
           <tbody>
-            {kelas.map((classroom) => {
+            {kelas.map((classroom, index) => {
               return (
                 <tr
                   key={classroom.id}
                   className="bg-white border-b hover:bg-gray-50"
                 >
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <input
-                        id="checkbox-table-search-1"
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <label className="sr-only">checkbox</label>
-                    </div>
-                  </td>
+                  <td className="text-center w-4 p-4">{index + 1}</td>
                   <th scope="row" className="px-6 py-4 whitespace-nowrap">
                     <div className="text-xs flex flex-col gap-1">
                       <p className="font-medium text-neutral2">
@@ -319,7 +358,8 @@ const HomeDashboardKelasPage = () => {
           </tbody>
         </table>
       </div>
-      <nav
+      {/* ------ pagination tes */}
+      {/* <nav
         className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
         aria-label="Table navigation"
       >
@@ -384,6 +424,56 @@ const HomeDashboardKelasPage = () => {
             >
               Selanjutnya
             </a>
+          </li>
+        </ul>
+      </nav> */}
+
+      {/* Pagination Controls */}
+      <nav
+        className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+        aria-label="Table navigation"
+      >
+        <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+          Showing{" "}
+          <span className="font-semibold text-gray-900">
+            {(currentPage - 1) * 10 + 1}-
+            {Math.min(currentPage * 10, totalPages * 10)}
+          </span>{" "}
+          of{" "}
+          <span className="font-semibold text-gray-900">{totalPages * 10}</span>
+        </span>
+        <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+          <li>
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2 disabled:opacity-50"
+            >
+              Sebelumnya
+            </button>
+          </li>
+          {[...Array(totalPages)].map((_, index) => (
+            <li key={index}>
+              <button
+                onClick={() => setCurrentPage(index + 1)}
+                className={`flex items-center justify-center px-3 h-8 leading-tight ${
+                  currentPage === index + 1
+                    ? "text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
+                    : "text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                }`}
+              >
+                {index + 1}
+              </button>
+            </li>
+          ))}
+          <li>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2 disabled:opacity-50"
+            >
+              Selanjutnya
+            </button>
           </li>
         </ul>
       </nav>

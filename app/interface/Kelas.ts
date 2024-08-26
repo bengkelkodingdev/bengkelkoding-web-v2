@@ -86,6 +86,18 @@ export interface Presence {
   qr_expired_at: string;
 }
 
+export interface pagination {
+  total: number;
+  count: number;
+  per_page: number;
+  current_page: number;
+  total_pages: number;
+  links: {
+    next: string | null;
+    previous: string | null;
+  };
+}
+
 interface Lecture {
   identity_code: string;
   name: string;
@@ -112,17 +124,7 @@ export interface AssignmentResponse {
     status_code: number;
     success: boolean;
     message: string;
-    pagination: {
-      total: number;
-      count: number;
-      per_page: number;
-      current_page: number;
-      total_pages: number;
-      links: {
-        next: string | null;
-        previous: string | null;
-      };
-    };
+    pagination: pagination;
   };
 }
 
