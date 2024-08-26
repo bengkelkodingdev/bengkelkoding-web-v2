@@ -42,8 +42,6 @@ export interface ClassroomData {
   assignments: Assignment[];
 }
 
-// types.ts
-
 export interface ClassFormData {
   name: string;
   lecture_id: number;
