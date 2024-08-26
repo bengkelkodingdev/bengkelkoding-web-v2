@@ -48,48 +48,6 @@ const HomeDashboardKelasPage = () => {
 
   // --------------
 
-  // mode find setiap onchange
-
-  // useEffect(() => {
-  //   const fetchClassrooms = async () => {
-  //     try {
-  //       let response;
-  //       if (role_user === "superadmin" || role_user === "admin") {
-  //         response = await getAllClassroomAdmin();
-  //       } else if (role_user === "lecture" || role_user === "assistant") {
-  //         response = await getAllClassroomLecture();
-  //       }
-
-  //       setAllClassrooms(response.data); // Simpan semua data kelas
-  //       setKelas(response.data); // Inisialisasi kelas dengan semua data
-  //     } catch (error) {
-  //       setError("Failed to fetch classrooms");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchClassrooms();
-  // }, []);
-
-  // useEffect(() => {
-  //   // Jika searchTerm kosong, gunakan semua data kelas
-  //   if (!searchTerm) {
-  //     setKelas(allClassrooms); // Set kelas ke semua data kelas jika searchTerm kosong
-  //   } else {
-  //     // Jika ada searchTerm, filter data berdasarkan search term
-  //     const filtered = allClassrooms.filter((classroom) =>
-  //       (classroom.name ? classroom.name.toLowerCase() : "").includes(
-  //         searchTerm.toLowerCase()
-  //       )
-  //     );
-  //     setKelas(filtered);
-  //   }
-  // }, [searchTerm, allClassrooms]);
-
-  // ---------------
-  // mode find search by onclick
-
   useEffect(() => {
     const fetchClassrooms = async () => {
       try {

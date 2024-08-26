@@ -213,14 +213,27 @@ export default function DetailTambahKelas() {
               />
             </div>
             {/* jenis */}
-            <Input
+            {/* <Input
               type="text"
               label="Jenis"
               name="Jenis"
               value={jenis}
               onChange={(e) => setJenis(e.target.value)}
               required
-            />
+            /> */}
+
+            <select
+              name="path_id"
+              id="path_id"
+              className="mt-1 block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+              value={jenis}
+              onChange={(e) => setJenis(e.target.value)}
+              required
+            >
+              <option value="task">task</option>
+              <option value="uts">uts</option>
+              <option value="uas">uas</option>
+            </select>
           </div>
           <div className="kanan">
             {/* Deskripsi */}
