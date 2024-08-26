@@ -109,7 +109,7 @@ const StudentHeader = () => {
               >
                 <li>
                   <a
-                    href="setting"
+                    href="/dashboard/student/setting"
                     className="text-xs md:text-sm block px-4 py-2 hover:bg-gray-100"
                   >
                     Pengaturan
