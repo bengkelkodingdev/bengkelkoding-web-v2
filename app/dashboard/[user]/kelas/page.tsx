@@ -143,11 +143,11 @@ const HomeDashboardKelasPage = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    // Jika searchTerm kosong, gunakan semua data kelas
-    if (!searchTerm) {
-      setKelas(allClassrooms); // Set kelas ke semua data kelas jika searchTerm kosong
+    // ketika telah mencari dan hapus semua input
+    if (searchTerm === "") {
+      fetchClassrooms(currentPage);
     }
-  }, [searchTerm, allClassrooms]);
+  }, [searchTerm, currentPage]);
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
