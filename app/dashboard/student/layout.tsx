@@ -11,7 +11,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div>
       <StudentHeader />
-      <main className="min-h-screen mt-4 max-w-6xl mx-auto px-2 lg:px-4 py-4">
+      <main className="min-h-screen lg:mt-4 max-w-6xl mx-auto px-2 lg:px-4 py-4">
         {children}
       </main>
       <StudentFooter />
