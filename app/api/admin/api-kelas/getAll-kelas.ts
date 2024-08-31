@@ -6,7 +6,9 @@ const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 import Cookies from "js-cookie";
 
 export const getAllClassroomAdmin = async (
-  searchTerm = ""
+  searchTerm = "",
+  page = 1,
+  per_page = 10
 ): Promise<KelasRespon> => {
   const access_token = Cookies.get("access_token");
 
@@ -16,7 +18,11 @@ export const getAllClassroomAdmin = async (
 
   try {
     const response = await axios.get(`${API_URL}/api/v1/admin/classrooms`, {
-      params: searchTerm ? { search: searchTerm } : {},
+      params: {
+        search: searchTerm,
+        page,
+        per_page,
+      },
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
@@ -29,7 +35,9 @@ export const getAllClassroomAdmin = async (
 };
 
 export const getAllClassroomLecture = async (
-  searchTerm = ""
+  searchTerm = "",
+  page = 1,
+  per_page = 10
 ): Promise<KelasRespon> => {
   const access_token = Cookies.get("access_token");
 
@@ -39,7 +47,11 @@ export const getAllClassroomLecture = async (
 
   try {
     const response = await axios.get(`${API_URL}/api/v1/lecture/classrooms`, {
-      params: searchTerm ? { search: searchTerm } : {},
+      params: {
+        search: searchTerm,
+        page,
+        per_page,
+      },
       headers: {
         Authorization: `Bearer ${access_token}`,
       },

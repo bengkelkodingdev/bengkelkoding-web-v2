@@ -36,7 +36,7 @@ import {
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
   const parts = url.split("/");
-  const role_user = Cookies.get("user_role");
+  const role_user = Cookies.get("user");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
@@ -176,6 +176,8 @@ const DashboardDetailKelasPage = () => {
         // KALO UDAH ADA APINYA PERLU GANTI
         // getAssignments = getAssigmentLecture(parts[4]);
       }
+
+      // const [response] = await Promise.all([getClassroomDetails]);
 
       const [response, responseAssigment] = await Promise.all([
         getClassroomDetails,

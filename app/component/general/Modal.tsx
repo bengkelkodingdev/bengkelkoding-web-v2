@@ -11,17 +11,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   return (
     <Fragment>
       {isOpen ? (
-                <div className="fixed z-10 inset-0 overflow-y-auto">
-                  <div className="flex items-center justify-center min-h-screen">
-                    <div className="bg-white rounded-lg shadow-lg p-6">
-                    <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex h-full items-center justify-center p-2">
+            <div className="bg-white w-96 rounded-lg shadow-lg p-6 ">
+              <div className="flex items-center justify-between md:p-5 border-b rounded-t ">
+                {/* judul */}
                 <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+                {/* close */}
                 <button
                   type="button"
                   onClick={onClose}
                   className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                   data-modal-hide="default-modal"
-                  
                 >
                   <svg
                     className="w-3 h-3"
@@ -41,10 +42,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
                   <span className="sr-only">Close modal</span>
                 </button>
               </div>
-              
+
               <div>{children}</div>
-             
-              
             </div>
           </div>
         </div>

@@ -15,7 +15,7 @@ const ModalFormKeterangan: React.FC<{
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid mt-4 gap-4 w-96">
+      <div className="grid mt-4 gap-4 w-full">
         <div>
           <label
             htmlFor="keterangan"
