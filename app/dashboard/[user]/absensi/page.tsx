@@ -4,7 +4,7 @@ import Modal from "@/app/component/general/Modal";
 import PDFView from "@/app/component/general/PDFView";
 import Keterangan from "@/app/component/general/Keterangan";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   getAllAbsence,
   getAllAbsenceLecture,
@@ -72,7 +72,7 @@ const HomeDashboardAbsensiPage = () => {
   const [DataAbsence, setDataAbsence] = useState<Absence[]>();
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     // get All data
     let response;
     if (role_user === "superadmin" || role_user === "admin") {
@@ -84,7 +84,7 @@ const HomeDashboardAbsensiPage = () => {
       setDataAbsence(response.data);
       countStatus(response.data);
     }
-  };
+  }, [role_user])
 
   useEffect(() => {
     fetchData();
@@ -97,7 +97,7 @@ const HomeDashboardAbsensiPage = () => {
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
-  }, [access_token]);
+  }, [fetchData]);
 
   const countStatus = (data: Absence[] | undefined) => {
     const totalApproved =

@@ -1,16 +1,14 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditForm from "@/app/component/general/EditForm";
 
 import { usePathname } from "next/navigation";
 import {
   Assignment,
-  AssignmentResponse,
   ClassroomData,
-  Kelas,
   Presence,
 } from "@/app/interface/Kelas";
 import {
@@ -163,7 +161,7 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
-  const fetchClassrooms = async () => {
+  const fetchClassrooms = useCallback(async () => {
     try {
       let getClassroomDetails, getAssignments;
 
@@ -202,7 +200,7 @@ const DashboardDetailKelasPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [parts, role_user]);
 
   function formatDateStart() {
     let time;
@@ -264,7 +262,7 @@ const DashboardDetailKelasPage = () => {
 
   useEffect(() => {
     fetchClassrooms();
-  }, []);
+  }, [fetchClassrooms]);
 
   if (loading)
     return (
@@ -603,8 +601,8 @@ const DashboardDetailKelasPage = () => {
 
   return (
     <>
-      {kelas.map((kelasItem) => (
-        <div>
+      {kelas.map((kelasItem, index) => (
+        <div key={index}>
           <h1>{kelasItem.classroom.name}</h1>
 
           <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">

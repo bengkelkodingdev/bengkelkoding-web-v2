@@ -5,7 +5,7 @@ import {
 } from "@/app/api/admin/api-kelas/getAll-kelas";
 import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditFormKelas from "@/app/component/general/EditFormKelas";
 
@@ -14,7 +14,6 @@ import SkletonListKelas from "@/app/component/skleton/SkletonListKelas";
 
 const HomeDashboardKelasPage = () => {
   // token
-  const access_token = Cookies.get("access_token");
   const role_user = Cookies.get("user");
 
   const [kelas, setKelas] = useState<Kelas[]>([]);
@@ -129,38 +128,41 @@ const HomeDashboardKelasPage = () => {
   // }, []);
 
   //  eksperimen
-  const fetchClassrooms = async (page: number = 1, searchTerm: string = "") => {
-    setLoading(true);
-    try {
-      let response;
+  const fetchClassrooms = useCallback(
+    async (page: number = 1, searchTerm: string = "") => {
+      setLoading(true);
+      try {
+        let response;
 
-      if (role_user === "superadmin" || role_user === "admin") {
-        response = await getAllClassroomAdmin(searchTerm, page);
-      } else if (role_user === "lecture" || role_user === "assistant") {
-        response = await getAllClassroomLecture(searchTerm, page);
+        if (role_user === "superadmin" || role_user === "admin") {
+          response = await getAllClassroomAdmin(searchTerm, page);
+        } else if (role_user === "lecture" || role_user === "assistant") {
+          response = await getAllClassroomLecture(searchTerm, page);
+        }
+
+        const data = response.data;
+        setKelas(data); // Set state 'kelas' dengan hasil pencarian atau semua data
+        setAllClassrooms(data); // Simpan data untuk referensi pencarian yang kosong
+        setTotalPages(response.meta.pagination.total_pages);
+      } catch (error) {
+        setError("Failed to fetch classrooms");
+      } finally {
+        setLoading(false);
       }
-
-      const data = response.data;
-      setKelas(data); // Set state 'kelas' dengan hasil pencarian atau semua data
-      setAllClassrooms(data); // Simpan data untuk referensi pencarian yang kosong
-      setTotalPages(response.meta.pagination.total_pages);
-    } catch (error) {
-      setError("Failed to fetch classrooms");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [role_user]
+  );
 
   useEffect(() => {
     fetchClassrooms(currentPage, searchTerm);
-  }, [currentPage]);
+  }, [fetchClassrooms, currentPage, searchTerm]);
 
   useEffect(() => {
     // ketika telah mencari dan hapus semua input
     if (searchTerm === "") {
       fetchClassrooms(currentPage);
     }
-  }, [searchTerm, currentPage]);
+  }, [fetchClassrooms, searchTerm, currentPage]);
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();

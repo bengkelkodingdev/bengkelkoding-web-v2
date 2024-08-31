@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 
 import Keterangan from "@/app/component/general/Keterangan";
@@ -155,7 +155,7 @@ const DetailKelasPageSesi = () => {
     }
   };
 
-  const fetchDetailSession = async () => {
+  const fetchDetailSession = useCallback(async () => {
     try {
       let presenceData;
       //  get detail session for qr
@@ -176,12 +176,13 @@ const DetailKelasPageSesi = () => {
     } finally {
       setLoading(false); // Set loading menjadi false setelah pengambilan data selesai
     }
-  };
+  }, [sesi, role_user])
+
   useEffect(() => {
     if (sesi && sesi.length > 0) {
       fetchDetailSession();
     }
-  }, [sesi]);
+  }, [sesi, fetchDetailSession]);
 
   // button generate qrcode
   const generateRandomText = async () => {
