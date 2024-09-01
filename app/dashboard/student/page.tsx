@@ -47,14 +47,12 @@ const StudentPage = () => {
         id: 0,
         name: "",
       },
-      tasks: [
-        {
-          id: 0,
-          score: 0,
-          is_submitted: true,
-          submitted_at: "",
-        },
-      ],
+      tasks: {
+        id: 0,
+        score: 0,
+        is_submitted: true,
+        submitted_at: "",
+      },
     },
   ]);
 
@@ -85,7 +83,16 @@ const StudentPage = () => {
   }, []);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 lg:gap-x-4 gap-y-2 md:gap-y-4 lg:gap-y-6">
+        <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg" />
+        <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg" />
+        <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg" />
+        <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg" />
+        <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg" />
+        <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg" />
+      </div>
+    );
   }
 
   if (error) {
@@ -224,7 +231,7 @@ const StudentPage = () => {
         </div>
         {/* List Kelas */}
         {classrooms.length > 0 ? (
-          <div id="ListKelasAnda" className="flex flex-col gap-3">
+          <div id="ListKelasAnda" className="flex flex-col gap-2 lg:gap-3">
             {classrooms.map((classroom) => (
               <Link
                 key={classroom.id}
@@ -324,7 +331,7 @@ const StudentPage = () => {
           </p>
         </div>
         {/* List Log Kehadiran */}
-        <div>
+        <div className="flex flex-col gap-2 lg:gap-3">
           <div className="flex justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 items-center gap-4 cursor-pointer transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]">
             {/* Informasi Log Kehadiran */}
             <div>
@@ -392,7 +399,7 @@ const StudentPage = () => {
       </div>
 
       {/* Tugas */}
-      <div id="TugasAnda" className="lg:col-span-2">
+      <div id="TugasAnda" className="md:col-span-2">
         {/* Judul Tugas */}
         <div className="flex gap-2 md:gap-4 border-b border-neutral4 mb-2 md:mb-3 lg:mb-4 p-2 md:p-3 lg:p-4 items-center">
           <div className="h-6 w-6 lg:h-8 lg:w-8 bg-primary5 fill-primary3 rounded-full flex items-center justify-center">
@@ -410,12 +417,12 @@ const StudentPage = () => {
         </div>
         {/* List Tugas */}
         {assignments.length > 0 ? (
-          <div id="ListTugasAnda" className="flex flex-col gap-3">
+          <div id="ListTugasAnda" className="flex flex-col gap-2 lg:gap-3">
             {assignments.map((assignment) => (
               <Link
                 key={assignment.id}
                 href={`student/classroom/${assignment.classroom.id}/assignment/${assignment.id}`}
-                className="flex flex-col lg:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 lg:items-center gap-2 md:gap-3 lg:gap-4  cursor-pointer transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
+                className="flex flex-col md:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 md:items-center gap-2 md:gap-3 lg:gap-4  cursor-pointer transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
               >
                 {/* Data Informasi Tugas */}
                 <div className="flex gap-4 lg:gap-6 items-center">
@@ -444,8 +451,8 @@ const StudentPage = () => {
                         {assignment}
                       </p> */}
                     </div>
-                    <div className="hidden lg:flex items-center gap-2 md:gap-3 lg:gap-4 mt-2">
-                      <div className="flex flex-col lg:flex-row gap-0.5 lg:gap-6">
+                    <div className="hidden md:flex items-center gap-2 md:gap-3 lg:gap-4 mt-2">
+                      <div className="flex flex-col md:flex-row gap-0.5 md:gap-6">
                         <p className="text-neutral2 text-xs md:text-sm">
                           Diberikan{" "}
                           <strong className="font-normal text-black">
@@ -464,7 +471,7 @@ const StudentPage = () => {
                 </div>
                 {/* Status */}
                 <div className="flex justify-between items-start">
-                  <div className="lg:hidden flex items-center gap-2 md:gap-3 lg:gap-4 mt-2">
+                  <div className="md:hidden flex items-center gap-2 md:gap-3 lg:gap-4 mt-2">
                     <div className="flex flex-col lg:flex-row gap-0.5 lg:gap-6">
                       <p className="text-neutral2 text-xs md:text-sm">
                         Diberikan{" "}
@@ -487,7 +494,7 @@ const StudentPage = () => {
                         <p className="text-xs lg:text-sm">Status</p>
                         {/* Status Terlambat */}
                         {assignment.deadline <
-                          assignment.tasks[0]?.submitted_at && (
+                          assignment.tasks?.submitted_at && (
                           <p className="h-max text-[10px] lg:text-xs bg-red-500 text-white p-0.5 lg:p-1 rounded-md">
                             Terlambat
                           </p>
@@ -514,7 +521,7 @@ const StudentPage = () => {
                       <p className="text-neutral2 text-xs md:text-sm">
                         Diserahkan{" "}
                         <strong className="font-normal text-primary2">
-                          {formatDate(assignment.tasks[0]?.submitted_at)}
+                          {formatDate(assignment.tasks?.submitted_at)}
                         </strong>
                       </p>
                     )}
