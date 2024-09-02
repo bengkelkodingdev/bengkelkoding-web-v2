@@ -6,11 +6,7 @@ import Modal from "@/app/component/general/Modal";
 import EditForm from "@/app/component/general/EditForm";
 
 import { usePathname } from "next/navigation";
-import {
-  Assignment,
-  ClassroomData,
-  Presence,
-} from "@/app/interface/Kelas";
+import { Assignment, ClassroomData, Presence } from "@/app/interface/Kelas";
 import {
   getDetailClassroom,
   getDetailClassroomLecture,
@@ -34,7 +30,7 @@ import {
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
   const parts = url.split("/");
-  const role_user = Cookies.get("user");
+  const role_user = Cookies.get("user_role");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
@@ -48,6 +44,24 @@ const DashboardDetailKelasPage = () => {
 
   const { dayNameStart, timeStart, dateStart } = formatDateStart();
   const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 500);
+  // PASTIKAN DIHAPUS
+  // const today = new Date().toISOString().split("T")[0];
+  const today = "2024-04-04";
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 500);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const sections = [
     { id: "pertemuan", label: "Pertemuan" },
@@ -161,7 +175,7 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
-  const fetchClassrooms = useCallback(async () => {
+  const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
 
@@ -200,7 +214,9 @@ const DashboardDetailKelasPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [parts, role_user]);
+  };
+
+  console.log("ini kelas", kelas);
 
   function formatDateStart() {
     let time;
@@ -262,7 +278,20 @@ const DashboardDetailKelasPage = () => {
 
   useEffect(() => {
     fetchClassrooms();
-  }, [fetchClassrooms]);
+  }, []);
+
+  function isValidURL(url: string): boolean {
+    const urlPattern = new RegExp(
+      "^(https?:\\/\\/)?" + // Protocol
+        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" + // Domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR IP (v4) address
+        "(\\:\\d+)?(\\/[-a-zA-Z\\d%_.~+]*)*" + // Port and path
+        "(\\?[;&a-zA-Z\\d%_.~+=-]*)?" + // Query string
+        "(\\#[-a-zA-Z\\d_]*)?$",
+      "i"
+    );
+    return urlPattern.test(url);
+  }
 
   if (loading)
     return (
@@ -597,13 +626,15 @@ const DashboardDetailKelasPage = () => {
       </div>
     );
 
-  if (error) return <p>Kelas Tidak ditemukan</p>;
+  if (error) return <p>Kelas Tidak ditemukan1</p>;
 
   return (
     <>
-      {kelas.map((kelasItem, index) => (
-        <div key={index}>
-          <h1>{kelasItem.classroom.name}</h1>
+      {kelas.map((kelasItem) => (
+        <div>
+          <h1 className="text-3xl mb-2 sm:mb-4 sm:text-5xl">
+            {kelasItem.classroom.name}
+          </h1>
 
           <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
             <div className="w-full">
@@ -670,22 +701,37 @@ const DashboardDetailKelasPage = () => {
             </table>
           </div>
 
-          <article className=" mx-auto">
+          <article className="mt-4 mx-auto">
             {/* Navigasi untuk management active section */}
-            <nav className="flex">
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-max px-4 py-2 font-medium rounded-t-md transition-all ease-in-out duration-200 ${
-                    activeSection === section.id
-                      ? "bg-slate-50  text-primary1"
-                      : "bg-gray-100 text-black hover:bg-slate-50  hover:text-primary1"
-                  }`}
+
+            <nav className="flex border-t py-3">
+              {isMobile ? (
+                <select
+                  value={activeSection}
+                  onChange={(e) => setActiveSection(e.target.value)}
+                  className="w-max px-4 mt-3 py-2 font-medium rounded-md transition-all ease-in-out duration-200 bg-slate-50 text-primary1"
                 >
-                  {section.label}
-                </button>
-              ))}
+                  {sections.map((section) => (
+                    <option key={section.id} value={section.id}>
+                      {section.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                sections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-max px-4 py-2 font-medium rounded-t-md transition-all ease-in-out duration-200 ${
+                      activeSection === section.id
+                        ? "bg-slate-50 text-primary1"
+                        : "bg-gray-100 text-black hover:bg-slate-50 hover:text-primary1"
+                    }`}
+                  >
+                    {section.label}
+                  </button>
+                ))
+              )}
             </nav>
 
             <section
@@ -713,7 +759,7 @@ const DashboardDetailKelasPage = () => {
                         </div>
                       </div>
                       {/* kontrak pertemuan */}
-                      <div className="lg:w-[30%] ">
+                      <div className="lg:w-[30%]  ">
                         <table className="w-full shadow-sm text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
                           <thead className="text-sm text-neutral2 bg-gray-100">
                             <tr>
@@ -746,115 +792,206 @@ const DashboardDetailKelasPage = () => {
                         </table>
                       </div>
                     </div>
+                    {/* sesi pertemuan */}
                     <div className="shadow-md">
-                      <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                        <thead className="text-neutral2 bg-gray-100">
-                          <tr>
-                            <th scope="col" className="p-4">
-                              <div className="flex items-center">
-                                <input
-                                  id="checkbox-all-search"
-                                  type="checkbox"
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                                <label className="sr-only">checkbox</label>
-                              </div>
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                              Sesi Pertemuan
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                              Tanggal
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                              Ruang
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                              Status
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                              Aksi
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {kelasItem.presences.map((presence, index) => (
-                            <tr
-                              key={presence.id}
-                              className="bg-white border-b hover:bg-gray-100"
-                            >
-                              <td className="w-4 p-4">
-                                <div className="flex items-center">
-                                  <input
-                                    id={`checkbox-table-search-${index}`}
-                                    type="checkbox"
-                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                  />
-                                  <label className="sr-only">checkbox</label>
+                      {isMobile ? (
+                        <>
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {kelasItem.presences.map((presence) => (
+                              <div
+                                key={presence.id}
+                                className="bg-white border border-gray-200 rounded-lg shadow-md p-4 hover:bg-gray-100 transition-all ease-in-out duration-150"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="text-sm font-semibold">
+                                    Pertemuan {presence.week}
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-semibold">
+                                      {today === presence.presence_date ? (
+                                        <span className="ml-2 text-green-500 font-bold">
+                                          aktif
+                                        </span>
+                                      ) : (
+                                        <span className="ml-2 text-red-500 font-bold">
+                                          Belum waktunya
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
                                 </div>
-                              </td>
-
-                              <td className="px-6 py-3 text-sm font-semibold">
-                                Pertemuan {presence.week}
-                              </td>
-                              <td className="px-6 py-3">
-                                <p className="text-xs font-semibold">
-                                  {presence.presence_date_formatted}
-                                </p>
-                              </td>
-                              <td className="px-6 py-3 text-xs">
-                                {kelasItem.classroom.room}
-                              </td>
-                              <td className="px-6 py-3 w-36">
-                                <span className="flex justify-center items-center text-xs font-medium w-full h-[2rem] rounded-full text-center  text-blue-800 bg-blue-100">
+                                <div className="mt-2 text-xs font-semibold">
+                                  Tanggal: {presence.presence_date_formatted}
+                                </div>
+                                <div className="mt-1 text-xs">
+                                  Ruang: {kelasItem.classroom.room}
+                                </div>
+                                <div className=" flex items-center justify-between mt-5">
                                   <Link
-                                    className="flex items-center justify-center text-center"
+                                    className=" flex items-center justify-center w-1/2  h-10 gap-4 text-center text-xs font-medium text-blue-800 bg-blue-100 rounded-full"
                                     href={`${kelasItem.classroom.id}/${presence.id}`}
                                   >
-                                    Masuk
+                                    <p>Masuk</p>
                                   </Link>
-                                </span>
-                              </td>
-                              <td className="px-6 py-3">
-                                <div className="flex gap-1">
-                                  <Link
-                                    href={`/edit/${presence.week}`}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      handleOpenModal(presence);
-                                    }}
-                                    className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      height="18px"
-                                      viewBox="0 0 24 24"
-                                      width="18px"
+                                  <div className="flex items-center justify-end gap-2">
+                                    <Link
+                                      href={`/edit/${presence.week}`}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleOpenModal(presence);
+                                      }}
+                                      className="p-2 bg-yellow2 rounded-full hover:bg-yellow1 transition-all ease-in-out duration-150"
                                     >
-                                      <path d="M0 0h24v24H0V0z" fill="none" />
-                                      <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                    </svg>
-                                  </Link>
-                                  <Link
-                                    href={`/delete/${presence.id}`}
-                                    className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      height="18px"
-                                      viewBox="0 0 24 24"
-                                      width="18px"
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="18px"
+                                        viewBox="0 0 24 24"
+                                        width="18px"
+                                      >
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                      </svg>
+                                    </Link>
+                                    <Link
+                                      href={`/delete/${presence.id}`}
+                                      className="p-2 bg-red2 rounded-full hover:bg-red1 transition-all ease-in-out duration-150"
                                     >
-                                      <path d="M0 0h24v24H0V0z" fill="none" />
-                                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                                    </svg>
-                                  </Link>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="18px"
+                                        viewBox="0 0 24 24"
+                                        width="18px"
+                                      >
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                      </svg>
+                                    </Link>
+                                  </div>
                                 </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                            <thead className="text-neutral2 bg-gray-100">
+                              <tr>
+                                <th scope="col" className="p-4">
+                                  <div className="flex items-center">
+                                    <input
+                                      id="checkbox-all-search"
+                                      type="checkbox"
+                                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                    />
+                                    <label className="sr-only">checkbox</label>
+                                  </div>
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                  Sesi Pertemuan
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                  Tanggal
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                  Ruang
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                  Status
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                  Aksi
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {kelasItem.presences.map((presence, index) => (
+                                <tr
+                                  key={presence.id}
+                                  className="bg-white border-b hover:bg-gray-100"
+                                >
+                                  <td className="w-4 p-4">
+                                    <div className="flex items-center">
+                                      <input
+                                        id={`checkbox-table-search-${index}`}
+                                        type="checkbox"
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                      />
+                                      <label className="sr-only">
+                                        checkbox
+                                      </label>
+                                    </div>
+                                  </td>
+
+                                  <td className="px-6 py-3 text-sm font-semibold">
+                                    Pertemuan {presence.week}
+                                  </td>
+                                  <td className="px-6 py-3">
+                                    <p className="text-xs font-semibold">
+                                      {presence.presence_date_formatted}
+                                    </p>
+                                  </td>
+                                  <td className="px-6 py-3 text-xs">
+                                    {kelasItem.classroom.room}
+                                  </td>
+                                  <td className="px-6 py-3 w-36">
+                                    <span className="flex justify-center items-center text-xs font-medium w-full h-[2rem] rounded-full text-center  text-blue-800 bg-blue-100">
+                                      <Link
+                                        className="flex items-center justify-center text-center"
+                                        href={`${kelasItem.classroom.id}/${presence.id}`}
+                                      >
+                                        Masuk
+                                      </Link>
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-3">
+                                    <div className="flex gap-1">
+                                      <Link
+                                        href={`/edit/${presence.week}`}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleOpenModal(presence);
+                                        }}
+                                        className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="18px"
+                                          viewBox="0 0 24 24"
+                                          width="18px"
+                                        >
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                          />
+                                          <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                        </svg>
+                                      </Link>
+                                      <Link
+                                        href={`/delete/${presence.id}`}
+                                        className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="18px"
+                                          viewBox="0 0 24 24"
+                                          width="18px"
+                                        >
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                          />
+                                          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                        </svg>
+                                      </Link>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </>
+                      )}
                     </div>
 
                     <Modal
@@ -876,80 +1013,130 @@ const DashboardDetailKelasPage = () => {
               {/* Mahasiswa */}
               {activeSection === "mahasiswa" && (
                 <div id="mahasiswa" className="mx-auto">
-                  <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                    <thead className="text-sm text-neutral2 bg-gray-100">
-                      <tr>
-                        <th scope="col" className="p-4">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-all-search"
-                              type="checkbox"
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                            />
-                            <label className="sr-only">checkbox</label>
-                          </div>
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Nama
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Nim
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Aksi
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kelas.flatMap((kelasItem) =>
-                        kelasItem.students.map((student) => (
-                          <tr
-                            key={student.id}
-                            className="bg-white border-b hover:bg-gray-50"
-                          >
-                            <td className="w-4 p-4">
-                              <div className="flex items-center">
-                                <input
-                                  id={`checkbox-table-search-${student.id}`}
-                                  type="checkbox"
-                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                                <label className="sr-only">checkbox</label>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-xs flex flex-col gap-1">
-                                <p className="font-medium text-neutral2">
-                                  {student.name}
-                                </p>
-                                <p className="font-normal text-neutral2">
-                                  Semester {student.semester}
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              {student.identity_code}
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex gap-1">
-                                <button className="block bg-yellow-200 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    height="18px"
-                                    viewBox="0 0 24 24"
-                                    width="18px"
-                                  >
-                                    <path d="M0 0h24v24H0V0z" fill="none" />
-                                    <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
+                  {isMobile ? (
+                    <div className="overflow-auto">
+                      <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                        <thead className="text-sm text-neutral2 bg-gray-100">
+                          <tr>
+                            <th scope="col" className="p-2">
+                              No
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Nama
+                            </th>
+
+                            <th scope="col" className="px-6 py-3">
+                              Aksi
+                            </th>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody>
+                          {kelas.flatMap((kelasItem) =>
+                            kelasItem.students.map((student, index) => (
+                              <tr
+                                key={student.id}
+                                className="bg-white border-b hover:bg-gray-50"
+                              >
+                                <td className="p-2 text-center">{index + 1}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-xs flex flex-col gap-1">
+                                    <p className="font-medium text-neutral2">
+                                      {student.name}
+                                    </p>
+                                    <p className="font-normal text-neutral2">
+                                      {student.identity_code}
+                                    </p>
+                                    <p className="font-normal text-neutral2">
+                                      Semester {student.semester}
+                                    </p>
+                                  </div>
+                                </td>
+
+                                <td className="px-6 py-4">
+                                  <div className="flex gap-1">
+                                    <button className="block bg-yellow-200 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="18px"
+                                        viewBox="0 0 24 24"
+                                        width="18px"
+                                      >
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                      <thead className="text-sm text-neutral2 bg-gray-100">
+                        <tr>
+                          <th scope="col" className="p-4">
+                            <div className="flex items-center">No</div>
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Nama
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Nim
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Aksi
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kelas.flatMap((kelasItem) =>
+                          kelasItem.students.map((student, index) => (
+                            <tr
+                              key={student.id}
+                              className="bg-white border-b hover:bg-gray-50"
+                            >
+                              <td className="w-4 p-4">
+                                <div className="flex items-center">
+                                  {index + 1}
+                                </div>
+                              </td>
+                              <td className="px-2 py-4 whitespace-nowrap">
+                                <div className="text-xs flex flex-col gap-1">
+                                  <p className="font-medium text-neutral2">
+                                    {student.name}
+                                  </p>
+                                  <p className="font-normal text-neutral2">
+                                    Semester {student.semester}
+                                  </p>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                {student.identity_code}
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex gap-1">
+                                  <button className="block bg-yellow-200 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="18px"
+                                      viewBox="0 0 24 24"
+                                      width="18px"
+                                    >
+                                      <path d="M0 0h24v24H0V0z" fill="none" />
+                                      <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               )}
 
@@ -994,166 +1181,334 @@ const DashboardDetailKelasPage = () => {
                       + Tambah Tugas
                     </Link>
                   </div>
-                  <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden mt-5 ">
-                    <thead className="text-sm text-neutral2 bg-gray-100">
-                      <tr className="text-center">
-                        <th scope="col" className="p-4">
-                          No
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Nama Tugas
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left">
-                          Deskripsi
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-center ">
-                          Tanggal Mulai
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-center ">
-                          Tanggal Selesai
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          File
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-center">
-                          Jenis
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-center">
-                          Terkumpul
-                        </th>
+                  {isMobile ? (
+                    <>
+                      {" "}
+                      {tugas.map((tugasItem, index) => (
+                        <div
+                          key={tugasItem.id}
+                          className="bg-white rounded-lg shadow-md p-4 mt-2"
+                        >
+                          <div className="flex justify-between items-center border-b pb-2 mb-2">
+                            <h3 className="text-base font-semibold">
+                              {tugasItem.title}
+                            </h3>
+                            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                              {tugasItem.type}
+                            </span>
+                          </div>
+                          <div className="text-xs mb-2">
+                            <p>{tugasItem.description}</p>
+                          </div>
 
-                        <th scope="col" className="px-6 py-3">
-                          Aksi
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tugas.length === 0 ? (
-                        <tr>
-                          <td colSpan={9} className="px-6 py-4 text-center ">
-                            Tidak ada tugas diberikan
-                          </td>
-                        </tr>
-                      ) : (
-                        tugas.map((tugasItem, index = 0) => {
-                          return (
-                            <tr
-                              key={tugasItem.id}
-                              className="bg-white border-b hover:bg-gray-50"
-                            >
-                              <td className="w-4 p-4">{index + 1}</td>
-                              <td className="px-6 py-4 font-semibold">
-                                {tugasItem.title}
-                              </td>
-                              <td className="px-6 py-4">
-                                {tugasItem.description}
-                              </td>
-                              <td className="px-2 py-4  text-center">
+                          <div className="flex flex-col justify-center items-center text-xs mb-2 gap-2">
+                            <p className="strong">terkumpul</p>
+                            <p>
+                              {tugasItem.student.total_submitted} /{" "}
+                              {tugasItem.student.student_need_to_submit}
+                            </p>
+                          </div>
+                          <div className="text-xs mb-2">
+                            <p>
+                              <strong>File:</strong>
+                            </p>
+                            {tugasItem.file == null ? (
+                              <p>Tidak ada file</p>
+                            ) : (
+                              <a
+                                href={tugasItem.file}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="24px"
+                                  viewBox="0 -960 960 960"
+                                  width="24px"
+                                  fill="#2014c8"
+                                >
+                                  <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+                                </svg>
+                              </a>
+                            )}
+                          </div>
+
+                          {/* waktu */}
+                          <div className="flex justify-between items-center text-xs mb-2">
+                            {/* start */}
+                            <div className="mulai flex gap-2 items-center text-green-700">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="20px"
+                                viewBox="0 -960 960 960"
+                                width="20px"
+                                className="fill-green-700"
+                              >
+                                <path d="M320-160h320v-120q0-66-47-113t-113-47q-66 0-113 47t-47 113v120ZM160-80v-80h80v-120q0-61 28.5-114.5T348-480q-51-32-79.5-85.5T240-680v-120h-80v-80h640v80h-80v120q0 61-28.5 114.5T612-480q51 32 79.5 85.5T720-280v120h80v80H160Z" />
+                              </svg>
+                              <div className="detail-time">
                                 <div>
                                   {dayNameStart} - {timeStart}
                                 </div>
                                 <div className="font-semibold">{dateStart}</div>
-                              </td>
-                              <td className="px-2 py-4  text-center">
+                              </div>
+                            </div>
+                            <div className="h-5 w-[1px] rounded-full bg-slate-500 mx-4 "></div>
+                            {/* end */}
+                            <div className="selesai flex gap-2 items-center text-red-700">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="20px"
+                                viewBox="0 -960 960 960"
+                                width="20px"
+                                className="fill-red-700"
+                              >
+                                <path d="M480-516q65 0 110.5-45.5T636-672v-120H324v120q0 65 45.5 110.5T480-516ZM192-96v-72h60v-120q0-59 28-109.5t78-82.5q-49-32-77.5-82.5T252-672v-120h-60v-72h576v72h-60v120q0 59-28.5 109.5T602-480q50 32 78 82.5T708-288v120h60v72H192Z" />
+                              </svg>
+                              <div className="detail-time">
                                 <div>
-                                  {dayNameEnd} - {timeEnd}
+                                  {dayNameStart} - {timeStart}
                                 </div>
-                                <div className="font-semibold">{dateEnd}</div>
-                              </td>
-                              <td className="px-6 py-4">
-                                {/* "file": null, jika tidak null maka tugasItem.file */}
-                                {tugasItem.file == null ? (
-                                  <p>Tidak ada file</p>
-                                ) : (
-                                  <a href={tugasItem.file}>
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      height="24px"
-                                      viewBox="0 -960 960 960"
-                                      width="24px"
-                                      fill="#2014c8"
-                                    >
-                                      <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
-                                    </svg>
-                                  </a>
-                                )}
-                              </td>
-                              <td className="px-6 py-4 ">
-                                <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
-                                  {tugasItem.type}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 text-center font-semibold">
-                                {tugasItem.student.total_submitted} /{" "}
-                                {tugasItem.student.student_need_to_submit}
-                              </td>
+                                <div className="font-semibold">{dateStart}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-center items-center gap-4 mt-3">
+                            <Link
+                              href={{
+                                pathname: `${kelasItem.classroom.id}/tambah-tugas`,
+                                query: {
+                                  idClassroom: kelasItem.classroom.id,
+                                  idAssignment: tugasItem.id,
+                                },
+                              }}
+                              className="bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                              >
+                                <path d="M0 0h24v24H0V0z" fill="none" />
+                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                              </svg>
+                            </Link>
+                            <button
+                              onClick={() =>
+                                handleDelete(
+                                  kelasItem.classroom.id,
+                                  tugasItem.id
+                                )
+                              }
+                              className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                              >
+                                <path d="M0 0h24v24H0V0z" fill="none" />
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                              </svg>
+                            </button>
+                            <Link
+                              href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
+                              className="bg-green-800 p-1 rounded-md fill-white hover:bg-green-700 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 -960 960 960"
+                                width="18px"
+                                fill="#F3F3F3"
+                              >
+                                <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm80-160h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790Z" />
+                              </svg>
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden mt-5 ">
+                        <thead className="text-sm text-neutral2 bg-gray-100">
+                          <tr className="text-center">
+                            <th scope="col" className="p-4">
+                              No
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Nama Tugas
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left">
+                              Deskripsi
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-center ">
+                              Tanggal Mulai
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-center ">
+                              Tanggal Selesai
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              File
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-center">
+                              Jenis
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-center">
+                              Terkumpul
+                            </th>
 
-                              <td className="px-6 py-4">
-                                <div className="flex gap-1">
-                                  {/* edit */}
-                                  <Link
-                                    href={{
-                                      pathname: `${kelasItem.classroom.id}/tambah-tugas`, // atau halaman yang sesuai jika berbeda
-                                      query: {
-                                        idClassroom: kelasItem.classroom.id,
-                                        idAssignment: tugasItem.id, // Parameter untuk mode edit
-                                      },
-                                    }}
-                                    className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      height="18px"
-                                      viewBox="0 0 24 24"
-                                      width="18px"
-                                    >
-                                      <path d="M0 0h24v24H0V0z" fill="none" />
-                                      <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                    </svg>
-                                  </Link>
-                                  {/* delete */}
-                                  <button
-                                    onClick={() =>
-                                      handleDelete(
-                                        kelasItem.classroom.id,
-                                        tugasItem.id
-                                      )
-                                    }
-                                    className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      height="18px"
-                                      viewBox="0 0 24 24"
-                                      width="18px"
-                                    >
-                                      <path d="M0 0h24v24H0V0z" fill="none" />
-                                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                                    </svg>
-                                  </button>
-                                  <span className="block bg-green-800 p-1 rounded-md fill-white hover:bg-green-700 transition-all ease-in-out duration-150">
-                                    <Link
-                                      href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        height="18px"
-                                        viewBox="0 -960 960 960"
-                                        width="18px"
-                                        fill="#F3F3F3"
-                                      >
-                                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm80-160h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790Z" />
-                                      </svg>
-                                    </Link>
-                                  </span>
-                                </div>
+                            <th scope="col" className="px-6 py-3">
+                              Aksi
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tugas.length === 0 ? (
+                            <tr>
+                              <td
+                                colSpan={9}
+                                className="px-6 py-4 text-center "
+                              >
+                                Tidak ada tugas diberikan
                               </td>
                             </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
+                          ) : (
+                            tugas.map((tugasItem, index = 0) => {
+                              return (
+                                <tr
+                                  key={tugasItem.id}
+                                  className="bg-white border-b hover:bg-gray-50"
+                                >
+                                  <td className="w-4 p-4">{index + 1}</td>
+                                  <td className="px-6 py-4 font-semibold">
+                                    {tugasItem.title}
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    {tugasItem.description}
+                                  </td>
+                                  <td className="px-2 py-4  text-center">
+                                    <div>
+                                      {dayNameStart} - {timeStart}
+                                    </div>
+                                    <div className="font-semibold">
+                                      {dateStart}
+                                    </div>
+                                  </td>
+                                  <td className="px-2 py-4  text-center">
+                                    <div>
+                                      {dayNameEnd} - {timeEnd}
+                                    </div>
+                                    <div className="font-semibold">
+                                      {dateEnd}
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    {/* "file": null, jika tidak null maka tugasItem.file */}
+                                    {tugasItem.file == null ? (
+                                      <p>Tidak ada file</p>
+                                    ) : (
+                                      <a href={tugasItem.file}>
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="24px"
+                                          viewBox="0 -960 960 960"
+                                          width="24px"
+                                          fill="#2014c8"
+                                        >
+                                          <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+                                        </svg>
+                                      </a>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4 ">
+                                    <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded   ms-3">
+                                      {tugasItem.type}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 text-center font-semibold">
+                                    {tugasItem.student.total_submitted} /{" "}
+                                    {tugasItem.student.student_need_to_submit}
+                                  </td>
+
+                                  <td className="px-6 py-4">
+                                    <div className="flex gap-1">
+                                      {/* edit */}
+                                      <Link
+                                        href={{
+                                          pathname: `${kelasItem.classroom.id}/tambah-tugas`, // atau halaman yang sesuai jika berbeda
+                                          query: {
+                                            idClassroom: kelasItem.classroom.id,
+                                            idAssignment: tugasItem.id, // Parameter untuk mode edit
+                                          },
+                                        }}
+                                        className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="18px"
+                                          viewBox="0 0 24 24"
+                                          width="18px"
+                                        >
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                          />
+                                          <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                        </svg>
+                                      </Link>
+                                      {/* delete */}
+                                      <button
+                                        onClick={() =>
+                                          handleDelete(
+                                            kelasItem.classroom.id,
+                                            tugasItem.id
+                                          )
+                                        }
+                                        className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="18px"
+                                          viewBox="0 0 24 24"
+                                          width="18px"
+                                        >
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                          />
+                                          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                        </svg>
+                                      </button>
+                                      <span className="block bg-green-800 p-1 rounded-md fill-white hover:bg-green-700 transition-all ease-in-out duration-150">
+                                        <Link
+                                          href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            height="18px"
+                                            viewBox="0 -960 960 960"
+                                            width="18px"
+                                            fill="#F3F3F3"
+                                          >
+                                            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm80-160h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790Z" />
+                                          </svg>
+                                        </Link>
+                                      </span>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1170,7 +1525,7 @@ const DashboardDetailKelasPage = () => {
                           className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
                         >
                           <Image
-                            src={"/img/kursus-image-1.png"}
+                            src={`${courses.image}`}
                             alt={""}
                             width={180}
                             height={140}
@@ -1201,28 +1556,42 @@ const DashboardDetailKelasPage = () => {
                   <div className="col-span-2">
                     <div className="flex flex-col gap-2">
                       {/* list kursus */}
-                      {kelasItem.courses.map((courses, index) => (
+                      {kelasItem.class_informations.map((informasi, index) => (
                         <div
                           key={index}
                           className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
                         >
-                          <Image
-                            src={"/img/kursus-image-1.png"}
-                            alt={""}
-                            width={180}
-                            height={140}
-                            loading="lazy"
-                          />
+                          <div className="iconInfo pl-3 flex items-center justify-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              height="34px"
+                              viewBox="0 -960 960 960"
+                              width="34px"
+                              className="fill-blue-500"
+                            >
+                              <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+                            </svg>
+                          </div>
                           <div className="py-3 px-4">
                             <h4 className="text-primary1 font-medium">
-                              {courses.title}
+                              {informasi.title}
                             </h4>
-                            <p className="text-neutral3 text-sm">
-                              {courses.author}
-                            </p>
-                            <p className="text-neutral2 text-sm mt-2">
-                              {courses.description}
-                            </p>
+                            {isValidURL(informasi.description) ? (
+                              <>
+                                <Link
+                                  href={`${informasi.description}`}
+                                  target="_blank"
+                                >
+                                  <p className="text-primary2 text-sm mt-2">
+                                    {informasi.description}
+                                  </p>
+                                </Link>{" "}
+                              </>
+                            ) : (
+                              <p className="text-neutral2 text-sm mt-2">
+                                {informasi.description}
+                              </p>
+                            )}
                           </div>
                         </div>
                       ))}
