@@ -37,7 +37,7 @@ const DetailKelasPageSesi = () => {
   const detail = params.detail;
 
   const access_token = Cookies.get("access_token");
-  const role_user = Cookies.get("user");
+  const role_user = Cookies.get("user_role");
 
   // state qr
   const [qrText, setQrText] = useState<string>("");
@@ -176,7 +176,7 @@ const DetailKelasPageSesi = () => {
     } finally {
       setLoading(false); // Set loading menjadi false setelah pengambilan data selesai
     }
-  }, [sesi, role_user])
+  }, [sesi, role_user]);
 
   useEffect(() => {
     if (sesi && sesi.length > 0) {

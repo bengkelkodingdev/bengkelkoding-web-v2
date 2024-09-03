@@ -169,8 +169,8 @@ export interface ClassRoomRespon {
   meta: Meta;
 }
 
-interface ClassInformation {
-  id: number;
+export interface ClassInformation {
+  id?: number;
   title: string;
   description: string;
 }

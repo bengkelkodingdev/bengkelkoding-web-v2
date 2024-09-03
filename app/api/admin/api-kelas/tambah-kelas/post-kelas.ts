@@ -35,3 +35,38 @@ export const createClassroom = async (data: ClassFormData) => {
     }
   }
 };
+
+export const updateClassroom = async (
+  data: ClassFormData,
+  idClassroom: number
+) => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/v1/admin/classrooms/${idClassroom}/update`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("Error response data:", error.response.data);
+      throw new Error(
+        error.response.data.message || "Failed to create classroom"
+      );
+    } else {
+      console.error("Error creating classroom:", error);
+      throw new Error("An unexpected error occurred");
+    }
+  }
+};

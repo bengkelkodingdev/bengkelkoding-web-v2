@@ -140,13 +140,6 @@ export default function DetailTambahKelas() {
     setIsStatus(true);
     try {
       if (idAssignment) {
-        // Update tugas jika dalam mode edit
-        console.log("data terinput", formData);
-        // Loop untuk memastikan formData terisi
-        console.log("FormData yang akan dikirim:");
-        formData.forEach((value, key) => {
-          console.log(`${key}: ${value}`);
-        });
         await updateAssignmentAdmin(formData, IdClassroom, idAssignment);
         toast.success("Tugas berhasil diperbarui");
       } else {
@@ -213,14 +206,6 @@ export default function DetailTambahKelas() {
               />
             </div>
             {/* jenis */}
-            {/* <Input
-              type="text"
-              label="Jenis"
-              name="Jenis"
-              value={jenis}
-              onChange={(e) => setJenis(e.target.value)}
-              required
-            /> */}
 
             <select
               name="path_id"

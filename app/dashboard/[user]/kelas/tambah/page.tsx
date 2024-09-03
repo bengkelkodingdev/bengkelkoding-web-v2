@@ -2,7 +2,10 @@
 import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useRef, useState } from "react";
 import { ClassFormData } from "@/app/interface/Kelas";
-import { createClassroom } from "@/app/api/admin/api-kelas/tambah-kelas/post-kelas";
+import {
+  createClassroom,
+  updateClassroom,
+} from "@/app/api/admin/api-kelas/tambah-kelas/post-kelas";
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
 import { toast, ToastContainer } from "react-toastify";
@@ -14,8 +17,14 @@ import {
 import { getSelectLecture } from "@/app/api/admin/api-kelas/tambah-kelas/select-lecture";
 import { getSelectPaths } from "@/app/api/admin/api-kelas/tambah-kelas/select-path";
 import { getSelectPeriods } from "@/app/api/admin/api-kelas/tambah-kelas/select-period";
+import { useSearchParams } from "next/navigation";
+import { getDetailClassroom } from "@/app/api/admin/api-kelas/getDetail-kelas";
 
 const DashboardTambahKelasPage: React.FC = () => {
+  const searchParams = useSearchParams();
+  const IdClassroom = searchParams.get("idClassroom");
+  const StatusForm = searchParams.get("status");
+
   const [formData, setFormData] = useState<ClassFormData>({
     name: "",
     lecture_id: undefined,
@@ -53,17 +62,22 @@ const DashboardTambahKelasPage: React.FC = () => {
   const fetchSelectLecture = async () => {
     try {
       const response = await getSelectLecture();
-      console.log("responnan: ", response);
+
+      console.log("Data dosen berhasil di-fetch: ", response.data);
       setSelectLectureApi(response.data);
+      console.log(
+        "State selectLectureApi setelah di-update:",
+        selectLectureApi
+      );
     } catch (error) {
-      console.error("error", error);
+      console.error("Gagal mengambil data dosen:", error);
     }
   };
 
   const fetchSelectPaths = async () => {
     try {
       const response = await getSelectPaths();
-      console.log("responnan: ", response);
+      // console.log("responnan: ", response);
       setSelectPathApi(response.data);
     } catch (error) {
       console.error("error", error);
@@ -73,18 +87,46 @@ const DashboardTambahKelasPage: React.FC = () => {
   const fetchSelectPeriods = async () => {
     try {
       const response = await getSelectPeriods();
-      console.log("responnan: ", response);
+      // console.log("responnan: ", response);
       setSelectPeriodApi(response.data);
     } catch (error) {
       console.error("error", error);
     }
   };
 
-  useEffect(() => {
-    fetchSelectLecture();
-    fetchSelectPaths();
-    fetchSelectPeriods();
-  }, []);
+  // Fungsi mapping untuk mendapatkan ID berdasarkan nama
+  const mapLectureToId = (lectureName: string): number => {
+    console.log(
+      "Mencari ID untuk nama dosen:",
+      lectureName.trim().toLowerCase()
+    );
+
+    const lecture = selectLectureApi.find((lec) => {
+      const trimmedLectureName = lectureName.trim().toLowerCase();
+      const trimmedLecName = lec.name.trim().toLowerCase();
+      console.log(`Comparing "${trimmedLectureName}" with "${trimmedLecName}"`);
+      return trimmedLecName === trimmedLectureName;
+    });
+
+    if (lecture) {
+      console.log("Dosen ditemukan:", lecture); // Log jika ditemukan
+    } else {
+      console.warn("Dosen tidak ditemukan untuk nama:", lectureName); // Log jika tidak ditemukan
+      console.log("Data selectLectureApi yang tersedia:", selectLectureApi); // Log data yang ada di selectLectureApi
+    }
+
+    return lecture ? lecture.id : 0; // Mengembalikan 0 jika tidak ditemukan
+  };
+
+  // const mapPathToId = (pathName: string): number => {
+  //   const path = selectPathApi.find((p) => p.name === pathName);
+  //   return path ? path.id : 0; // Mengembalikan 0 jika tidak ditemukan
+  // };
+
+  const mapPeriodToId = (periodName: string): number => {
+    const period = selectPeriodApi.find((p) => p.period === periodName);
+    return period ? period.id : 0; // Mengembalikan 0 jika tidak ditemukan
+  };
 
   // Fungsi untuk menangani perubahan pada input pencarian dosen
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,23 +146,6 @@ const DashboardTambahKelasPage: React.FC = () => {
     }));
     console.log(`Selected Dosen ID: ${dosenId}`);
   };
-
-  // Efek untuk menutup dropdown ketika mengklik di luar
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !(dropdownRef.current as any).contains(event.target)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   // Filter dosen berdasarkan pencarian
   const filteredDosenOptions = selectLectureApi.filter((option) =>
@@ -162,29 +187,158 @@ const DashboardTambahKelasPage: React.FC = () => {
     });
   };
 
+  // eksperimen
+
+  // Fungsi untuk mengkonversi nama hari ke nomor
+  const convertDayToNumber = (day: string): number => {
+    const daysMap = {
+      Minggu: 0,
+      Senin: 1,
+      Selasa: 2,
+      Rabu: 3,
+      Kamis: 4,
+      Jumat: 5,
+      Sabtu: 6,
+    };
+    return daysMap[day] ?? 0; // Mengembalikan 0 jika hari tidak ditemukan
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await createClassroom(formData);
 
-      toast.success("Berhasil Menambahkan Kelas 😁");
-      window.location.href = `./`;
-      // Tambahkan logika untuk menangani sukses, misalnya navigasi ke halaman lain atau menampilkan notifikasi
-    } catch (error) {
-      console.error("Failed to create classroom", error);
-      toast.error(`Gagal Menambahkan Kelas 😔: ${error.message}`);
-      if (error instanceof Error) {
-        console.error("Error message:", error.message);
+    if (StatusForm) {
+      try {
+        const response = await updateClassroom(formData, parseInt(IdClassroom));
+        toast.success("Berhasil Mengubah Kelas 😁");
+        window.location.href = `./`;
+      } catch (error) {
+        console.error("Failed to update classroom", error);
+        toast.error(`Gagal Mengubah Kelas 😔: ${error.message}`);
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+        }
       }
-      // Tambahkan logika untuk menangani error, misalnya menampilkan pesan error kepada pengguna
+    } else {
+      try {
+        const response = await createClassroom(formData);
+        toast.success("Berhasil Menambahkan Kelas 😁");
+        window.location.href = `./`;
+      } catch (error) {
+        console.error("Failed to create classroom", error);
+        toast.error(`Gagal Menambahkan Kelas 😔: ${error.message}`);
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+        }
+      }
     }
   };
+
+  // UseEffect
+
+  useEffect(() => {
+    fetchSelectLecture();
+    fetchSelectPaths();
+    fetchSelectPeriods();
+  }, []);
+
+  // Efek untuk menutup dropdown ketika mengklik di luar
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !(dropdownRef.current as any).contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (StatusForm && IdClassroom) {
+      getDetailClassroom(IdClassroom)
+        .then((response) => {
+          if (response.data && response.data.classroom) {
+            const classroomData = response.data.classroom;
+
+            // console.log("Data Dosen dari API:", classroomData.lecture);
+            // console.log("Data selectLectureApi:", selectLectureApi);
+
+            const mappedLectureId = mapLectureToId(classroomData.lecture);
+            console.log("Mapped Lecture ID:", mappedLectureId);
+
+            // Map data dari server ke format yang dibutuhkan oleh aplikasi
+            setFormData({
+              name: classroomData.name,
+              lecture_id: mappedLectureId, // Fungsi untuk mendapatkan ID dari nama dosen
+              path_id: 1, // Pastikan path_id adalah number
+              period_id: mapPeriodToId(classroomData.period), // Pastikan period_id adalah number
+              description: classroomData.description,
+              quota: classroomData.quota,
+              day: convertDayToNumber(classroomData.day), // Mengkonversi nama hari ke nomor
+              time_start: classroomData.time_start.replace(".", ":"),
+              time_end: classroomData.time_end.replace(".", ":"),
+              room: classroomData.room,
+              task_percent: parseInt(
+                classroomData.task_percent.replace("%", "")
+              ), // Menghapus % dan konversi ke number
+              uts_percent: parseInt(classroomData.uts_percent.replace("%", "")),
+              uas_percent: parseInt(classroomData.uas_percent.replace("%", "")),
+              start_date: classroomData.start_date,
+              max_absent: classroomData.max_absent,
+              total_class_session: classroomData.total_session, // Ini perlu ada di formData jika Anda ingin menggunakannya
+            });
+            setSearchTerm(classroomData.lecture.trim());
+          } else {
+            toast.error("Data kelas tidak ditemukan");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching classroom details:", error);
+          toast.error("Gagal memuat detail kelas");
+        });
+    }
+  }, [StatusForm, IdClassroom]);
+
+  useEffect(() => {
+    if (StatusForm === "edit" && selectLectureApi.length > 0 && IdClassroom) {
+      getDetailClassroom(IdClassroom)
+        .then((response) => {
+          if (response.data && response.data.classroom) {
+            const classroomData = response.data.classroom;
+            setSearchTerm(classroomData.lecture.trim());
+
+            const mappedLectureId = mapLectureToId(classroomData.lecture);
+            console.log("Mapped Lecture ID HALLO:", mappedLectureId);
+            setFormData((prevData) => ({
+              ...prevData,
+              lecture_id: mappedLectureId,
+            }));
+            setSelectedDosenId(mappedLectureId);
+          } else {
+            toast.error("Data kelas tidak ditemukan");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching classroom details:", error);
+          toast.error("Gagal memuat detail kelas");
+        });
+    }
+  }, [StatusForm, selectLectureApi, IdClassroom]); // Dependensi termasuk selectLectureApi
 
   return (
     <>
       <form className="max-w-5xl flex flex-col gap-4" onSubmit={handleSubmit}>
         <div>
-          <p className="font-semibold text-neutral2 text-base">Informasi</p>
+          {StatusForm == "edit" ? (
+            <p className="font-semibold text-neutral2 text-base">Ubah Data</p>
+          ) : (
+            <p className="font-semibold text-neutral2 text-base">Tambah Data</p>
+          )}
           <p className="text-neutral3 text-sm">Indentitas kelas</p>
           <div className="grid grid-cols-2 gap-x-4 mt-2">
             {/* nama */}
@@ -340,7 +494,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               </select>
             </div>
             <Input
-              type="text"
+              type="time"
               label="Jam Mulai"
               name="time_start"
               value={formData.time_start}
@@ -348,7 +502,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               required
             />
             <Input
-              type="text"
+              type="time"
               label="Jam selesai"
               name="time_end"
               value={formData.time_end}
@@ -434,7 +588,11 @@ const DashboardTambahKelasPage: React.FC = () => {
         </div>
 
         <div className="text-end">
-          <Button text="Tambah Kursus" type="submit" />
+          {StatusForm == "edit" ? (
+            <Button text="Update Kelas" type="submit" />
+          ) : (
+            <Button text="Tambah Kelas" type="submit" />
+          )}
         </div>
       </form>
       <ToastContainer />

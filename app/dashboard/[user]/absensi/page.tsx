@@ -45,7 +45,7 @@ const StatusFilterDropdown = ({
 
 const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
-  const role_user = Cookies.get("user");
+  const role_user = Cookies.get("user_role");
 
   const [keterangan, setKeterangan] = useState("");
   const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
@@ -73,18 +73,25 @@ const HomeDashboardAbsensiPage = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const fetchData = useCallback(async () => {
-    // get All data
-    let response;
-    if (role_user === "superadmin" || role_user === "admin") {
-      response = await getAllAbsence();
-      setDataAbsence(response.data);
-      countStatus(response.data);
-    } else if (role_user === "lecture" || role_user === "assistent") {
-      response = await getAllAbsenceLecture();
-      setDataAbsence(response.data);
-      countStatus(response.data);
+    try {
+      let response;
+      // Check the user's role and fetch data accordingly
+      if (role_user === "superadmin" || role_user === "admin") {
+        response = await getAllAbsence();
+      } else if (role_user === "lecture" || role_user === "assistent") {
+        response = await getAllAbsenceLecture();
+      }
+
+      if (response) {
+        setDataAbsence(response.data);
+        countStatus(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      window.location.reload();
+      // Optionally, you can add error handling logic here, such as setting an error state
     }
-  }, [role_user])
+  }, [role_user]);
 
   useEffect(() => {
     fetchData();

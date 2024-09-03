@@ -14,7 +14,7 @@ import SkletonListKelas from "@/app/component/skleton/SkletonListKelas";
 
 const HomeDashboardKelasPage = () => {
   // token
-  const role_user = Cookies.get("user");
+  const role_user = Cookies.get("user_role");
 
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,83 +51,6 @@ const HomeDashboardKelasPage = () => {
     setIsModalOpen(false);
   };
 
-  // gagal-------
-
-  // const fetchData = async () => {
-  //   let response = await getAllClassroomAdmin(access_token);
-  //   setListClassroom(response.data);
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [access_token]);
-
-  // --------------
-
-  // useEffect(() => {
-  //   const fetchClassrooms = async () => {
-  //     try {
-  //       let response;
-  //       if (role_user === "superadmin" || role_user === "admin") {
-  //         response = await getAllClassroomAdmin();
-  //       } else if (role_user === "lecture" || role_user === "assistant") {
-  //         response = await getAllClassroomLecture();
-  //       }
-
-  //       setAllClassrooms(response.data); // Simpan semua data kelas
-  //       setKelas(response.data); // Inisialisasi kelas dengan semua data
-  //     } catch (error) {
-  //       setError("Failed to fetch classrooms");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchClassrooms();
-  // }, []);
-
-  // useEffect(() => {
-  //   // Jika searchTerm kosong, gunakan semua data kelas
-  //   if (!searchTerm) {
-  //     setKelas(allClassrooms); // Set kelas ke semua data kelas jika searchTerm kosong
-  //   }
-  // }, [searchTerm, allClassrooms]);
-
-  // const handleSearch = async () => {
-  //   try {
-  //     setLoading(true); // Set loading state
-  //     let response;
-
-  //     // Cek jika searchTerm kosong
-  //     if (searchTerm.trim() === "") {
-  //       // Panggil API tanpa parameter pencarian untuk mendapatkan semua kelas
-  //       if (role_user === "superadmin" || role_user === "admin") {
-  //         response = await getAllClassroomAdmin(); // Panggil tanpa searchTerm
-  //       } else if (role_user === "lecture" || role_user === "assistant") {
-  //         response = await getAllClassroomLecture(); // Panggil tanpa searchTerm
-  //       }
-  //     } else {
-  //       // Jika ada searchTerm, panggil API dengan parameter pencarian
-  //       if (role_user === "superadmin" || role_user === "admin") {
-  //         response = await getAllClassroomAdmin(searchTerm);
-  //       } else if (role_user === "lecture" || role_user === "assistant") {
-  //         response = await getAllClassroomLecture(searchTerm);
-  //       }
-  //     }
-
-  //     setKelas(response.data); // Update state kelas dengan hasil pencarian atau semua data
-  //   } catch (error) {
-  //     setError("Failed to fetch classrooms");
-  //   } finally {
-  //     setLoading(false); // Set loading state kembali ke false
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   handleSearch();
-  // }, []);
-
-  //  eksperimen
   const fetchClassrooms = useCallback(
     async (page: number = 1, searchTerm: string = "") => {
       setLoading(true);
@@ -153,21 +76,53 @@ const HomeDashboardKelasPage = () => {
     [role_user]
   );
 
-  useEffect(() => {
-    fetchClassrooms(currentPage, searchTerm);
-  }, [fetchClassrooms, currentPage, searchTerm]);
+  const [isSearching, setIsSearching] = useState(false); // State untuk status pencarian
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    console.log("Current search term:", value);
+  };
+
+  // const fetchClassrooms = useCallback(
+  //   async (page = 1, search = "") => {
+  //     setLoading(true);
+  //     try {
+  //       let response;
+  //       if (role_user === "superadmin" || role_user === "admin") {
+  //         response = await getAllClassroomAdmin(search, page);
+  //       } else if (role_user === "lecture" || role_user === "assistant") {
+  //         response = await getAllClassroomLecture(search, page);
+  //       }
+  //       const data = response.data;
+  //       setAllClassrooms(data); // Simpan semua data asli
+  //       setKelas(data); // Tampilkan data
+  //       setTotalPages(response.meta.pagination.total_pages);
+  //     } catch (error) {
+  //       setError("Failed to fetch classrooms");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [role_user]
+  // );
 
   useEffect(() => {
-    // ketika telah mencari dan hapus semua input
     if (searchTerm === "") {
+      // Fetch all data jika input kosong
       fetchClassrooms(currentPage);
+      setIsSearching(false); // Reset status pencarian
     }
-  }, [fetchClassrooms, searchTerm, currentPage]);
+  }, [searchTerm, currentPage, fetchClassrooms]);
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
     setCurrentPage(1); // Reset ke halaman 1 setiap kali pencarian baru dilakukan
-    fetchClassrooms(1, searchTerm);
+    setIsSearching(true); // Set status pencarian
+    const filtered = allClassrooms.filter((classroom) =>
+      classroom.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setKelas(filtered); // Tampilkan hasil filter
   };
 
   const handleNextPage = () => {
@@ -197,7 +152,8 @@ const HomeDashboardKelasPage = () => {
               className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               placeholder="Cari kelas"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              // onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleInputChange}
             />
 
             <button
@@ -207,21 +163,25 @@ const HomeDashboardKelasPage = () => {
               Search
             </button>
           </div>
-          <Link
-            href={"kelas/tambah"}
-            className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20px"
-              viewBox="0 0 24 24"
-              width="20px"
+          {role_user == "superadmin" || role_user == "admin" ? (
+            <Link
+              href={"kelas/tambah"}
+              className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
             >
-              <path d="M0 0h24v24H0V0z" fill="none" />
-              <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
-            </svg>
-            <p>Tambah Kelas</p>
-          </Link>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 0 24 24"
+                width="20px"
+              >
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
+              </svg>
+              <p>Tambah Kelas</p>
+            </Link>
+          ) : (
+            <></>
+          )}
         </div>
 
         {isMobile ? (
@@ -277,38 +237,48 @@ const HomeDashboardKelasPage = () => {
                         <path d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                       </svg>
                     </Link>
-                    <Link
-                      href="/"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleOpenModal();
-                      }}
-                      className="flex items-center bg-yellow2 p-2 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
-                      >
-                        <path d="M0 0h24v24H0V0z" fill="none" />
-                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="/"
-                      className="flex items-center bg-red2 p-2 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="18px"
-                        viewBox="0 0 24 24"
-                        width="18px"
-                      >
-                        <path d="M0 0h24v24H0V0z" fill="none" />
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                      </svg>
-                    </Link>
+
+                    {role_user == "superadmin" || role_user == "admin" ? (
+                      <>
+                        <Link
+                          href={{
+                            pathname: `kelas/tambah`, // atau halaman yang sesuai jika berbeda
+                            query: {
+                              idClassroom: classroom.id,
+                              status: "edit",
+                            },
+                          }}
+                          className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="18px"
+                            viewBox="0 0 24 24"
+                            width="18px"
+                          >
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                            <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                          </svg>
+                        </Link>
+
+                        <Link
+                          href={"/"}
+                          className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="18px"
+                            viewBox="0 0 24 24"
+                            width="18px"
+                          >
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                          </svg>
+                        </Link>
+                      </>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </div>
               ))}
@@ -399,47 +369,48 @@ const HomeDashboardKelasPage = () => {
                               <path d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                             </svg>
                           </Link>
-                          <Link
-                            href={"/"}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleOpenModal();
-                            }}
-                            className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              height="18px"
-                              viewBox="0 0 24 24"
-                              width="18px"
-                            >
-                              <path d="M0 0h24v24H0V0z" fill="none" />
-                              <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                            </svg>
-                          </Link>
+                          {/* tombol edit, gunakan aja query untuk href passing data id classroom ke edit */}
+                          {role_user == "superadmin" || role_user == "admin" ? (
+                            <>
+                              <Link
+                                href={{
+                                  pathname: `kelas/tambah`, // atau halaman yang sesuai jika berbeda
+                                  query: {
+                                    idClassroom: classroom.id,
+                                    status: "edit",
+                                  },
+                                }}
+                                className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path d="M0 0h24v24H0V0z" fill="none" />
+                                  <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                </svg>
+                              </Link>
 
-                          <Modal
-                            title="Kelas"
-                            isOpen={isModalOpen}
-                            onClose={handleCloseModal}
-                          >
-                            <EditFormKelas />
-                          </Modal>
-
-                          <Link
-                            href={"/"}
-                            className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              height="18px"
-                              viewBox="0 0 24 24"
-                              width="18px"
-                            >
-                              <path d="M0 0h24v24H0V0z" fill="none" />
-                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                            </svg>
-                          </Link>
+                              <Link
+                                href={"/"}
+                                className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="18px"
+                                  viewBox="0 0 24 24"
+                                  width="18px"
+                                >
+                                  <path d="M0 0h24v24H0V0z" fill="none" />
+                                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                </svg>
+                              </Link>
+                            </>
+                          ) : (
+                            <></>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -45,7 +45,7 @@ const MasukPage = () => {
       if (response.meta.success) {
         // set cookie
         Cookies.set("access_token", response.token);
-        Cookies.set("user", response.data.role);
+        Cookies.set("user_role", response.data.role);
         // push to dashboard
         const path =
           roleToPath[response.data.role as keyof typeof roleToPath] || "/";
