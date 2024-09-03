@@ -25,7 +25,7 @@ export default function DetailTambahKelas() {
   const idAssignment = searchParams.get("idAssignment"); // Cek apakah ada idAssignment
   // State untuk input
   const [judul, setJudul] = useState<string>("");
-  const [jenis, setJenis] = useState<string>("");
+  const [jenis, setJenis] = useState<string>("task");
   const [description, setDescription] = useState<string>("");
   const [descriptionCharCount, setDescriptionCharCount] = useState<number>(0);
   const [start_time, setStartTime] = useState<string>("");
