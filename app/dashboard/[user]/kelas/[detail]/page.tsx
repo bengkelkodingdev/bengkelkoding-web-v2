@@ -1233,8 +1233,8 @@ const DashboardDetailKelasPage = () => {
                 <div id="tugas" className="mx-auto mt-4">
                   {/* list Tugas */}
                   <h3 className="font-semibold mb-3">Tabel Penugasan</h3>
-                  <div className="flex  w-full justify-between items-center">
-                    <div className="relative ml-2">
+                  <div className="flex flex-col sm:flex-row sm:row gap-2  w-full justify-between items-center">
+                    {/* <div className="relative ml-2">
                       <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
                         <svg
                           className="w-5 h-5 text-neutral3"
@@ -1256,7 +1256,23 @@ const DashboardDetailKelasPage = () => {
                         className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
                         placeholder="Cari Tugas"
                       />
+                    </div> */}
+                    {/* Search */}
+                    <div className=" w-auto flex ">
+                      <input
+                        type="text"
+                        id="table-search"
+                        className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                        placeholder="Cari kelas"
+
+                        // onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+
+                      <button className="ml-2 px-4 py-2 bg-primary1 text-white rounded-md">
+                        Search
+                      </button>
                     </div>
+
                     <Link
                       href={{
                         pathname: `${kelasItem.classroom.id}/tambah-tugas`,
@@ -1264,7 +1280,7 @@ const DashboardDetailKelasPage = () => {
                           idClassroom: `${kelasItem.classroom.id}`,
                         },
                       }}
-                      className="w-max bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+                      className="w-max bg-white border border-blue-600 hover:text-white hover:bg-primary2 focus:ring-primary5 px-5 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration- mb-3"
                     >
                       + Tambah Tugas
                     </Link>
@@ -1285,42 +1301,6 @@ const DashboardDetailKelasPage = () => {
                               {tugasItem.type}
                             </span>
                           </div>
-                          <div className="text-xs mb-2">
-                            <p>{tugasItem.description}</p>
-                          </div>
-
-                          <div className="flex flex-col justify-center items-center text-xs mb-2 gap-2">
-                            <p className="strong">terkumpul</p>
-                            <p>
-                              {tugasItem.student.total_submitted} /{" "}
-                              {tugasItem.student.student_need_to_submit}
-                            </p>
-                          </div>
-                          <div className="text-xs mb-2">
-                            <p>
-                              <strong>File:</strong>
-                            </p>
-                            {tugasItem.file == null ? (
-                              <p>Tidak ada file</p>
-                            ) : (
-                              <a
-                                href={tugasItem.file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="24px"
-                                  viewBox="0 -960 960 960"
-                                  width="24px"
-                                  fill="#2014c8"
-                                >
-                                  <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
-                                </svg>
-                              </a>
-                            )}
-                          </div>
-
                           {/* waktu */}
                           <div className="flex justify-between items-center text-xs mb-2">
                             {/* start */}
@@ -1361,6 +1341,44 @@ const DashboardDetailKelasPage = () => {
                               </div>
                             </div>
                           </div>
+                          {/* deskripsi */}
+                          <div className="text-xs mb-2">
+                            <p className="text-justify my-3">
+                              {tugasItem.description}
+                            </p>
+                          </div>
+
+                          {/* detail terkumpul + file */}
+                          <div className="flex gap-2">
+                            <div className="flex justify-center items-center text-xs w-full rounded-md bg-neutral-100">
+                              <p>
+                                {tugasItem.student.total_submitted} /{" "}
+                                {tugasItem.student.student_need_to_submit}
+                              </p>
+                            </div>
+                            <div className="w-full flex items-center justify-center py-2 rounded-md bg-blue-100">
+                              {tugasItem.file == null ? (
+                                <p>Tidak ada file</p>
+                              ) : (
+                                <a
+                                  href={tugasItem.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 -960 960 960"
+                                    width="24px"
+                                    fill="#2014c8"
+                                  >
+                                    <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+                                  </svg>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+
                           <div className="flex justify-center items-center gap-4 mt-3">
                             <Link
                               href={{
