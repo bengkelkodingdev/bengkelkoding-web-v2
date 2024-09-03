@@ -64,17 +64,15 @@ export const createPutRequest = async (
 // Delete
 export const deleteRequest = async (
   url: string,
-  data: any,
+
   access_token: string
 ): Promise<AxiosResponse> => {
   try {
     const config = {
       headers: { Authorization: `Bearer ${access_token}` },
-      data: data,
     };
     const response: AxiosResponse = await Axios.delete(
       `${API_URL}${url}`,
-
       config
     );
     return response.data;
