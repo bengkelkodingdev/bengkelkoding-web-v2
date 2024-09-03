@@ -301,48 +301,54 @@ const StudentClassroomPage = () => {
             </h2>
           </div>
           {/* Daftar Informasi Kelas */}
-          <div className="w-full flex flex-col gap-2 lg:gap-3">
-            {classroom.class_informations.map((information) => (
-              <div
-                key={information.id}
-                className="h-max w-full border border-neutral4 rounded-xl text-left py-2 lg:py-4 px-3 lg:px-6 focus:shadow-[rgba(7,_65,_210,_0.1)_0px_4px_10px] hover:shadow-[rgba(7,_65,_210,_0.1)_0px_4px_10px] transition-all ease-in-out duration-200"
-              >
-                {/* pertanyaan */}
-                <div className="flex justify-between items-center gap-2">
-                  <strong className="font-semibold text-neutral1 text-xs md:text-sm lg:text-base">
-                    {information.title}
-                  </strong>
-                  <div
-                    className="w-8 h-8 cursor-pointer"
-                    onClick={() => toggleFAQ(information.id)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="30px"
-                      viewBox="0 0 24 24"
-                      width="30px"
-                      className={`fill-neutral1 w-8 h-8 transform transition-transform duration-200 ${
-                        openIndex === information.id ? "rotate-180" : ""
-                      }`}
+          {classroom.class_informations.length > 0 ? (
+            <div className="w-full flex flex-col gap-2 lg:gap-3">
+              {classroom.class_informations.map((information) => (
+                <div
+                  key={information.id}
+                  className="h-max w-full border border-neutral4 rounded-xl text-left py-2 lg:py-4 px-3 lg:px-6 focus:shadow-[rgba(7,_65,_210,_0.1)_0px_4px_10px] hover:shadow-[rgba(7,_65,_210,_0.1)_0px_4px_10px] transition-all ease-in-out duration-200"
+                >
+                  {/* pertanyaan */}
+                  <div className="flex justify-between items-center gap-2">
+                    <strong className="font-semibold text-neutral1 text-xs md:text-sm lg:text-base">
+                      {information.title}
+                    </strong>
+                    <div
+                      className="w-8 h-8 cursor-pointer"
+                      onClick={() => toggleFAQ(information.id)}
                     >
-                      <path d="M0 0h24v24H0V0z" fill="none" />
-                      <path d="M8.71 11.71l2.59 2.59c.39.39 1.02.39 1.41 0l2.59-2.59c.63-.63.18-1.71-.71-1.71H9.41c-.89 0-1.33 1.08-.7 1.71z" />
-                    </svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="30px"
+                        viewBox="0 0 24 24"
+                        width="30px"
+                        className={`fill-neutral1 w-8 h-8 transform transition-transform duration-200 ${
+                          openIndex === information.id ? "rotate-180" : ""
+                        }`}
+                      >
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path d="M8.71 11.71l2.59 2.59c.39.39 1.02.39 1.41 0l2.59-2.59c.63-.63.18-1.71-.71-1.71H9.41c-.89 0-1.33 1.08-.7 1.71z" />
+                      </svg>
+                    </div>
+                  </div>
+                  {/* jawaban */}
+                  <div
+                    className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
+                      openIndex === information.id ? "max-h-screen" : "max-h-0"
+                    }`}
+                  >
+                    <p className="text-neutral2 pt-4 text-xs md:text-sm">
+                      {information.description}
+                    </p>
                   </div>
                 </div>
-                {/* jawaban */}
-                <div
-                  className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
-                    openIndex === information.id ? "max-h-screen" : "max-h-0"
-                  }`}
-                >
-                  <p className="text-neutral2 pt-4 text-xs md:text-sm">
-                    {information.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 rounded-xl border border-neutral4 text-center text-xs md:text-sm lg:text-base">
+              Belum ada informasi di kelas ini!
+            </div>
+          )}
         </div>
 
         {/* Statistik Log Kehadiran */}
@@ -475,7 +481,7 @@ const StudentClassroomPage = () => {
               {classroom.assignments.map((assignment) => (
                 <Link
                   key={assignment.id}
-                  href={`student/classroom/${classroom.id}/assignment/${assignment.id}`}
+                  href={`${classroom.id}/assignment/${assignment.id}`}
                   className="flex flex-col md:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 md:items-center gap-2 md:gap-3 lg:gap-4  cursor-pointer transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
                 >
                   {/* Data Informasi Tugas */}
