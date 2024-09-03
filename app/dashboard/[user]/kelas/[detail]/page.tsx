@@ -33,6 +33,7 @@ import {
 } from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
 import EditFormInfo from "@/app/component/general/EditFormInfo";
 import {
+  deleteInformationAdmin,
   postInformationAdmin,
   updateInformationAdmin,
 } from "@/app/api/admin/api-kelas/informasi/API-Information";
@@ -237,6 +238,17 @@ const DashboardDetailKelasPage = () => {
       toast.success(`Informasi berhasil diperbarui 😁`);
     } catch (error) {
       toast.error(`Gagal memperbarui informasi`, error);
+    }
+  };
+
+  const handleDeleteInfo = async (idClassroom, idInfo) => {
+    try {
+      await deleteInformationAdmin(idClassroom, idInfo, access);
+      toast.success(`Berhasil menghapus tugas 😁`);
+      fetchClassrooms();
+    } catch (error) {
+      console.error("Gagal menghapus tugas:", error);
+      toast.error(`Gagal menghapus tugas`);
     }
   };
 
@@ -1729,7 +1741,15 @@ const DashboardDetailKelasPage = () => {
                                 </svg>
                               </Link>
                               {/* delete */}
-                              <button className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150">
+                              <button
+                                onClick={() =>
+                                  handleDeleteInfo(
+                                    kelasItem.classroom.id,
+                                    informasi.id
+                                  )
+                                }
+                                className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   height="18px"

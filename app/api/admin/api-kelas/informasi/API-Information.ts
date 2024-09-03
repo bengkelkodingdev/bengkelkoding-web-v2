@@ -3,6 +3,7 @@ import {
   createPostRequest,
   createPutRequest,
   createRequest,
+  deleteRequest,
 } from "@/app/api/request";
 
 export const postInformationAdmin = async (
@@ -14,6 +15,18 @@ export const postInformationAdmin = async (
     title: titleInformation,
     description: descInformation,
   });
+
+// /api/v1/admin/classrooms/2/informations/9
+
+export const deleteInformationAdmin = async (
+  idClassroom: number,
+  idInfo: number,
+  access_token: string
+): Promise<AxiosResponse> =>
+  deleteRequest(
+    `/api/v1/admin/classrooms/${idClassroom}/informations/${idInfo}`,
+    access_token
+  );
 
 export const updateInformationAdmin = async (
   idClassroom: number,
