@@ -242,13 +242,13 @@ const HomeDashboardKelasPage = () => {
                       <>
                         <Link
                           href={{
-                            pathname: `kelas/tambah`, // atau halaman yang sesuai jika berbeda
+                            pathname: `kelas/tambah`,
                             query: {
                               idClassroom: classroom.id,
                               status: "edit",
                             },
                           }}
-                          className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+                          className="flex items-center bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -263,7 +263,7 @@ const HomeDashboardKelasPage = () => {
 
                         <Link
                           href={"/"}
-                          className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                          className="flex items-center bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

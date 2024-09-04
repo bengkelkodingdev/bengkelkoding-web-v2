@@ -19,6 +19,7 @@ import { getSelectPaths } from "@/app/api/admin/api-kelas/tambah-kelas/select-pa
 import { getSelectPeriods } from "@/app/api/admin/api-kelas/tambah-kelas/select-period";
 import { useSearchParams } from "next/navigation";
 import { getDetailClassroom } from "@/app/api/admin/api-kelas/getDetail-kelas";
+import InputBasic from "@/app/component/general/InputBasic";
 
 const DashboardTambahKelasPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -340,10 +341,10 @@ const DashboardTambahKelasPage: React.FC = () => {
             <p className="font-semibold text-neutral2 text-base">Tambah Data</p>
           )}
           <p className="text-neutral3 text-sm">Indentitas kelas</p>
-          <div className="grid grid-cols-2 gap-x-4 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 mt-2">
             {/* nama */}
             <div>
-              <Input
+              <InputBasic
                 type="text"
                 label="Nama"
                 name="name"
@@ -352,8 +353,8 @@ const DashboardTambahKelasPage: React.FC = () => {
                 required
               />
               {/* dosen */}
-              <div className="relative" ref={dropdownRef}>
-                <Input
+              <div className="block" ref={dropdownRef}>
+                <InputBasic
                   type="text"
                   label="Cari Dosen"
                   name="searchDosen"
@@ -363,7 +364,7 @@ const DashboardTambahKelasPage: React.FC = () => {
                 />
 
                 {isDropdownOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                  <div className="absolute z-10 w-[90%] sm:w-[40%] mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
                     {filteredDosenOptions.length > 0 ? (
                       filteredDosenOptions.map((option) => (
                         <div
@@ -430,14 +431,14 @@ const DashboardTambahKelasPage: React.FC = () => {
               </div>
             </div>
             {/* deskripsi */}
-            <div className="h-full">
+            <div className="h-full mt-3 mb-24 sm:mt-0 sm:mb-4">
               <label htmlFor="description" className="block text-neutral2">
                 Deskripsi
               </label>
               <textarea
                 name="description"
                 id="description"
-                className="h-[82%] mt-1 relative shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                className="h-[82%] mt-1  shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
                 value={formData.description}
                 onChange={handleChange}
                 maxLength={maxDescriptionLength}
@@ -457,12 +458,13 @@ const DashboardTambahKelasPage: React.FC = () => {
         </div>
 
         <div>
-          <p className="font-semibold text-neutral2 text-base">Detail</p>
+          <p className="font-semibold text-neutral2 text-base mt-3 ">Detail</p>
           <p className="text-neutral3 text-sm">
             Informasi detail terkait kelas
           </p>
-          <div className="grid grid-cols-4 gap-x-4 mt-2">
-            <Input
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 mt-2">
+            {/* kuota */}
+            <InputBasic
               type="number"
               label="Kuota"
               name="quota"
@@ -493,7 +495,9 @@ const DashboardTambahKelasPage: React.FC = () => {
                 <option value={0}>Minggu</option>
               </select>
             </div>
-            <Input
+
+            {/* jam mulai */}
+            <InputBasic
               type="time"
               label="Jam Mulai"
               name="time_start"
@@ -501,7 +505,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <Input
+            <InputBasic
               type="time"
               label="Jam selesai"
               name="time_end"
@@ -509,7 +513,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <Input
+            <InputBasic
               type="text"
               label="Ruangan"
               name="room"
@@ -528,7 +532,7 @@ const DashboardTambahKelasPage: React.FC = () => {
             Presentase untuk penghitungan nilai akhir
           </p>
           <div className="grid grid-cols-3 gap-x-4 mt-2">
-            <Input
+            <InputBasic
               type="number"
               label="Tugas"
               name="task_percent"
@@ -536,7 +540,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <Input
+            <InputBasic
               type="number"
               label="UTS"
               name="uts_percent"
@@ -544,7 +548,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <Input
+            <InputBasic
               type="number"
               label="UAS"
               name="uas_percent"
@@ -559,8 +563,8 @@ const DashboardTambahKelasPage: React.FC = () => {
             Kontrak Pertemuan
           </p>
           <p className="text-neutral3 text-sm">Ketentuan penjadwalan</p>
-          <div className="grid grid-cols-3 gap-x-4 mt-2">
-            <Input
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 mt-2">
+            <InputBasic
               type="number"
               label="Maksimal izin"
               name="max_absent"
@@ -568,7 +572,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <Input
+            <InputBasic
               type="number"
               label="Jumlah Pertemuan"
               name="total_class_session"
@@ -576,7 +580,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <Input
+            <InputBasic
               type="date"
               label="Mulai Pertemuan"
               name="start_date"
@@ -595,6 +599,7 @@ const DashboardTambahKelasPage: React.FC = () => {
           )}
         </div>
       </form>
+
       <ToastContainer />
     </>
   );
