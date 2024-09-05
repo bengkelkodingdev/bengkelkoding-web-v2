@@ -65,6 +65,19 @@ const DetailKelasPageSesi = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isKetModalOpen, setIsKetModalOpen] = useState(false);
 
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 650);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  });
+
   // modal open
   const openModalForApproval = (idClassroom: number, idAbsence: number) => {
     setSelectedIdClassroom(idClassroom);
@@ -407,7 +420,7 @@ const DetailKelasPageSesi = () => {
 
   // test 2024-04-05
   // const today = new Date().toISOString().split("T")[0];
-  const today = "2024-04-12";
+  const today = "2024-04-04";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
   console.log("sesi sekarang", sesi);
   let count = 1;
@@ -453,7 +466,7 @@ const DetailKelasPageSesi = () => {
                 <dt className="w-8 h-8 rounded-full bg-white fill-white bg-opacity-10 text-neutral5  text-sm font-medium flex items-center justify-center mb-1">
                   {detailClassRoom.presence.student_count}
                 </dt>
-                <dd className="text-neutral5 text-sm font-medium">
+                <dd className="text-neutral5 text-center text-xs md:text-sm font-medium">
                   Total Mahasiswa
                 </dd>
               </dl>
@@ -476,7 +489,7 @@ const DetailKelasPageSesi = () => {
             </div>
             <button
               onClick={isDateMatching ? generateRandomText : null}
-              className={`btn-generate w-1/4 mt-5 p-3 font-semibold text-white border-2 border-slate-200 
+              className={`btn-generate w-1/2 lg:w-1/3 mt-5 p-3 font-semibold text-white border-2 border-slate-200 
                 ${
                   isDateMatching
                     ? "bg-gradient-to-r from-blue-700 to-blue-600 hover:bg-[#3263de]"
@@ -495,16 +508,20 @@ const DetailKelasPageSesi = () => {
               <div className=" flex items-center justify-center border-2 border-gray-200 border-dashed h-[40vh] rounded-lg dark:border-gray-700">
                 {/* <p>QR Code belum dihasilkan</p> */}
                 {qrText ? (
-                  <div className="w-full p-5 ">
-                    <QRCodeSVG className="w-full" height={230} value={qrText} />
-                    <p className="pt-5 text-center">
-                      QR Code akan hilang dalam {countdown} detik
-                    </p>
+                  <div className="w-full h-full  p-5 ">
+                    <QRCodeSVG className="w-full h-full" value={qrText} />
                   </div>
                 ) : (
                   <p>QR Code belum dihasilkan</p>
                 )}
               </div>
+              {qrText ? (
+                <p className="pt-5 text-center">
+                  QR Code akan hilang dalam {countdown} detik
+                </p>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </div>
@@ -541,7 +558,7 @@ const DetailKelasPageSesi = () => {
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-3">
+          <div className="flex justify-between flex-wrap-reverse lg:flex-row gap-2">
             {/* List Mhs */}
             <div className="left-belumabsen w-full lg:w-[70%]">
               <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">
@@ -550,94 +567,179 @@ const DetailKelasPageSesi = () => {
                     List mhs
                   </p>
                 </div>
-                <table className=" w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                  <thead className="text-sm text-neutral2 bg-gray-100 ">
-                    <tr>
-                      <th scope="col" className="p-4">
-                        No
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        Nama
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        Nim
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        Status
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {detailClassRoom.students.map((listMhs) => (
-                      <tr
+
+                {isMobile ? (
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {detailClassRoom.students.map((listMhs, index) => (
+                      <div
                         key={listMhs.id}
-                        className="bg-white border-b hover:bg-gray-50"
+                        className="bg-white border rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
                       >
-                        <td className="w-4 p-4">{count++}</td>
-                        <th
-                          scope="row"
-                          className="px-6 py-4 whitespace-nowrap "
-                        >
-                          <div className="text-xs flex flex-col gap-1">
-                            <p className="font-medium text-neutral2">
-                              {listMhs.name}
-                            </p>
+                        <div className="flex justify-between items-center mb-4">
+                          {/* No */}
+                          <div className="text-gray-600 font-semibold">
+                            No: {index + 1}
                           </div>
-                        </th>
-                        <td className="px-6 py-4">{listMhs.identity_code}</td>
+                        </div>
 
-                        <td className="px-6 py-4">
-                          {listMhs.is_present ? (
-                            <p className="w-max text-sm rounded-xl px-4 text-green-600 bg-green-100">
-                              Hadir
+                        {/* Nama */}
+                        <div className="flex flex-col ">
+                          <p className="font-medium text-lg  text-neutral2">
+                            {listMhs.name}
+                          </p>
+                          <div className=" w-full flex  items-center py-1 gap-2">
+                            <p className="font-normal text-neutral2 text-sm">
+                              {" "}
+                              {listMhs.identity_code}
                             </p>
-                          ) : (
-                            <p className="w-max text-sm rounded-xl px-4 text-red-600 bg-red-100">
-                              Tidak Hadir
-                            </p>
-                          )}
-                        </td>
 
-                        <td className="px-6 py-4">
+                            {/* Status */}
+                            <div className="">
+                              {listMhs.is_present ? (
+                                <p className="inline-block text-sm rounded-full px-4 py-1 text-green-700 bg-green-100 font-medium">
+                                  Hadir
+                                </p>
+                              ) : (
+                                <p className="inline-block text-sm rounded-full px-4 py-2 text-red-700 bg-red-100 font-medium">
+                                  Tidak Hadir
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Aksi */}
+                        <div className="mt-4 flex justify-end items-center">
                           {listMhs.is_present ? (
-                            <div className="flex gap-1">
-                              <div className="block bg-neutral3 p-1 rounded-md fill-white transition-all ease-in-out duration-150">
+                            <div className="flex gap-2">
+                              <div className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all ease-in-out duration-150 cursor-pointer">
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   height="24px"
                                   viewBox="0 -960 960 960"
                                   width="24px"
-                                  fill="#e8eaed"
+                                  fill="#4B5563"
                                 >
                                   <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
                                 </svg>
                               </div>
                             </div>
                           ) : (
-                            <div className="flex gap-1">
+                            <div className="flex gap-2">
                               <button
                                 onClick={() => handleSaveStatus(listMhs)}
-                                className="block bg-green2 p-1 rounded-md fill-white "
+                                className="p-2 rounded-full bg-green-100 hover:bg-green-200 transition-all ease-in-out duration-150"
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   height="24px"
                                   viewBox="0 -960 960 960"
                                   width="24px"
+                                  fill="#10B981"
                                 >
                                   <path d="M720-120H320v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h218q32 0 56 24t24 56v80q0 7-1.5 15t-4.5 15L794-168q-9 20-30 34t-44 14ZM240-640v520H80v-520h160Z" />
                                 </svg>
                               </button>
                             </div>
                           )}
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                ) : (
+                  <div className="w-full overflow-x-auto">
+                    <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg ">
+                      <thead className="text-sm text-neutral2 bg-gray-100 rounded">
+                        <tr>
+                          <th scope="col" className="p-4">
+                            No
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Nama
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Nim
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Status
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Aksi
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {detailClassRoom.students.map((listMhs) => (
+                          <tr
+                            key={listMhs.id}
+                            className="bg-white border-b hover:bg-gray-50"
+                          >
+                            <td className="w-4 p-4">{count++}</td>
+                            <th
+                              scope="row"
+                              className="px-6 py-4 whitespace-nowrap "
+                            >
+                              <div className="text-xs flex flex-col gap-1">
+                                <p className="font-medium text-neutral2">
+                                  {listMhs.name}
+                                </p>
+                              </div>
+                            </th>
+                            <td className="px-6 py-4">
+                              {listMhs.identity_code}
+                            </td>
+
+                            <td className="px-6 py-4">
+                              {listMhs.is_present ? (
+                                <p className="w-max text-sm rounded-xl px-4 text-green-600 bg-green-100">
+                                  Hadir
+                                </p>
+                              ) : (
+                                <p className="w-max text-sm rounded-xl px-4 text-red-600 bg-red-100">
+                                  Tidak Hadir
+                                </p>
+                              )}
+                            </td>
+
+                            <td className="px-6 py-4">
+                              {listMhs.is_present ? (
+                                <div className="flex gap-1">
+                                  <div className="block bg-neutral3 p-1 rounded-md fill-white transition-all ease-in-out duration-150">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="24px"
+                                      viewBox="0 -960 960 960"
+                                      width="24px"
+                                      fill="#e8eaed"
+                                    >
+                                      <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex gap-1">
+                                  <button
+                                    onClick={() => handleSaveStatus(listMhs)}
+                                    className="block bg-green2 p-1 rounded-md fill-white "
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="24px"
+                                      viewBox="0 -960 960 960"
+                                      width="24px"
+                                    >
+                                      <path d="M720-120H320v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h218q32 0 56 24t24 56v80q0 7-1.5 15t-4.5 15L794-168q-9 20-30 34t-44 14ZM240-640v520H80v-520h160Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
               <nav
@@ -713,106 +815,96 @@ const DetailKelasPageSesi = () => {
 
             {/* list izin */}
 
-            <div className="right-izin w-full lg:w-[30%]">
-              <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">
-                <div className="text-center w-full flex justify-left ">
-                  <p className="bg-yellow-200 p-1 w-3/12 rounded-lg mb-3 ">
+            <div className="right-izin w-full md:w-1/2 lg:w-[25%]">
+              <div className="flex flex-col lg:flex-row flex-wrap space-y-4 md:space-y-0 p-3 border-2 border-gray-200 border-dashed">
+                <div className="text-center w-auto  flex justify-left ">
+                  <p className="bg-yellow-200 p-1 px-4 w-auto rounded-lg mb-3 ">
                     List Izin
                   </p>
                 </div>
-                <table className="text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                  <thead className=" text-sm text-neutral2 bg-gray-100 ">
-                    <tr>
-                      <th scope="col" className="p-4">
-                        No
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        Nama
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
+
+                {/* card izin */}
+                <div className="text-sm  text-left rtl:text-right text-neutral3 rounded-lg ">
+                  <div className="flex flex-col gap-2">
                     {detailClassRoom.absence_students.map((absen, index) => (
-                      <tr
+                      <div
                         key={absen.id}
-                        className="bg-white border-b hover:bg-gray-50"
+                        className="bg-slate-100 p-3 rounded-md border-b hover:bg-gray-50"
                       >
-                        <td className="w-4 p-4">{index + 1}</td>
-                        <th
-                          scope="row"
-                          className="px-6 py-4 whitespace-nowrap "
-                        >
-                          <div className="text-xs flex flex-col gap-1">
-                            <p className="font-medium text-neutral2">
-                              {absen.name}
+                        <div className="text-xs flex flex-col gap-1">
+                          <p className="font-medium text-neutral2">
+                            {absen.name}
+                          </p>
+                          <div className="flex items-center flex-wrap py-1 gap-2">
+                            <p className="font-normal text-sm">
+                              {" "}
+                              {absen.identity_code}
                             </p>
-                            <div className="flex items-center py-1 gap-2">
-                              <p className="font-normal text-sm">
-                                {" "}
-                                {absen.identity_code}
+                            {absen.approve_status === 2 ? (
+                              <p className="text-xs rounded-xl px-4 py-1 text-green-600 bg-green-100">
+                                Diterima
                               </p>
-                              {absen.approve_status === 2 ? (
-                                <p className="text-xs rounded-xl px-4 text-green-600 bg-green-100">
-                                  Diterima
-                                </p>
-                              ) : absen.approve_status === 3 ? (
-                                <p className="text-xs text-center rounded-xl px-4 text-red-600 bg-red-100">
-                                  Ditolak
-                                </p>
-                              ) : (
-                                <p className="text-xs text-center rounded-xl px-4 text-yellow-600 bg-yellow-100">
-                                  Menunggu
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex gap-3 items-center">
-                              <Link href={absen.attachment}>File</Link>
-                              <button
-                                onClick={() =>
-                                  openModalForApproval(Number(sesi), absen.id)
-                                }
-                                className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="18px"
-                                  viewBox="0 0 24 24"
-                                  width="18px"
-                                >
-                                  <path
-                                    d="M0 0h24v24H0V0zm0 0h24v24H0V0z"
-                                    fill="none"
-                                  />
-                                  <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
-                                </svg>
-                              </button>
-                              <button
-                                onClick={() =>
-                                  openModalForRejection(Number(sesi), absen.id)
-                                }
-                                className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
-                              >
-                                <span className="sr-only">EditFormKelas</span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="18px"
-                                  viewBox="0 0 24 24"
-                                  width="18px"
-                                >
-                                  <path
-                                    d="M0 0h24v24H0V0zm0 0h24v24H0V0z"
-                                    fill="none"
-                                  />
-                                  <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
-                                </svg>
-                              </button>
-                            </div>
+                            ) : absen.approve_status === 3 ? (
+                              <p className="text-xs text-center rounded-xl px-4 py-1 text-red-600 bg-red-100">
+                                Ditolak
+                              </p>
+                            ) : (
+                              <p className="text-xs text-center rounded-xl px-4 py-1 text-yellow-600 bg-yellow-100">
+                                Menunggu
+                              </p>
+                            )}
                           </div>
-                        </th>
-                      </tr>
+                          <div className="flex gap-3 items-center">
+                            <Link
+                              href={absen.attachment ? absen.attachment : "#"}
+                            >
+                              File
+                            </Link>
+                            <button
+                              onClick={() =>
+                                openModalForApproval(Number(sesi), absen.id)
+                              }
+                              className="block bg-green-500 p-1 rounded-md fill-white hover:bg-green-600 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                              >
+                                <path
+                                  d="M0 0h24v24H0V0zm0 0h24v24H0V0z"
+                                  fill="none"
+                                />
+                                <path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01zM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() =>
+                                openModalForRejection(Number(sesi), absen.id)
+                              }
+                              className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                            >
+                              <span className="sr-only">EditFormKelas</span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                              >
+                                <path
+                                  d="M0 0h24v24H0V0zm0 0h24v24H0V0z"
+                                  fill="none"
+                                />
+                                <path d="m10.88 21.94 5.53-5.54c.37-.37.58-.88.58-1.41V5c0-1.1-.9-2-2-2H6c-.8 0-1.52.48-1.83 1.21L.91 11.82C.06 13.8 1.51 16 3.66 16h5.65l-.95 4.58c-.1.5.05 1.01.41 1.37.59.58 1.53.58 2.11-.01zM21 3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
               </div>
 
               {/* IZIN PERLU DI PERBAIKI */}

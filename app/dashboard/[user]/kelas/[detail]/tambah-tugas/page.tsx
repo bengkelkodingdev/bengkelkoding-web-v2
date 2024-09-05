@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import InputBasic from "@/app/component/general/InputBasic";
 
 export default function DetailTambahKelas() {
   const searchParams = useSearchParams();
@@ -174,10 +175,10 @@ export default function DetailTambahKelas() {
             {idAssignment ? "Edit Tugas" : "Tambah Tugas"}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 mt-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 mt-2">
           {/* judul tugas  */}
           <div className="kiri">
-            <Input
+            <InputBasic
               type="text"
               label="Judul"
               name="judul"
@@ -185,9 +186,9 @@ export default function DetailTambahKelas() {
               onChange={(e) => setJudul(e.target.value)}
               required
             />
-            <div className="flex w-full justify-between">
+            <div className="flex w-full flex-col md:flex-row md:justify-between lg:flex-wrap gap-2 ">
               {/* Tanggal mulai */}
-              <Input
+              <InputBasic
                 type="datetime-local"
                 label="Waktu Mulai"
                 name="Waktu Mulai"
@@ -196,7 +197,7 @@ export default function DetailTambahKelas() {
                 required
               />
               {/* Tanggal selesai */}
-              <Input
+              <InputBasic
                 type="datetime-local"
                 label="Waktu Selesai"
                 name="Waktu Selesai"
@@ -210,7 +211,7 @@ export default function DetailTambahKelas() {
             <select
               name="path_id"
               id="path_id"
-              className="mt-1 block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+              className="mt-1 block w-full md:w-1/2 px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               value={jenis}
               onChange={(e) => setJenis(e.target.value)}
               required
@@ -240,7 +241,7 @@ export default function DetailTambahKelas() {
               <textarea
                 name="description"
                 id="description"
-                className="h-[82%] mt-1 relative shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                className="h-[82%] mt-1  shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
                 onChange={handleChange}
                 maxLength={maxDescriptionLength}
                 value={description}

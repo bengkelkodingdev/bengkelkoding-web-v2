@@ -15,6 +15,7 @@ import { Absence } from "@/app/interface/Absence";
 
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import PdfViewer from "@/app/component/general/PDFView";
 
 // dropdown
 const StatusFilterDropdown = ({
@@ -34,7 +35,7 @@ const StatusFilterDropdown = ({
     <select
       value={selectedStatus}
       onChange={handleStatusChange}
-      className="block w-full sm:w-1/2 p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+      className="w-full  p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
     >
       <option value="menunggu">Menunggu</option>
       <option value="approved">Diterima</option>
@@ -207,28 +208,28 @@ const HomeDashboardAbsensiPage = () => {
     <>
       <div className="overflow-x-auto">
         {/* Searching + Button */}
-        <div className="flex flex-column  w-full sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center gap-2 pb-4">
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-1/2">
+        <div className="flex  flex-col w-full md:flex-row sm:justify-between items-center gap-2 pb-4">
+          <div className="grid grid-cols-2 gap-5 sm:gap-1 md:gap-1 ">
             {/* Search */}
             <input
               type="text"
               id="table-search"
-              className="block w-full sm:w-[200px] lg:w-[300px] p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+              className=" w-full  sm:w-full lg:w-[300px] p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               placeholder="Cari Mahasiswa"
             />
 
             <StatusFilterDropdown onFilterChange={handleFilterChange} />
           </div>
 
-          <div className="flex w-full sm:w-1/4 gap-2">
-            <div className="box-tolak text-white w-full rounded-md flex justify-center items-center bg-primary1">
+          <div className="flex w-full md:w-1/2 lg:w-1/3 gap-2">
+            <div className="box-tolak px-3 text-white w-full rounded-md flex justify-center items-center bg-primary1">
               <span className="font-semibold pr-1 text-xl">
                 {totalRejected}
               </span>{" "}
               Ditolak
             </div>
 
-            <div className="box-tolak text-white w-full p-2 rounded-md flex justify-center items-center bg-primary1">
+            <div className="box-tolak px-3 text-white w-full p-2 rounded-md flex justify-center items-center bg-primary1">
               <span className="font-semibold pr-1 text-xl">
                 {totalApproved}
               </span>{" "}
@@ -262,7 +263,7 @@ const HomeDashboardAbsensiPage = () => {
                           {izin.approve_status_label}
                         </p>
                       </div>
-                      <div className="profil flex gap-5 pb-2 w-full justify-between border-b-2">
+                      <div className="profil flex gap-5 pb-2 w-full  border-b-2">
                         <div className="foto w-10 h-10 bg-blue-200 rounded-full"></div>
                         <div className="flex flex-col">
                           <p>{izin.student?.name}</p>
@@ -577,7 +578,7 @@ const HomeDashboardAbsensiPage = () => {
           mhsNim={selectedMhsNim}
           mhsFile={selectedMhsFile}
         >
-          <PDFView />
+          <PdfViewer fileUrl={selectedMhsFile} />
         </ViewModalPDF>
         <Modal
           title="Keterangan"

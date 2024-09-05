@@ -55,7 +55,7 @@ const DashboardDetailKelasPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [activeSection, setActiveSection] = useState("pertemuan");
+  const [activeSection, setActiveSection] = useState("informasi");
 
   const { dayNameStart, timeStart, dateStart } = formatDateStart();
   const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
@@ -67,7 +67,7 @@ const DashboardDetailKelasPage = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 500);
+      setIsMobile(window.innerWidth < 650);
     };
 
     window.addEventListener("resize", handleResize);
@@ -1636,6 +1636,7 @@ const DashboardDetailKelasPage = () => {
                             width={180}
                             height={140}
                             loading="lazy"
+                            className="w-full lg:w-1/2 object-cover "
                           />
                           <div className="py-3 px-4">
                             <h4 className="text-primary1 font-medium">
@@ -1659,29 +1660,26 @@ const DashboardDetailKelasPage = () => {
               {activeSection === "informasi" && (
                 <div id="informasi" className="mx-auto">
                   <h3 className="font-semibold mb-3">List Informasi</h3>
-                  <div className="flex  w-full justify-between items-center">
-                    <div className="relative ml-2">
-                      <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                        <svg
-                          className="w-5 h-5 text-neutral3"
-                          aria-hidden="true"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </div>
+
+                  <div className="flex gap-2 flex-column sm:flex-row flex-wrap items-center justify-between pb-4">
+                    {/* Search */}
+                    <div className=" w-auto flex flex-wrap ">
                       <input
                         type="text"
                         id="table-search"
                         className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                        placeholder="Cari Informasi"
+                        placeholder="Cari kelas"
+                        // value={searchTerm}
+                        // onChange={(e) => setSearchTerm(e.target.value)}
+                        // onChange={handleInputChange}
                       />
+
+                      <button
+                        // onClick={handleSearch}
+                        className="ml-2 px-4 py-2 bg-primary1 text-white rounded-md"
+                      >
+                        Search
+                      </button>
                     </div>
                     <Link
                       href={"#"}
@@ -1689,96 +1687,126 @@ const DashboardDetailKelasPage = () => {
                         e.preventDefault();
                         handleOpenModalInfo();
                       }}
-                      className="w-max bg-primary1 text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+                      className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
                     >
-                      + Tambah Informasi
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="20px"
+                        viewBox="0 0 24 24"
+                        width="20px"
+                      >
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
+                      </svg>
+                      <p>Tambah Informasi</p>
                     </Link>
                   </div>
+
                   {/* list informasi */}
-                  <div className="col-span-2 mt-4">
+                  <div className=" mt-4">
                     <div className="flex flex-col gap-2">
                       {/* detail informasi */}
                       {kelasItem.class_informations.map((informasi, index) => (
                         <div
                           key={index}
-                          className="flex flex-col  sm:flex-row justify-between items-center rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
+                          className="w-full flex flex-col lg:flex-row justify-between items-center rounded-md border border-gray-200 hover:shadow-lg transition-all ease-out duration-200 cursor-pointer"
                         >
-                          <div className="detailInformasi flex">
-                            <div className="iconInfo pl-3 flex items-center justify-center">
+                          <div className="flex flex-col w-full">
+                            <div className="iconInfo lg:hidden items-center flex  p-2  rounded-full">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 height="34px"
                                 viewBox="0 -960 960 960"
                                 width="34px"
-                                className="fill-blue-500"
+                                className="fill-primary2"
                               >
                                 <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
                               </svg>
                             </div>
-                            <div className="py-3 px-4">
-                              <h4 className="text-primary1 font-medium">
-                                {informasi.title}
-                              </h4>
-                              {isValidURL(informasi.description) ? (
-                                <>
+                            {/* card */}
+                            <div className="detailInformasi h-auto flex w-full   gap-2">
+                              {/* icon */}
+                              <div className="iconInfo lg:flex items-center hidden justify-center p-2  rounded-full">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="34px"
+                                  viewBox="0 -960 960 960"
+                                  width="34px"
+                                  className="fill-primary2"
+                                >
+                                  <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+                                </svg>
+                              </div>
+
+                              {/* info */}
+                              <div className="info-content w-full px-4 rounded-md">
+                                {/* judul */}
+                                <h4 className="text-primary1 font-medium text-sm rounded-md p-1">
+                                  {informasi.title}
+                                </h4>
+                                {/* descrip */}
+                                {isValidURL(informasi.description) ? (
                                   <Link
                                     href={`${informasi.description}`}
                                     target="_blank"
                                   >
-                                    <p className="text-primary2 text-sm mt-2">
+                                    <p className="text-primary2 text-sm mt-2 break-words">
                                       {informasi.description}
                                     </p>
-                                  </Link>{" "}
-                                </>
-                              ) : (
-                                <p className="text-neutral2 text-sm mt-2">
-                                  {informasi.description}
-                                </p>
-                              )}
+                                  </Link>
+                                ) : (
+                                  <p className="text-neutral2 text-sm mt-2">
+                                    {informasi.description}
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
-                          <div className="aksi px-3">
-                            <div className="flex gap-1">
-                              {/* edit */}
-                              <Link
-                                href={`/edit/${informasi.id}`}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleOpenModalInfo(informasi);
-                                }}
-                                className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
+
+                          {/* Aksi buttons */}
+                          <div className="aksi w-full justify-end lg:w-auto flex gap-2 p-2 sm:p-4">
+                            {/* edit */}
+                            <Link
+                              href={`/edit/${informasi.id}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleOpenModalInfo(informasi);
+                              }}
+                              className="bg-yellow-400 p-2 rounded-md hover:bg-yellow-500 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                                className="fill-white"
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="18px"
-                                  viewBox="0 0 24 24"
-                                  width="18px"
-                                >
-                                  <path d="M0 0h24v24H0V0z" fill="none" />
-                                  <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                </svg>
-                              </Link>
-                              {/* delete */}
-                              <button
-                                onClick={() =>
-                                  handleDeleteInfo(
-                                    kelasItem.classroom.id,
-                                    informasi.id
-                                  )
-                                }
-                                className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                                <path d="M0 0h24v24H0V0z" fill="none" />
+                                <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                              </svg>
+                            </Link>
+
+                            {/* delete */}
+                            <button
+                              onClick={() =>
+                                handleDeleteInfo(
+                                  kelasItem.classroom.id,
+                                  informasi.id
+                                )
+                              }
+                              className="bg-red-400 p-2 rounded-md hover:bg-red-500 transition-all ease-in-out duration-150"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="18px"
+                                viewBox="0 0 24 24"
+                                width="18px"
+                                className="fill-white"
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="18px"
-                                  viewBox="0 0 24 24"
-                                  width="18px"
-                                >
-                                  <path d="M0 0h24v24H0V0z" fill="none" />
-                                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
-                                </svg>
-                              </button>
-                            </div>
+                                <path d="M0 0h24v24H0V0z" fill="none" />
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                              </svg>
+                            </button>
                           </div>
                         </div>
                       ))}

@@ -143,9 +143,9 @@ const HomeDashboardKelasPage = () => {
     <>
       <div className="overflow-x-auto">
         {/* Searching + Button */}
-        <div className="flex  flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+        <div className="flex gap-2 flex-column sm:flex-row flex-wrap items-center justify-between pb-4">
           {/* Search */}
-          <div className=" w-auto flex mb-5">
+          <div className=" w-auto flex flex-wrap ">
             <input
               type="text"
               id="table-search"
