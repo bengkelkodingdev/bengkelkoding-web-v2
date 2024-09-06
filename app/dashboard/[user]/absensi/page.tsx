@@ -5,17 +5,19 @@ import PDFView from "@/app/component/general/PDFView";
 import Keterangan from "@/app/component/general/Keterangan";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  getAllAbsence,
-  getAllAbsenceLecture,
-  postUpdateStatusAbsenceAdmin,
-} from "@/app/api/admin/api-kelas/izin/API-Izin";
+
 import Cookies from "js-cookie";
 import { Absence } from "@/app/interface/Absence";
 
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import PdfViewer from "@/app/component/general/PDFView";
+import {
+  getAllAbsence,
+  getAllAbsenceLecture,
+  postUpdateStatusAbsenceAdmin,
+  postUpdateStatusAbsenceLecture,
+} from "@/app/api/ApiAbsence";
 
 // dropdown
 const StatusFilterDropdown = ({
@@ -142,12 +144,29 @@ const HomeDashboardAbsensiPage = () => {
       const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
 
       try {
-        const response = await postUpdateStatusAbsenceAdmin(
-          selectedIdClassroom,
-          selectedIdAbsence,
-          status, // Status 2 for "Approved" and 3 for "Rejected"
-          keterangan
-        );
+        let response;
+        if (role_user == "superadmin" || role_user == "admin") {
+          response = await postUpdateStatusAbsenceAdmin(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+        } else if (role_user == "lecture") {
+          response = await postUpdateStatusAbsenceLecture(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+        } else if (role_user == "assistant") {
+          response = await postUpdateStatusAbsenceLecture(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+        }
         toast.success(`Absen Mahasiswa ${actionText} 😁`);
 
         // mari dapatkan datanya lagi
@@ -294,7 +313,9 @@ const HomeDashboardAbsensiPage = () => {
                         {izin.approve_changed_at_formatted}
                       </p>
                       <div className="flex gap-2 items-center mt-2">
-                        <Link href={izin.attachment}>
+                        <Link
+                          href={izin.attachment ? izin.attachment : "kosong"}
+                        >
                           <svg
                             fill="none"
                             aria-hidden="true"
