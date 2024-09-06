@@ -2,10 +2,7 @@
 import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useRef, useState } from "react";
 import { ClassFormData } from "@/app/interface/Kelas";
-import {
-  createClassroom,
-  updateClassroom,
-} from "@/app/api/admin/api-kelas/tambah-kelas/post-kelas";
+
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
 import { toast, ToastContainer } from "react-toastify";
@@ -14,12 +11,17 @@ import {
   SelectPath,
   SelectPeriod,
 } from "@/app/interface/SelectData";
-import { getSelectLecture } from "@/app/api/admin/api-kelas/tambah-kelas/select-lecture";
-import { getSelectPaths } from "@/app/api/admin/api-kelas/tambah-kelas/select-path";
-import { getSelectPeriods } from "@/app/api/admin/api-kelas/tambah-kelas/select-period";
+
 import { useSearchParams } from "next/navigation";
 import { getDetailClassroom } from "@/app/api/admin/api-kelas/getDetail-kelas";
 import InputBasic from "@/app/component/general/InputBasic";
+import {
+  createClassroom,
+  getSelectLecture,
+  getSelectPaths,
+  getSelectPeriods,
+  updateClassroom,
+} from "@/app/api/ApiKelas";
 
 const DashboardTambahKelasPage: React.FC = () => {
   const searchParams = useSearchParams();

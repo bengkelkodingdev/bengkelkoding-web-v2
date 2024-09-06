@@ -1,8 +1,5 @@
 "use client";
-import {
-  getAllClassroomAdmin,
-  getAllClassroomLecture,
-} from "@/app/api/admin/api-kelas/getAll-kelas";
+
 import { Kelas } from "@/app/interface/Kelas";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
@@ -11,6 +8,14 @@ import EditFormKelas from "@/app/component/general/EditFormKelas";
 
 import Cookies from "js-cookie";
 import SkletonListKelas from "@/app/component/skleton/SkletonListKelas";
+import {
+  deleteClassroom,
+  getAllClassroomAdmin,
+  getAllClassroomAssistent,
+  getAllClassroomLecture,
+} from "@/app/api/ApiKelas";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const HomeDashboardKelasPage = () => {
   // token
@@ -51,6 +56,20 @@ const HomeDashboardKelasPage = () => {
     setIsModalOpen(false);
   };
 
+  const handleDelete = async (idClass: number, nameClassroom: string) => {
+    try {
+      await deleteClassroom(idClass);
+      toast.success(`Berhasil Menghapus Kelas ${nameClassroom} 😁`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete classroom", error);
+      toast.error(`Gagal Menghapus Kelas 😔: ${error.message}`);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+    }
+  };
+
   const fetchClassrooms = useCallback(
     async (page: number = 1, searchTerm: string = "") => {
       setLoading(true);
@@ -59,8 +78,10 @@ const HomeDashboardKelasPage = () => {
 
         if (role_user === "superadmin" || role_user === "admin") {
           response = await getAllClassroomAdmin(searchTerm, page);
-        } else if (role_user === "lecture" || role_user === "assistant") {
+        } else if (role_user === "lecture") {
           response = await getAllClassroomLecture(searchTerm, page);
+        } else if (role_user === "assistant") {
+          response = await getAllClassroomAssistent(searchTerm, page);
         }
 
         const data = response.data;
@@ -83,29 +104,6 @@ const HomeDashboardKelasPage = () => {
     setSearchTerm(value);
     console.log("Current search term:", value);
   };
-
-  // const fetchClassrooms = useCallback(
-  //   async (page = 1, search = "") => {
-  //     setLoading(true);
-  //     try {
-  //       let response;
-  //       if (role_user === "superadmin" || role_user === "admin") {
-  //         response = await getAllClassroomAdmin(search, page);
-  //       } else if (role_user === "lecture" || role_user === "assistant") {
-  //         response = await getAllClassroomLecture(search, page);
-  //       }
-  //       const data = response.data;
-  //       setAllClassrooms(data); // Simpan semua data asli
-  //       setKelas(data); // Tampilkan data
-  //       setTotalPages(response.meta.pagination.total_pages);
-  //     } catch (error) {
-  //       setError("Failed to fetch classrooms");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   },
-  //   [role_user]
-  // );
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -261,9 +259,11 @@ const HomeDashboardKelasPage = () => {
                           </svg>
                         </Link>
 
-                        <Link
-                          href={"/"}
-                          className="flex items-center bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                        <button
+                          onClick={() =>
+                            handleDelete(classroom.id, classroom.name)
+                          }
+                          className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -274,7 +274,7 @@ const HomeDashboardKelasPage = () => {
                             <path d="M0 0h24v24H0V0z" fill="none" />
                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                           </svg>
-                        </Link>
+                        </button>
                       </>
                     ) : (
                       <></>
@@ -393,8 +393,10 @@ const HomeDashboardKelasPage = () => {
                                 </svg>
                               </Link>
 
-                              <Link
-                                href={"/"}
+                              <button
+                                onClick={() =>
+                                  handleDelete(classroom.id, classroom.name)
+                                }
                                 className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                               >
                                 <svg
@@ -406,7 +408,7 @@ const HomeDashboardKelasPage = () => {
                                   <path d="M0 0h24v24H0V0z" fill="none" />
                                   <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                                 </svg>
-                              </Link>
+                              </button>
                             </>
                           ) : role_user == "admin" ? (
                             <>
@@ -494,6 +496,7 @@ const HomeDashboardKelasPage = () => {
           </li>
         </ul>
       </nav>
+      <ToastContainer />
     </>
   );
 };
