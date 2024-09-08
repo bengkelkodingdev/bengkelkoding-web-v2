@@ -2,6 +2,7 @@ import { Dosen } from "./Dosen";
 
 export interface Kelas {
   id: number;
+  path: number;
   name: string;
   lecture: string;
   period: string;
@@ -40,6 +41,7 @@ export interface ClassroomData {
   presences: Presence[];
   courses: Courses[];
   assignments: Assignment[];
+  class_informations: ClassInformation[];
 }
 
 export interface ClassFormData {
@@ -163,6 +165,12 @@ export interface KelasRespon {
 }
 
 export interface ClassRoomRespon {
-  data: ClassroomData[];
+  data: ClassroomData;
   meta: Meta;
+}
+
+export interface ClassInformation {
+  id?: number;
+  title: string;
+  description: string;
 }
