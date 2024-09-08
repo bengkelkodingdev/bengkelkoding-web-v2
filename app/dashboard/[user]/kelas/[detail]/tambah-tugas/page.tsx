@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import InputBasic from "@/app/component/general/InputBasic";
 
 export default function DetailTambahKelas() {
   const searchParams = useSearchParams();
@@ -25,7 +26,7 @@ export default function DetailTambahKelas() {
   const idAssignment = searchParams.get("idAssignment"); // Cek apakah ada idAssignment
   // State untuk input
   const [judul, setJudul] = useState<string>("");
-  const [jenis, setJenis] = useState<string>("");
+  const [jenis, setJenis] = useState<string>("task");
   const [description, setDescription] = useState<string>("");
   const [descriptionCharCount, setDescriptionCharCount] = useState<number>(0);
   const [start_time, setStartTime] = useState<string>("");
@@ -140,13 +141,6 @@ export default function DetailTambahKelas() {
     setIsStatus(true);
     try {
       if (idAssignment) {
-        // Update tugas jika dalam mode edit
-        console.log("data terinput", formData);
-        // Loop untuk memastikan formData terisi
-        console.log("FormData yang akan dikirim:");
-        formData.forEach((value, key) => {
-          console.log(`${key}: ${value}`);
-        });
         await updateAssignmentAdmin(formData, IdClassroom, idAssignment);
         toast.success("Tugas berhasil diperbarui");
       } else {
@@ -181,10 +175,10 @@ export default function DetailTambahKelas() {
             {idAssignment ? "Edit Tugas" : "Tambah Tugas"}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 mt-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 mt-2">
           {/* judul tugas  */}
           <div className="kiri">
-            <Input
+            <InputBasic
               type="text"
               label="Judul"
               name="judul"
@@ -192,9 +186,9 @@ export default function DetailTambahKelas() {
               onChange={(e) => setJudul(e.target.value)}
               required
             />
-            <div className="flex w-full justify-between">
+            <div className="flex w-full flex-col md:flex-row md:justify-between lg:flex-wrap gap-2 ">
               {/* Tanggal mulai */}
-              <Input
+              <InputBasic
                 type="datetime-local"
                 label="Waktu Mulai"
                 name="Waktu Mulai"
@@ -203,7 +197,7 @@ export default function DetailTambahKelas() {
                 required
               />
               {/* Tanggal selesai */}
-              <Input
+              <InputBasic
                 type="datetime-local"
                 label="Waktu Selesai"
                 name="Waktu Selesai"
@@ -213,19 +207,11 @@ export default function DetailTambahKelas() {
               />
             </div>
             {/* jenis */}
-            {/* <Input
-              type="text"
-              label="Jenis"
-              name="Jenis"
-              value={jenis}
-              onChange={(e) => setJenis(e.target.value)}
-              required
-            /> */}
 
             <select
               name="path_id"
               id="path_id"
-              className="mt-1 block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+              className="mt-1 block w-full md:w-1/2 px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               value={jenis}
               onChange={(e) => setJenis(e.target.value)}
               required
@@ -255,7 +241,7 @@ export default function DetailTambahKelas() {
               <textarea
                 name="description"
                 id="description"
-                className="h-[82%] mt-1 relative shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                className="h-[82%] mt-1  shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
                 onChange={handleChange}
                 maxLength={maxDescriptionLength}
                 value={description}

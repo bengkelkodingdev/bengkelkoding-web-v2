@@ -5,16 +5,19 @@ import PDFView from "@/app/component/general/PDFView";
 import Keterangan from "@/app/component/general/Keterangan";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  getAllAbsence,
-  getAllAbsenceLecture,
-  postUpdateStatusAbsenceAdmin,
-} from "@/app/api/admin/api-kelas/izin/API-Izin";
+
 import Cookies from "js-cookie";
 import { Absence } from "@/app/interface/Absence";
 
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import PdfViewer from "@/app/component/general/PDFView";
+import {
+  getAllAbsence,
+  getAllAbsenceLecture,
+  postUpdateStatusAbsenceAdmin,
+  postUpdateStatusAbsenceLecture,
+} from "@/app/api/ApiAbsence";
 
 // dropdown
 const StatusFilterDropdown = ({
@@ -34,7 +37,7 @@ const StatusFilterDropdown = ({
     <select
       value={selectedStatus}
       onChange={handleStatusChange}
-      className="block w-full sm:w-1/2 p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+      className="w-full  p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
     >
       <option value="menunggu">Menunggu</option>
       <option value="approved">Diterima</option>
@@ -45,7 +48,7 @@ const StatusFilterDropdown = ({
 
 const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
-  const role_user = Cookies.get("user");
+  const role_user = Cookies.get("user_role");
 
   const [keterangan, setKeterangan] = useState("");
   const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
@@ -73,18 +76,25 @@ const HomeDashboardAbsensiPage = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const fetchData = useCallback(async () => {
-    // get All data
-    let response;
-    if (role_user === "superadmin" || role_user === "admin") {
-      response = await getAllAbsence();
-      setDataAbsence(response.data);
-      countStatus(response.data);
-    } else if (role_user === "lecture" || role_user === "assistent") {
-      response = await getAllAbsenceLecture();
-      setDataAbsence(response.data);
-      countStatus(response.data);
+    try {
+      let response;
+      // Check the user's role and fetch data accordingly
+      if (role_user === "superadmin" || role_user === "admin") {
+        response = await getAllAbsence();
+      } else if (role_user === "lecture" || role_user === "assistent") {
+        response = await getAllAbsenceLecture();
+      }
+
+      if (response) {
+        setDataAbsence(response.data);
+        countStatus(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      window.location.reload();
+      // Optionally, you can add error handling logic here, such as setting an error state
     }
-  }, [role_user])
+  }, [role_user]);
 
   useEffect(() => {
     fetchData();
@@ -134,12 +144,29 @@ const HomeDashboardAbsensiPage = () => {
       const actionText = approvalAction === "approve" ? "Diterima" : "Ditolak";
 
       try {
-        const response = await postUpdateStatusAbsenceAdmin(
-          selectedIdClassroom,
-          selectedIdAbsence,
-          status, // Status 2 for "Approved" and 3 for "Rejected"
-          keterangan
-        );
+        let response;
+        if (role_user == "superadmin" || role_user == "admin") {
+          response = await postUpdateStatusAbsenceAdmin(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+        } else if (role_user == "lecture") {
+          response = await postUpdateStatusAbsenceLecture(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+        } else if (role_user == "assistant") {
+          response = await postUpdateStatusAbsenceLecture(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+        }
         toast.success(`Absen Mahasiswa ${actionText} 😁`);
 
         // mari dapatkan datanya lagi
@@ -200,28 +227,28 @@ const HomeDashboardAbsensiPage = () => {
     <>
       <div className="overflow-x-auto">
         {/* Searching + Button */}
-        <div className="flex flex-column  w-full sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center gap-2 pb-4">
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-1/2">
+        <div className="flex  flex-col w-full md:flex-row sm:justify-between items-center gap-2 pb-4">
+          <div className="grid grid-cols-2 gap-5 sm:gap-1 md:gap-1 ">
             {/* Search */}
             <input
               type="text"
               id="table-search"
-              className="block w-full sm:w-[200px] lg:w-[300px] p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+              className=" w-full  sm:w-full lg:w-[300px] p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               placeholder="Cari Mahasiswa"
             />
 
             <StatusFilterDropdown onFilterChange={handleFilterChange} />
           </div>
 
-          <div className="flex w-full sm:w-1/4 gap-2">
-            <div className="box-tolak text-white w-full rounded-md flex justify-center items-center bg-primary1">
+          <div className="flex w-full md:w-1/2 lg:w-1/3 gap-2">
+            <div className="box-tolak px-3 text-white w-full rounded-md flex justify-center items-center bg-primary1">
               <span className="font-semibold pr-1 text-xl">
                 {totalRejected}
               </span>{" "}
               Ditolak
             </div>
 
-            <div className="box-tolak text-white w-full p-2 rounded-md flex justify-center items-center bg-primary1">
+            <div className="box-tolak px-3 text-white w-full p-2 rounded-md flex justify-center items-center bg-primary1">
               <span className="font-semibold pr-1 text-xl">
                 {totalApproved}
               </span>{" "}
@@ -255,7 +282,7 @@ const HomeDashboardAbsensiPage = () => {
                           {izin.approve_status_label}
                         </p>
                       </div>
-                      <div className="profil flex gap-5 pb-2 w-full justify-between border-b-2">
+                      <div className="profil flex gap-5 pb-2 w-full  border-b-2">
                         <div className="foto w-10 h-10 bg-blue-200 rounded-full"></div>
                         <div className="flex flex-col">
                           <p>{izin.student?.name}</p>
@@ -286,7 +313,9 @@ const HomeDashboardAbsensiPage = () => {
                         {izin.approve_changed_at_formatted}
                       </p>
                       <div className="flex gap-2 items-center mt-2">
-                        <Link href={izin.attachment}>
+                        <Link
+                          href={izin.attachment ? izin.attachment : "kosong"}
+                        >
                           <svg
                             fill="none"
                             aria-hidden="true"
@@ -570,7 +599,7 @@ const HomeDashboardAbsensiPage = () => {
           mhsNim={selectedMhsNim}
           mhsFile={selectedMhsFile}
         >
-          <PDFView />
+          <PdfViewer fileUrl={selectedMhsFile} />
         </ViewModalPDF>
         <Modal
           title="Keterangan"

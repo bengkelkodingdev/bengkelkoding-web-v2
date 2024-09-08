@@ -35,6 +35,7 @@ export const logout = async (): Promise<void> => {
     };
     await Axios.post(apiUrl, null, config);
     Cookies.remove("access_token");
+    Cookies.remove("user_role");
   } catch (error) {
     throw new Error("Logout failed");
   }

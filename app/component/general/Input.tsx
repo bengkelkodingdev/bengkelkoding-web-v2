@@ -8,6 +8,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     | "password"
     | "email"
     | "number"
+    | "time"
     | "date"
     | "datetime"
     | "datetime-local";

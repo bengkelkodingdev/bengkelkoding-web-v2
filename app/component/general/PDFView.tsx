@@ -1,19 +1,21 @@
-import { Presence } from "@/app/interface/Kelas";
-import { stringify } from "querystring";
-import React, { useState } from "react";
+// PDFView.tsx
 
+import React from "react";
 
+interface PdfViewerProps {
+  fileUrl: string;
+}
 
-const EditFormKelas: React.FC = () => {
-
+const PdfViewer: React.FC<PdfViewerProps> = ({ fileUrl }) => {
   return (
-  <div className="h-96">
-
-    <embed src="/absensi/aslam.pdf" type="application/pdf" className="w-full h-full p-2 rounded-xl" />
-
-  </div>
-
+    <div className="h-96">
+      <embed
+        src={fileUrl}
+        type="application/pdf"
+        className="w-full h-full p-2 rounded-xl"
+      />
+    </div>
   );
 };
 
-export default EditFormKelas;
+export default PdfViewer;
