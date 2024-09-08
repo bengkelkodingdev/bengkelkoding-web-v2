@@ -82,6 +82,8 @@ const StudentPage = () => {
     fetchData();
   }, []);
 
+  const today = new Date().toISOString().slice(0, 19).replace("T", " ");
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 lg:gap-x-4 gap-y-2 md:gap-y-4 lg:gap-y-6">
@@ -422,8 +424,34 @@ const StudentPage = () => {
               <Link
                 key={assignment.id}
                 href={`student/classroom/${assignment.classroom.id}/assignment/${assignment.id}`}
-                className="flex flex-col md:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 md:items-center gap-2 md:gap-3 lg:gap-4  cursor-pointer transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
+                className={`group relative overflow-hidden flex flex-col md:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 md:items-center gap-2 md:gap-3 lg:gap-4 transition-all duration-200 ease-in-out transform ${
+                  assignment.deadline < today || assignment.start_time > today
+                    ? "cursor-default"
+                    : "cursor-pointer hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
+                }`}
+                onClick={(e) =>
+                  assignment.deadline < today && e.preventDefault()
+                }
               >
+                {assignment.deadline < today ||
+                  (assignment.start_time > today ? (
+                    <div className="absolute w-full h-full bg-neutral4 left-0 flex items-center justify-center bg-opacity-30 fill-neutral3">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                      >
+                        <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="absolute w-full h-full hidden group-hover:flex left-0 items-center justify-center">
+                      <p className="bg-primary5 text-primary3 font-semibold px-3 py-2 text-sm lg:text-base rounded-md">
+                        Upload Tugas
+                      </p>
+                    </div>
+                  ))}
                 {/* Data Informasi Tugas */}
                 <div className="flex gap-4 lg:gap-6 items-center">
                   {/* Icon Tugas */}
@@ -493,10 +521,15 @@ const StudentPage = () => {
                       <div className="flex justify-between mb-1 lg:mb-2 items-center">
                         <p className="text-xs lg:text-sm">Status</p>
                         {/* Status Terlambat */}
-                        {assignment.deadline <
-                          assignment.tasks?.submitted_at && (
-                          <p className="h-max text-[10px] lg:text-xs bg-red-500 text-white p-0.5 lg:p-1 rounded-md">
-                            Terlambat
+                        {assignment.deadline < today &&
+                          !assignment.is_uploaded && (
+                            <p className="h-max text-[10px] lg:text-xs bg-red-500 text-white p-0.5 lg:p-1 rounded-md">
+                              Terlambat
+                            </p>
+                          )}
+                        {assignment.start_time > today && (
+                          <p className="h-max text-[10px] lg:text-xs bg-green-500 text-white p-0.5 lg:p-1 rounded-md">
+                            Belum dibuka
                           </p>
                         )}
                       </div>
