@@ -21,14 +21,15 @@ import {
   postManualPresenceAdmin,
   postManualPresenceLecture,
 } from "@/app/api/admin/api-kelas/presensi/postManualPresence";
-import {
-  postUpdateStatusAbsenceAdmin,
-  postUpdateStatusAbsenceLecture,
-} from "@/app/api/admin/api-kelas/izin/API-Izin";
+
 import Cookies from "js-cookie";
 
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import {
+  postUpdateStatusAbsenceAdmin,
+  postUpdateStatusAbsenceLecture,
+} from "@/app/api/ApiAbsence";
 
 const DetailKelasPageSesi = () => {
   // const router = useRouter();

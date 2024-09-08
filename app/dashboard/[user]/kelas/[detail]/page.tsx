@@ -55,7 +55,7 @@ const DashboardDetailKelasPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [activeSection, setActiveSection] = useState("informasi");
+  const [activeSection, setActiveSection] = useState("pertemuan");
 
   const { dayNameStart, timeStart, dateStart } = formatDateStart();
   const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
@@ -1420,7 +1420,13 @@ const DashboardDetailKelasPage = () => {
                               </svg>
                             </button>
                             <Link
-                              href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
+                              href={{
+                                pathname: `${kelasItem.classroom.id}/penilaian`,
+                                query: {
+                                  idClassroom: kelasItem.classroom.id,
+                                  idAssignment: tugasItem.id,
+                                },
+                              }}
                               className="bg-green-800 p-1 rounded-md fill-white hover:bg-green-700 transition-all ease-in-out duration-150"
                             >
                               <svg
@@ -1592,7 +1598,14 @@ const DashboardDetailKelasPage = () => {
                                       </button>
                                       <span className="block bg-green-800 p-1 rounded-md fill-white hover:bg-green-700 transition-all ease-in-out duration-150">
                                         <Link
-                                          href={`${kelasItem.classroom.id}/penilaian/${tugasItem.id}`}
+                                          href={{
+                                            pathname: `${kelasItem.classroom.id}/penilaian`,
+                                            query: {
+                                              idClassroom:
+                                                kelasItem.classroom.id,
+                                              idAssignment: tugasItem.id,
+                                            },
+                                          }}
                                         >
                                           <svg
                                             xmlns="http://www.w3.org/2000/svg"
