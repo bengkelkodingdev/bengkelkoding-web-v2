@@ -483,15 +483,24 @@ const StudentClassroomPage = () => {
               {classroom.assignments.map((assignment) => (
                 <Link
                   key={assignment.id}
-                  href={`${classroom.id}/assignment/${assignment.id}`}
+                  href={
+                    assignment.deadline < today || assignment.start_time > today
+                      ? "#"
+                      : `${classroom.id}/assignment/${assignment.id}`
+                  }
                   className={`group relative overflow-hidden flex flex-col md:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 md:items-center gap-2 md:gap-3 lg:gap-4 transition-all duration-200 ease-in-out transform ${
                     assignment.deadline < today || assignment.start_time > today
                       ? "cursor-default"
                       : "cursor-pointer hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
                   }`}
-                  onClick={(e) =>
-                    assignment.deadline < today && e.preventDefault()
-                  }
+                  onClick={(e) => {
+                    if (
+                      assignment.deadline < today ||
+                      assignment.start_time > today
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   {assignment.deadline < today ||
                     (assignment.start_time > today ? (
