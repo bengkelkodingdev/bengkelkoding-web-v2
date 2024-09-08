@@ -7,6 +7,9 @@ import Footer from "../component/general/Footer";
 import { getListCourses } from "../api/courses";
 
 const KelasPage = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   // Handler untuk mengubah nilai pencarian
@@ -40,13 +43,43 @@ const KelasPage = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      // Response ListCourses
-      const responseListCourses = await getListCourses(searchTerm);
-      setListCourses(responseListCourses.data);
-    };
-    fetchData();
+    try {
+      const fetchData = async () => {
+        // Response ListCourses
+        const responseListCourses = await getListCourses(searchTerm);
+        setListCourses(responseListCourses.data);
+      };
+      fetchData();
+      setIsLoading(false);
+    } catch (err) {
+      setError("Failed to load data. Please try again.");
+      setIsLoading(false);
+    }
   }, [searchTerm]);
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#f7f9fa]">
+        <Header />
+
+        <div className="max-w-5xl mx-auto px-2 lg:px-4 py-4 min-h-screen">
+          <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg mb-6 md:mb-8" />
+          <div className="mx-auto grid lg:max-w-screen-lg grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className="bg-[#f7f9fa]">

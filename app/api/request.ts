@@ -20,17 +20,23 @@ export const createRequest = async (url: string): Promise<AxiosResponse> => {
 // post request
 export const createPostRequest = async (
   url: string,
-  data: any
+  data?: Record<string, any> | FormData,
 ): Promise<AxiosResponse> => {
   try {
-    // ini yg bedain lif
     const access_token = Cookies.get("access_token");
 
     if (!access_token) {
       throw new Error("Access token not found");
     }
-
-    const config = { headers: { Authorization: `Bearer ${access_token}` } };
+    
+    const config = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        ...(data instanceof FormData
+          ? { "Content-Type": "multipart/form-data" }
+          : {}),
+      },
+    };
     const response: AxiosResponse = await Axios.post(
       `${API_URL}${url}`,
       data,
@@ -42,7 +48,7 @@ export const createPostRequest = async (
   }
 };
 
-// update
+// Update
 export const createPutRequest = async (
   url: string,
   data: any,
@@ -80,6 +86,7 @@ export const deleteRequest = async (
     throw new Error(`API POST Request for ${url} failed: ${error.message}`);
   }
 };
+
 // No Auth
 export const createRequestNoAuth = async (
   url: string

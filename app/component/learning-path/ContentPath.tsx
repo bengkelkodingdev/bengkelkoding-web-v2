@@ -2,19 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "../general/Button";
 
 import {
-  DataPath,
-  ListKelasPath,
   ListKelasPathResponse,
   PathResponse,
 } from "@/app/interface/LearningPath";
 
 import SkeletonLearningPath from "../skleton/SkeletonLearningPath";
-// import { getListKelasLearningPath } from "@/app/api/learning-path/getListKelas-learningPath";
-import { getDetaiLearningPath } from "@/app/api/learning-path/getDetail-learningPath";
 import {
   getDetailLearningPaths,
   getListKelasLearningPath,
 } from "@/app/api/learning-path/API-LearningPath";
+import Modal from "../general/Modal";
+import Input from "../general/Input";
+import { loggedIn } from "@/app/api/checkAccessToken";
+import { postAktivasiToken } from "@/app/api/learning-path/aktivasiToken";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 
 const ContentPath = ({ selectedMenu }) => {
   const [dataPath, setDataPath] = useState<PathResponse | null>();
@@ -26,6 +28,35 @@ const ContentPath = ({ selectedMenu }) => {
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const daftarKelasRef = useRef<HTMLElement | null>(null);
+
+  const login = loggedIn();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [classroomId, setClassroomId] = useState(0);
+  const [token, setToken] = useState("");
+  const handleOpenModalAktivasiToken = (id_classroom: number) => {
+    setIsModalOpen(true);
+    setClassroomId(id_classroom);
+  };
+  const handleCloseModalAktivasiToken = () => {
+    setIsModalOpen(false);
+  };
+
+  const handlePostActivateToken = async () => {
+    try {
+      const response = await postAktivasiToken(classroomId, token);
+
+      // Success handling
+      toast.success("Anda Berhasil Mengaktifkan Token 😁");
+      setIsModalOpen(false);
+      window.location.href = `./dashboard/student`;
+    } catch (error) {
+      // Log error and show toast message
+      console.error("Failed to activate token", error);
+      toast.error("Gagal Mengaktifkan Token 😔");
+      setIsModalOpen(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,12 +108,10 @@ const ContentPath = ({ selectedMenu }) => {
     return <p>{error}</p>;
   }
 
-  // console.log(dataPath.data.roadmap);
-
   return (
     <>
       {/* top content */}
-      <div className="top-content sm:h-[40vh] w-full  sm:w-[80%] flex flex-col justify-center items-center ">
+      <div className="top-content max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 flex flex-col justify-center items-center">
         <h1 className="title-path text-center">
           {" "}
           <strong className="font-bold bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">
@@ -90,20 +119,20 @@ const ContentPath = ({ selectedMenu }) => {
           </strong>{" "}
         </h1>
         <div className="desc-path mt-2 w-full text-center flex items-center justify-center ">
-          <p className="sm:w-2/3 text-neutral2">
+          <p className="text-neutral2 max-w-3xl">
             {" "}
             {dataPath.data.path.description}
           </p>
         </div>
         <Button
           text="Daftar Kelas"
-          className=" mt-4"
+          className="mt-4"
           onClick={scrollToDaftarKelas}
         />
       </div>
 
       {/* Path content */}
-      <section className="sm:w-[75%] h-full flex flex-col gap-4 sm:mt-14 p-2">
+      <section className=" max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12 h-full flex flex-col gap-4 sm:mt-14 p-2">
         {dataPath.data.roadmap.map((_, index) => (
           <div
             className="card-kursus flex flex-col sm:flex-row gap-0 sm:gap-12"
@@ -334,13 +363,16 @@ const ContentPath = ({ selectedMenu }) => {
       {/* daftar kelas */}
       {isMobile ? (
         <section ref={daftarKelasRef} className="list-kelas my-12 w-[80%] ">
-          <h2 className="text-center mb-4">Daftar kelas</h2>
+          <div className="my-4 text-center">
+            <h2 className="text-center bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text  text-transparent font-bold text-3xl">
+              Daftar Kelas
+            </h2>
+            <p className="text-neutral2">
+              Lihat kelas aktif yang berada di Bengkel Koding
+            </p>
+          </div>
           <div className="info-kelas">
             <div className="overflow-x-auto border p-5 flex flex-col justify-center rounded-md">
-              <h3 className="text-left">Kelas Aktif</h3>
-              <p className="mb-5 text-left">
-                Lihat kelas aktif yang berada di Bengkel Koding
-              </p>
               <div className="text-sm text-left rtl:text-right text-neutral3 rounded-md overflow-hidden">
                 {kelasPath.data.map((KelasPathItem) => (
                   <div
@@ -373,7 +405,19 @@ const ContentPath = ({ selectedMenu }) => {
                       </span>
                     </div>
                     <div className="flex justify-center mt-4">
-                      <Button text="Masuk" />
+                      {login ? (
+                        <Button
+                          text="Masuk"
+                          onClick={() =>
+                            handleOpenModalAktivasiToken(KelasPathItem.id)
+                          }
+                        />
+                      ) : (
+                        <Button
+                          text="Masuk"
+                          onClick={() => (window.location.href = "./masuk")}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
@@ -382,14 +426,20 @@ const ContentPath = ({ selectedMenu }) => {
           </div>
         </section>
       ) : (
-        <section ref={daftarKelasRef} className="list-kelas my-12 w-[80%] ">
-          <h2 className="text-center mb-4">Daftar kelas</h2>
+        <section
+          ref={daftarKelasRef}
+          className="list-kelas max-w-5xl mx-auto my-2 lg:my-10 2xl:my-12"
+        >
+          <div className="my-6 text-center">
+            <h2 className="text-center bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text  text-transparent font-bold text-3xl">
+              Daftar Kelas
+            </h2>
+            <p className="text-neutral2">
+              Lihat kelas aktif yang berada di Bengkel Koding
+            </p>
+          </div>
           <div className="info-kelas">
-            <div className="overflow-x-auto border p-5 flex flex-col justify-center rounded-md">
-              <h3 className="text-left">Kelas Aktif</h3>
-              <p className="mb-5 text-left">
-                Lihat kelas aktif yang berada di Bengkel Koding
-              </p>
+            <div className="overflow-x-auto flex flex-col justify-center rounded-md">
               <table className="text-sm text-left rtl:text-right text-neutral3 rounded-md overflow-hidden">
                 <thead className="text-sm text-neutral2 bg-gray-100">
                   <tr>
@@ -437,7 +487,19 @@ const ContentPath = ({ selectedMenu }) => {
                         {KelasPathItem.student_count}/{KelasPathItem.quota}
                       </td>
                       <td className="py-4 flex justify-center">
-                        <Button text="Masuk" />
+                        {login ? (
+                          <Button
+                            text="Masuk"
+                            onClick={() =>
+                              handleOpenModalAktivasiToken(KelasPathItem.id)
+                            }
+                          />
+                        ) : (
+                          <Button
+                            text="Masuk"
+                            onClick={() => (window.location.href = "./masuk")}
+                          />
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -447,6 +509,28 @@ const ContentPath = ({ selectedMenu }) => {
           </div>
         </section>
       )}
+      <Modal
+        title="Aktivasi Token"
+        isOpen={isModalOpen}
+        onClose={handleCloseModalAktivasiToken}
+      >
+        <div className="mt-4">
+          <Input
+            label=""
+            type="text"
+            name="token"
+            placeholder="Masukkan Token"
+            required
+            onChange={(e) => setToken(e.target.value)}
+          />
+          <Button
+            text="Aktifkan Token"
+            className="w-full"
+            onClick={handlePostActivateToken}
+          />
+        </div>
+      </Modal>
+      <ToastContainer />
     </>
   );
 };
