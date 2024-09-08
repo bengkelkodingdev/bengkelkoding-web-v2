@@ -20,10 +20,17 @@ export const createRequest = async (url: string): Promise<AxiosResponse> => {
 // post request
 export const createPostRequest = async (
   url: string,
-  data: any
+  data?: Record<string, any> | FormData,
 ): Promise<AxiosResponse> => {
   try {
-    const config = { headers: { Authorization: `Bearer ${access_token}` } };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        ...(data instanceof FormData
+          ? { "Content-Type": "multipart/form-data" }
+          : {}),
+      },
+    };
     const response: AxiosResponse = await Axios.post(
       `${API_URL}${url}`,
       data,

@@ -9,7 +9,7 @@ import { getMenuLearningPath } from "../api/learning-path/getMenu-learningpaths"
 export default function LearningPathPage() {
   const [menusPath, setMenusPath] = useState<MenuPath[]>([]);
   const [selectedMenu, setSelectedMenu] = useState<MenuPath | null>(null);
-  const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+  const [activeMenuId, setActiveMenuId] = useState<number | null>(1);
   const [isMobile, setIsMobile] = useState<boolean>(false); // State untuk menentukan mode tampilan
 
   const pathNavRef = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ export default function LearningPathPage() {
   const pathNavScrollLeft = () => {
     if (pathNavRef.current) {
       pathNavRef.current.scrollBy({
-        left: -224,
+        left: -180,
         behavior: "smooth",
       });
     }
@@ -65,7 +65,7 @@ export default function LearningPathPage() {
   const pathNavScrollRight = () => {
     if (pathNavRef.current) {
       pathNavRef.current.scrollBy({
-        left: 224,
+        left: 180,
         behavior: "smooth",
       });
     }
@@ -74,6 +74,7 @@ export default function LearningPathPage() {
   return (
     <div className="bg-[#f7f9fa]">
       <Header />
+
       <div className="box-path px-2 py-2 border-b">
         <div className="lg:max-w-7xl md:max-w-5xl mx-auto flex items-center gap-4">
           {isMobile ? (
@@ -112,7 +113,7 @@ export default function LearningPathPage() {
                 {menusPath.map((menu, index) => (
                   <button
                     key={index}
-                    className={`menu-item px-4 py-2 text-lg ${
+                    className={`menu-item px-4 py-2 text-base hover:text-neutral2 ${
                       activeMenuId === menu.id ? "font-semibold" : ""
                     }`}
                     onClick={() => handleMenuClick(menu)}
