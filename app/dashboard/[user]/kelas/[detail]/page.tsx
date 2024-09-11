@@ -51,6 +51,7 @@ import {
   getDetailClassroomAssistant,
   getDetailClassroomLecture,
 } from "@/app/api/detailClassroom";
+import splitTextByURL from "@/app/lib/validUrl";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -435,19 +436,6 @@ const DashboardDetailKelasPage = () => {
   useEffect(() => {
     fetchClassrooms();
   }, []);
-
-  function isValidURL(url: string): boolean {
-    const urlPattern = new RegExp(
-      "^(https?:\\/\\/)?" + // Protocol
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" + // Domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR IP (v4) address
-        "(\\:\\d+)?(\\/[-a-zA-Z\\d%_.~+]*)*" + // Port and path
-        "(\\?[;&a-zA-Z\\d%_.~+=-]*)?" + // Query string
-        "(\\#[-a-zA-Z\\d_]*)?$",
-      "i"
-    );
-    return urlPattern.test(url);
-  }
 
   if (loading)
     return (
@@ -1794,7 +1782,8 @@ const DashboardDetailKelasPage = () => {
                   </div>
 
                   {/* list informasi */}
-                  <div className=" mt-4">
+                  {/* list informasi */}
+                  <div className="mt-4">
                     <div className="flex flex-col gap-2">
                       {/* detail informasi */}
                       {kelasItem.class_informations.map((informasi, index) => (
@@ -1803,7 +1792,7 @@ const DashboardDetailKelasPage = () => {
                           className="w-full flex flex-col lg:flex-row justify-between items-center rounded-md border border-gray-200 hover:shadow-lg transition-all ease-out duration-200 cursor-pointer"
                         >
                           <div className="flex flex-col w-full">
-                            <div className="iconInfo lg:hidden items-center flex  p-2  rounded-full">
+                            <div className="iconInfo lg:hidden items-center flex p-2 rounded-full">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 height="34px"
@@ -1815,9 +1804,9 @@ const DashboardDetailKelasPage = () => {
                               </svg>
                             </div>
                             {/* card */}
-                            <div className="detailInformasi h-auto flex w-full   gap-2">
+                            <div className="detailInformasi h-auto flex w-full gap-2">
                               {/* icon */}
-                              <div className="iconInfo lg:flex items-center hidden justify-center p-2  rounded-full">
+                              <div className="iconInfo lg:flex items-center hidden justify-center p-2 rounded-full">
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   height="34px"
@@ -1828,7 +1817,6 @@ const DashboardDetailKelasPage = () => {
                                   <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
                                 </svg>
                               </div>
-
                               {/* info */}
                               <div className="info-content w-full px-4 rounded-md">
                                 {/* judul */}
@@ -1836,18 +1824,9 @@ const DashboardDetailKelasPage = () => {
                                   {informasi.title}
                                 </h4>
                                 {/* descrip */}
-                                {isValidURL(informasi.description) ? (
-                                  <Link
-                                    href={`${informasi.description}`}
-                                    target="_blank"
-                                  >
-                                    <p className="text-primary2 text-sm mt-2 break-words">
-                                      {informasi.description}
-                                    </p>
-                                  </Link>
-                                ) : (
-                                  <p className="text-neutral2 text-sm mt-2">
-                                    {informasi.description}
+                                {informasi.description && (
+                                  <p className="text-sm mt-2 break-words">
+                                    {splitTextByURL(informasi.description)}
                                   </p>
                                 )}
                               </div>
@@ -1909,26 +1888,25 @@ const DashboardDetailKelasPage = () => {
                       isOpen={isModalOpen}
                       onClose={handleCloseModalInfo}
                     >
-                      {selectedInformation &&
-                        (selectedInformation.id ? (
-                          <EditFormInfo
-                            user={selectedInformation}
-                            onSave={(updatedInfo) =>
-                              handleUpdateInfo(
-                                updatedInfo,
-                                kelasItem.classroom.id,
-                                selectedInformation.id
-                              )
-                            }
-                          />
-                        ) : (
-                          <PostFormInfo
-                            user={selectedInformation}
-                            onSave={(newInfo) =>
-                              handleSaveInfo(newInfo, kelasItem.classroom.id)
-                            }
-                          />
-                        ))}
+                      {selectedInformation && selectedInformation.id ? (
+                        <EditFormInfo
+                          user={selectedInformation}
+                          onSave={(updatedInfo) =>
+                            handleUpdateInfo(
+                              updatedInfo,
+                              kelasItem.classroom.id,
+                              selectedInformation.id
+                            )
+                          }
+                        />
+                      ) : (
+                        <PostFormInfo
+                          user={selectedInformation}
+                          onSave={(newInfo) =>
+                            handleSaveInfo(newInfo, kelasItem.classroom.id)
+                          }
+                        />
+                      )}
                     </Modal>
                   </div>
                 </div>
