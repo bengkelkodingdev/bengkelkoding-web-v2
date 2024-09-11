@@ -10,15 +10,16 @@ import { useSearchParams } from "next/navigation";
 import Input from "@/app/component/general/Input";
 import Button from "@/app/component/general/Button";
 import { AssignmentData } from "@/app/interface/Assigment";
-import {
-  createAssigment,
-  getDetailAssignmentAdmin,
-  updateAssignmentAdmin,
-} from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
+
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import InputBasic from "@/app/component/general/InputBasic";
+import {
+  createAssigment,
+  getDetailAssignmentAdmin,
+  updateAssignmentAdmin,
+} from "@/app/api/penugasan";
 
 export default function DetailTambahKelas() {
   const searchParams = useSearchParams();

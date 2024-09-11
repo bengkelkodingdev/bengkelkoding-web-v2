@@ -3,10 +3,11 @@
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { getSubmissionAdmin } from "@/app/api/ApiPenugasan";
+
 import { SubmissionResponse } from "@/app/interface/Submission";
 import InputBasic from "@/app/component/general/InputBasic";
 import Input from "@/app/component/general/Input";
+import { getSubmissionAdmin } from "@/app/api/penugasan";
 
 export default function PenilaianTugas() {
   const searchParams = useSearchParams();

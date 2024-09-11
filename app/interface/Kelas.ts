@@ -174,3 +174,25 @@ export interface ClassInformation {
   title: string;
   description: string;
 }
+
+export interface EditFormClassroom {
+  lecture_id: number;
+  period_id: number;
+  path_id: number;
+  name: string;
+  description: string;
+  day: number;
+  time_start: string;
+  time_end: string;
+  room: string;
+  quota: number;
+  task_percent: number;
+  uts_percent: number;
+  uas_percent: number;
+  max_absent: number;
+  start_date: string;
+}
+
+export interface EditFormClassroomResponse {
+  data: EditFormClassroom[];
+}

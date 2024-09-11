@@ -13,7 +13,7 @@ import {
   getAllClassroomAdmin,
   getAllClassroomAssistent,
   getAllClassroomLecture,
-} from "@/app/api/ApiKelas";
+} from "@/app/api/kelas";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -236,7 +236,7 @@ const HomeDashboardKelasPage = () => {
                       </svg>
                     </Link>
 
-                    {role_user == "superadmin" || role_user == "admin" ? (
+                    {role_user == "superadmin" ? (
                       <>
                         <Link
                           href={{

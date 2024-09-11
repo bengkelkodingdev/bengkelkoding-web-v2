@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditForm from "@/app/component/general/EditForm";
 
@@ -12,32 +12,45 @@ import {
   ClassroomData,
   Presence,
 } from "@/app/interface/Kelas";
-import {
-  getDetailClassroom,
-  getDetailClassroomLecture,
-} from "@/app/api/admin/api-kelas/getDetail-kelas";
 
 import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import Cookies from "js-cookie";
-import {
-  updatePresenceAdmin,
-  updatePresenceLecture,
-} from "@/app/api/admin/api-kelas/presensi/updatePresence";
+
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import {
-  deleteAssigmentAdmin,
-  getAssigmentAdmin,
-} from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
+
 import EditFormInfo from "@/app/component/general/EditFormInfo";
+
+import PostFormInfo from "@/app/component/general/PostFormInfo";
 import {
   deleteInformationAdmin,
+  deleteInformationAssistant,
+  deleteInformationLecture,
   postInformationAdmin,
+  postInformationAssistant,
+  postInformationLecture,
   updateInformationAdmin,
-} from "@/app/api/admin/api-kelas/informasi/API-Information";
-import PostFormInfo from "@/app/component/general/PostFormInfo";
+  updateInformationAssistant,
+  updateInformationLecture,
+} from "@/app/api/information";
+import {
+  deleteAssigmentAdmin,
+  deleteAssigmentAssistant,
+  deleteAssigmentLecture,
+  getAssigmentAdmin,
+} from "@/app/api/penugasan";
+import {
+  updatePresenceAdmin,
+  updatePresenceAssistant,
+  updatePresenceLecture,
+} from "@/app/api/presensi";
+import {
+  getDetailClassroom,
+  getDetailClassroomAssistant,
+  getDetailClassroomLecture,
+} from "@/app/api/detailClassroom";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -179,8 +192,13 @@ const DashboardDetailKelasPage = () => {
           updatedMeeting.id,
           updatedMeeting.presence_date
         );
-      } else if (role_user === "lecture" || role_user === "assistant") {
+      } else if (role_user === "lecture") {
         updatedData = await updatePresenceLecture(
+          updatedMeeting.id,
+          updatedMeeting.presence_date
+        );
+      } else if (role_user === "assistant") {
+        updatedData = await updatePresenceAssistant(
           updatedMeeting.id,
           updatedMeeting.presence_date
         );
@@ -202,6 +220,18 @@ const DashboardDetailKelasPage = () => {
       let response;
       if (role_user === "superadmin" || role_user === "admin") {
         response = await postInformationAdmin(
+          idClassroom,
+          savedInfo.title,
+          savedInfo.description
+        );
+      } else if (role_user === "lecture") {
+        response = await postInformationLecture(
+          idClassroom,
+          savedInfo.title,
+          savedInfo.description
+        );
+      } else if (role_user === "assistant") {
+        response = await postInformationAssistant(
           idClassroom,
           savedInfo.title,
           savedInfo.description
@@ -233,6 +263,26 @@ const DashboardDetailKelasPage = () => {
         );
       }
 
+      if (role_user === "lecture") {
+        response = await updateInformationLecture(
+          idClassroom,
+          idInfo,
+          savedInfo.title,
+          savedInfo.description,
+          access
+        );
+      }
+
+      if (role_user === "assistant") {
+        response = await updateInformationAssistant(
+          idClassroom,
+          idInfo,
+          savedInfo.title,
+          savedInfo.description,
+          access
+        );
+      }
+
       handleCloseModalInfo();
       fetchClassrooms(); // Memuat ulang data kelas setelah menyimpan
       toast.success(`Informasi berhasil diperbarui 😁`);
@@ -243,18 +293,31 @@ const DashboardDetailKelasPage = () => {
 
   const handleDeleteInfo = async (idClassroom, idInfo) => {
     try {
-      await deleteInformationAdmin(idClassroom, idInfo, access);
-      toast.success(`Berhasil menghapus tugas 😁`);
+      if (role_user === "superadmin" || role_user === "admin") {
+        await deleteInformationAdmin(idClassroom, idInfo, access);
+      } else if (role_user === "lecture") {
+        await deleteInformationLecture(idClassroom, idInfo, access);
+      } else if (role_user === "assistant") {
+        await deleteInformationAssistant(idClassroom, idInfo, access);
+      }
+      toast.success(`Berhasil menghapus Informasi 😁`);
       fetchClassrooms();
     } catch (error) {
-      console.error("Gagal menghapus tugas:", error);
-      toast.error(`Gagal menghapus tugas`);
+      console.error("Gagal menghapus Informasi:", error);
+      toast.error(`Gagal menghapus Informasi`);
     }
   };
 
   const handleDelete = async (idClassroom, idAssignment) => {
     try {
-      await deleteAssigmentAdmin(idClassroom, idAssignment);
+      if (role_user === "superadmin" || role_user === "admin") {
+        await deleteAssigmentAdmin(idClassroom, idAssignment);
+      } else if (role_user === "lecture") {
+        await deleteAssigmentLecture(idClassroom, idAssignment);
+      } else if (role_user === "assistant") {
+        await deleteAssigmentAssistant(idClassroom, idAssignment);
+      }
+
       toast.success(`Berhasil menghapus tugas 😁`);
       fetchClassrooms();
     } catch (error) {
@@ -265,6 +328,7 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
+  // AKU UBAH SESUATU DISINI KARENA MENUNGGU API ASSIGMENT LECTURE + ASSISTANT (283-286 *BUKA TUTUP YANG ATAS)
   const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
@@ -272,19 +336,23 @@ const DashboardDetailKelasPage = () => {
       if (role_user === "superadmin" || role_user === "admin") {
         getClassroomDetails = getDetailClassroom(parts[4]);
         getAssignments = getAssigmentAdmin(parts[4]);
-      } else if (role_user === "lecture" || role_user === "assistant") {
+      } else if (role_user === "lecture") {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
 
         // KALO UDAH ADA APINYA PERLU GANTI
         // getAssignments = getAssigmentLecture(parts[4]);
+      } else if (role_user === "assistant") {
+        getClassroomDetails = getDetailClassroomAssistant(parts[4]);
+
+        // KALO UDAH ADA APINYA PERLU GANTI
+        // getAssignments = getAssigmentLecture(parts[4]);
       }
+      const [response] = await Promise.all([getClassroomDetails]);
 
-      // const [response] = await Promise.all([getClassroomDetails]);
-
-      const [response, responseAssigment] = await Promise.all([
-        getClassroomDetails,
-        getAssignments,
-      ]);
+      // const [response, responseAssigment] = await Promise.all([
+      //   getClassroomDetails,
+      //   getAssignments,
+      // ]);
 
       const formatData = (data) => {
         if (Array.isArray(data)) {
@@ -298,7 +366,7 @@ const DashboardDetailKelasPage = () => {
 
       setKelas(formatData(response.data));
       // KALO UDAH ADA APINYA PERLU GANTI
-      setTugas(formatData(responseAssigment.data));
+      // setTugas(formatData(responseAssigment.data));
     } catch (error) {
       setError("Failed to fetch classrooms");
     } finally {
@@ -1112,7 +1180,9 @@ const DashboardDetailKelasPage = () => {
                             <th scope="col" className="px-6 py-3">
                               Nama
                             </th>
-
+                            <th scope="col" className="px-6 py-3">
+                              Nilai Akhir
+                            </th>
                             <th scope="col" className="px-6 py-3">
                               Aksi
                             </th>
@@ -1139,6 +1209,8 @@ const DashboardDetailKelasPage = () => {
                                     </p>
                                   </div>
                                 </td>
+
+                                <td className="p-2 text-center">{index + 1}</td>
 
                                 <td className="px-6 py-4">
                                   <div className="flex gap-1">
@@ -1174,6 +1246,9 @@ const DashboardDetailKelasPage = () => {
                           <th scope="col" className="px-6 py-3">
                             Nim
                           </th>
+                          <th scope="col" className=" text-center py-3">
+                            Nilai Akhir
+                          </th>
                           <th scope="col" className="px-6 py-3">
                             Aksi
                           </th>
@@ -1203,6 +1278,9 @@ const DashboardDetailKelasPage = () => {
                               </td>
                               <td className="px-6 py-4">
                                 {student.identity_code}
+                              </td>
+                              <td className=" text-center py-4 ">
+                                {index + 1}
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex gap-1">

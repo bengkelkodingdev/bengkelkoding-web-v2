@@ -17,7 +17,7 @@ import {
   getAllAbsenceLecture,
   postUpdateStatusAbsenceAdmin,
   postUpdateStatusAbsenceLecture,
-} from "@/app/api/ApiAbsence";
+} from "@/app/api/absence";
 
 // dropdown
 const StatusFilterDropdown = ({
