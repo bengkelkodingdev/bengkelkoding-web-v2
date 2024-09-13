@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SubmissionResponse } from "../interface/Submission";
 import { AssignmentResponse } from "@/app/interface/Kelas";
 import { AssignmentData } from "@/app/interface/Assigment";
+import { createPostRequest } from "./request";
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
@@ -186,6 +187,19 @@ export const getSubmissionAdmin = async (
   }
 };
 
+export const postGradeAdmin = async (
+  idClassroom: string,
+  idAssignment: string,
+  idTask: number,
+  inpuScore: number
+): Promise<AxiosResponse> =>
+  createPostRequest(
+    `/api/v1/admin/classrooms/${idClassroom}/assignments/${idAssignment}/tasks/${idTask}/grade`,
+    {
+      score: inpuScore,
+    }
+  );
+
 // lecture
 
 export const createAssigmentLecture = async (data: FormData, id: string) => {
@@ -367,6 +381,19 @@ export const getSubmissionLecture = async (
   }
 };
 
+export const postGradeLecture = async (
+  idClassroom: string,
+  idAssignment: string,
+  idTask: number,
+  inpuScore: number
+): Promise<AxiosResponse> =>
+  createPostRequest(
+    `/api/v1/lecture/classrooms/${idClassroom}/assignments/${idAssignment}/tasks/${idTask}/grade`,
+    {
+      score: inpuScore,
+    }
+  );
+
 // assistant
 
 export const createAssigmentAssistant = async (data: FormData, id: string) => {
@@ -547,3 +574,16 @@ export const getSubmissionAssistant = async (
     throw error;
   }
 };
+
+export const postGradeAssistant = async (
+  idClassroom: string,
+  idAssignment: string,
+  idTask: number,
+  inpuScore: number
+): Promise<AxiosResponse> =>
+  createPostRequest(
+    `/api/v1/assistant/classrooms/${idClassroom}/assignments/${idAssignment}/tasks/${idTask}/grade`,
+    {
+      score: inpuScore,
+    }
+  );

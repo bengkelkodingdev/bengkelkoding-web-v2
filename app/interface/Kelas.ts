@@ -1,5 +1,3 @@
-import { Dosen } from "./Dosen";
-
 export interface Kelas {
   id: number;
   path: number;
@@ -98,12 +96,6 @@ export interface pagination {
     next: string | null;
     previous: string | null;
   };
-}
-
-interface Lecture {
-  identity_code: string;
-  name: string;
-  role: string;
 }
 
 export interface Assignment {

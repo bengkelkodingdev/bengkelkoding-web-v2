@@ -348,12 +348,12 @@ const DashboardDetailKelasPage = () => {
         // KALO UDAH ADA APINYA PERLU GANTI
         // getAssignments = getAssigmentLecture(parts[4]);
       }
-      const [response] = await Promise.all([getClassroomDetails]);
+      //     const [response] = await Promise.all([getClassroomDetails]);
 
-      // const [response, responseAssigment] = await Promise.all([
-      //   getClassroomDetails,
-      //   getAssignments,
-      // ]);
+      const [response, responseAssigment] = await Promise.all([
+        getClassroomDetails,
+        getAssignments,
+      ]);
 
       const formatData = (data) => {
         if (Array.isArray(data)) {
@@ -367,7 +367,7 @@ const DashboardDetailKelasPage = () => {
 
       setKelas(formatData(response.data));
       // KALO UDAH ADA APINYA PERLU GANTI
-      // setTugas(formatData(responseAssigment.data));
+      setTugas(formatData(responseAssigment.data));
     } catch (error) {
       setError("Failed to fetch classrooms");
     } finally {
@@ -1300,29 +1300,6 @@ const DashboardDetailKelasPage = () => {
                   {/* list Tugas */}
                   <h3 className="font-semibold mb-3">Tabel Penugasan</h3>
                   <div className="flex flex-col sm:flex-row sm:row gap-2  w-full justify-between items-center">
-                    {/* <div className="relative ml-2">
-                      <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                        <svg
-                          className="w-5 h-5 text-neutral3"
-                          aria-hidden="true"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        id="table-search"
-                        className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                        placeholder="Cari Tugas"
-                      />
-                    </div> */}
                     {/* Search */}
                     <div className=" w-auto flex ">
                       <input
@@ -1782,7 +1759,7 @@ const DashboardDetailKelasPage = () => {
                   </div>
 
                   {/* list informasi */}
-                  {/* list informasi */}
+
                   <div className="mt-4">
                     <div className="flex flex-col gap-2">
                       {/* detail informasi */}
