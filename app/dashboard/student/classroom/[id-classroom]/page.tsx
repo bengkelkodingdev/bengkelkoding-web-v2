@@ -10,11 +10,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
+import Cookies from "js-cookie";
 
 const StudentClassroomPage = () => {
   const url = usePathname();
   const parts = url.split("/");
   const idClassroom = parts[parts.length - 1];
+
+  Cookies.set("current_classroom_id", idClassroom);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
