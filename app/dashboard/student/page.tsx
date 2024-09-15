@@ -106,6 +106,22 @@ const StudentPage = () => {
     fetchData();
   }, []);
 
+  // Get status presence style
+  const getStatusColor = (attendance_status: number): string => {
+    switch (attendance_status) {
+      case 1:
+        return "bg-gray-100 border-gray-500 text-gray-500";
+      case 5:
+        return "bg-green-100 border-green-500 text-green-500";
+      case 6:
+        return "bg-orange-100 border-orange-500 text-orange-500";
+      case 7:
+        return "bg-red-100 border-red-500 text-red-500";
+      default:
+        return ""; // Default classes if none of the cases match
+    }
+  };
+
   const today = new Date().toISOString().slice(0, 19).replace("T", " ");
 
   if (isLoading) {
@@ -409,11 +425,17 @@ const StudentPage = () => {
                 <div className="w-max bg-primary5 p-1.5 lg:p-2 rounded-lg">
                   {/* Judul Status */}
                   <div className="mb-0.5 lg:mb-2">
-                    <p className="min-w-max text-xs lg:text-sm">Status Absensi</p>
+                    <p className="min-w-max text-xs lg:text-sm">
+                      Status Absensi
+                    </p>
                   </div>
                   {/* Informasi Lengkap Status */}
                   <div>
-                    <p className="bg-red-100 border-2 border-dashed border-red-500 text-red-500 font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md">
+                    <p
+                      className={`border-2 border-dashed font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md text-center ${getStatusColor(
+                        presence.attendance_status
+                      )}`}
+                    >
                       {presence.attendance_status_label}
                     </p>
                     {/* <p className="bg-green-100 border-2 border-dashed border-green-500 text-green-500 font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md">
