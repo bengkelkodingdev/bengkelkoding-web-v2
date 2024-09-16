@@ -168,10 +168,10 @@ export interface ClassInformation {
 }
 
 export interface EditFormClassroom {
+  name: string;
   lecture_id: number;
   period_id: number;
   path_id: number;
-  name: string;
   description: string;
   day: number;
   time_start: string;

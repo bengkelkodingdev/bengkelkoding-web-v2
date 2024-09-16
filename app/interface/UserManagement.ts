@@ -4,6 +4,34 @@ export interface DosenData {
   name: string;
   email: string;
   is_active: number;
+  password: string;
+}
+
+export interface AssistantData {
+  id: number;
+  nim: string;
+  name: string;
+  email: string;
+  is_active: number;
+  password: string;
+}
+
+export interface StudentData {
+  id: number;
+  nim: string;
+  name: string;
+  email: string;
+  is_active: number;
+  password: string;
+}
+
+export interface UpDosenData {
+  id: number;
+  identity_code: string;
+  name: string;
+  email: string;
+  is_active: boolean;
+  password: string;
 }
 
 interface PaginationLinks {
@@ -29,5 +57,15 @@ interface Meta {
 
 export interface DosenRespon {
   data: DosenData[];
+  meta: Meta;
+}
+
+export interface AssistantRespon {
+  data: AssistantData[];
+  meta: Meta;
+}
+
+export interface StudentRespon {
+  data: StudentData[];
   meta: Meta;
 }
