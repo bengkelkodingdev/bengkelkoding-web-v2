@@ -8,6 +8,11 @@ const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 // Request
 // Access Token + URL
 export const createRequest = async (url: string): Promise<AxiosResponse> => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
   try {
     const config = { headers: { Authorization: `Bearer ${access_token}` } };
     const response: AxiosResponse = await Axios.get(`${API_URL}${url}`, config);
@@ -20,7 +25,7 @@ export const createRequest = async (url: string): Promise<AxiosResponse> => {
 // post request
 export const createPostRequest = async (
   url: string,
-  data?: Record<string, any> | FormData,
+  data?: Record<string, any> | FormData
 ): Promise<AxiosResponse> => {
   try {
     const access_token = Cookies.get("access_token");
@@ -28,7 +33,7 @@ export const createPostRequest = async (
     if (!access_token) {
       throw new Error("Access token not found");
     }
-    
+
     const config = {
       headers: {
         Authorization: `Bearer ${access_token}`,

@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { DosenRespon } from "@/app/interface/UserManagement";
-import { getAllLectureData } from "@/app/api/manageUser";
+import { deleteLecture, getAllLectureData } from "@/app/api/manageUser";
 
 const HomeDashboardPenggunaDosen = () => {
   const access_token = Cookies.get("access_token");
@@ -15,19 +15,56 @@ const HomeDashboardPenggunaDosen = () => {
   const [DataDosen, setDataDosen] = useState<DosenRespon>();
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 10; // Jumlah data per halaman
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   const fetchData = useCallback(async () => {
+    if (!access_token) {
+      throw new Error("Access token not found");
+    }
     try {
       let response;
-      // Check the user's role and fetch data accordingly
-      if (role_user === "superadmin" || role_user === "admin") {
-        response = await getAllLectureData();
+      if (role_user && (role_user === "superadmin" || role_user === "admin")) {
+        response = await getAllLectureData(
+          searchTerm,
+          currentPage,
+          itemsPerPage
+        );
       }
 
       if (response) {
         setDataDosen(response);
+        setTotalPages(response.meta.pagination.total_pages); // Set total halaman dari meta pagination API
       }
-    } catch (error) {}
-  }, [role_user]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, [role_user, searchTerm, access_token, currentPage, itemsPerPage]);
+
+  // useEffect untuk memanggil fetchData setiap kali searchTerm berubah
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]); // Jalankan fetchData saat searchTerm berubah
+
+  const handleDelete = async (idLecture: number, nameLecture: string) => {
+    try {
+      await deleteLecture(idLecture);
+      toast.success(`Berhasil Menghapus Dosen ${nameLecture} 😁`);
+      fetchData();
+    } catch (error) {
+      console.error("Failed to delete classroom", error);
+      toast.error(`Gagal Menghapus Dosen 😔: ${error.message}`);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -68,6 +105,7 @@ const HomeDashboardPenggunaDosen = () => {
             <input
               type="text"
               id="table-search"
+              onChange={handleSearchChange}
               className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
               placeholder="Cari dosen"
             />
@@ -135,7 +173,13 @@ const HomeDashboardPenggunaDosen = () => {
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
                       <Link
-                        href={"/"}
+                        href={{
+                          pathname: `dosen/tambah`,
+                          query: {
+                            idLecture: listDosen.id,
+                            status: "edit",
+                          },
+                        }}
                         className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -148,8 +192,10 @@ const HomeDashboardPenggunaDosen = () => {
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                       </Link>
-                      <Link
-                        href={"/"}
+                      <button
+                        onClick={() =>
+                          handleDelete(listDosen.id, listDosen.name)
+                        }
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -161,7 +207,7 @@ const HomeDashboardPenggunaDosen = () => {
                           <path d="M0 0h24v24H0V0z" fill="none" />
                           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                         </svg>
-                      </Link>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -180,70 +226,47 @@ const HomeDashboardPenggunaDosen = () => {
           aria-label="Table navigation"
         >
           <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-            Showing <span className="font-semibold text-gray-900">1-10</span> of{" "}
-            <span className="font-semibold text-gray-900">1000</span>
+            Menampilkan halaman {currentPage} dari {totalPages}
           </span>
           <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
+                disabled={currentPage === 1}
               >
                 Sebelumnya
-              </a>
+              </button>
             </li>
+            {[...Array(totalPages)].map((_, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`flex items-center justify-center px-3 h-8 leading-tight ${
+                    currentPage === index + 1
+                      ? "text-blue-600 bg-blue-50 border-blue-300"
+                      : "text-neutral3 bg-white border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
             <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                aria-current="page"
-                className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
+                disabled={currentPage === totalPages}
               >
                 Selanjutnya
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
       </div>
+      <ToastContainer />
     </>
   );
 };
