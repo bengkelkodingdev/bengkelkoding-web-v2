@@ -138,7 +138,7 @@ const StudentClassroomPage = () => {
 
         // Get Presences
         const responsePresences = await getPresences(Number(idClassroom));
-        setPresences(responsePresences);
+        setPresences(responsePresences.data);
       };
 
       fetchData();
