@@ -1,8 +1,6 @@
 import Axios, { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 
-const access_token = Cookies.get("access_token");
-
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
 // Request
