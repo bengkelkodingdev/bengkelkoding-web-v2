@@ -53,3 +53,13 @@ export const postSubmitTask = async (
   createPostRequest(
     `/api/v1/mobile/student/assignment/classroom/${classroom_id}/assignments/${assignment_id}/task/submit`
   );
+
+// Get Presences This Week
+export const getPresencesThisWeek = async (): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/student/dashboard/presences`);
+
+// Get All Presences
+export const getPresences = async (
+  classroom_id: number
+): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/student/classrooms/${classroom_id}/presences`);

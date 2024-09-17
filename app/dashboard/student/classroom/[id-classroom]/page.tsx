@@ -1,16 +1,23 @@
 "use client";
-import { getStudentClassroomDetail } from "@/app/api/student/dashboard";
+import {
+  getPresences,
+  getStudentClassroomDetail,
+} from "@/app/api/student/dashboard";
 import Breadcrumb from "@/app/component/general/Breadcrumb";
 import { formatDate } from "@/app/lib/formatDate";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import ReactApexChart from "react-apexcharts";
+import Cookies from "js-cookie";
 
 const StudentClassroomPage = () => {
   const url = usePathname();
   const parts = url.split("/");
   const idClassroom = parts[parts.length - 1];
+
+  Cookies.set("current_classroom_id", idClassroom);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -85,12 +92,53 @@ const StudentClassroomPage = () => {
     ],
   });
 
+  const [presences, setPresences] = useState({
+    statistic: {
+      totalPresence: 0,
+      attended: 0,
+      attended_percentage: 0,
+      absent: 0,
+      absent_percentage: 0,
+      unattended: 0,
+      unattended_percentage: 0,
+    },
+    presences: {
+      data: [
+        {
+          id: 0,
+          week: 0,
+          classroom_name: "",
+          presence_date: "",
+          presence_date_formatted: "",
+          time_start: "",
+          time_end: "",
+          day: "",
+          room: "",
+          attendance_status: 0,
+          attendance_status_label: "",
+          is_enabled: 0,
+          is_enabled_label: "",
+          qr_is_generated: 0,
+        },
+      ],
+      meta: {
+        status_code: 0,
+        success: false,
+        message: "",
+      },
+    },
+  });
+
   useEffect(() => {
     try {
       const fetchData = async () => {
         // Get Detail Classroom
         const responseClassroom = await getStudentClassroomDetail(idClassroom);
         setClassroom(responseClassroom.data);
+
+        // Get Presences
+        const responsePresences = await getPresences(Number(idClassroom));
+        setPresences(responsePresences.data);
       };
 
       fetchData();
@@ -100,6 +148,79 @@ const StudentClassroomPage = () => {
       setIsLoading(false);
     }
   }, [idClassroom]);
+
+  // Chart Statistik Log Kehadiran
+  const chartOptions: ApexCharts.ApexOptions = {
+    series: [
+      presences.statistic.attended,
+      presences.statistic.absent,
+      presences.statistic.unattended,
+    ],
+    labels: ["Hadir", "Izin", "Tidak Hadir"],
+    colors: ["#3B82F6", "#dddddd", "#000000"],
+    dataLabels: {
+      enabled: false,
+    },
+    chart: {
+      animations: {
+        enabled: false,
+      },
+      foreColor: "#333",
+      fontFamily: "Roboto",
+      height: 50,
+      id: "leQPC",
+      stackOnlyBar: true,
+      toolbar: {
+        show: false,
+      },
+      type: "donut",
+      width: 300,
+    },
+    plotOptions: {
+      line: {
+        isSlopeChart: false,
+      },
+      pie: {
+        donut: {
+          size: "50%",
+          labels: {
+            name: {},
+            value: {},
+            total: {},
+          },
+        },
+      },
+    },
+    fill: {
+      opacity: 1,
+    },
+    grid: {
+      padding: {
+        right: 0,
+        bottom: 0,
+        left: 0,
+      },
+    },
+    legend: {
+      show: false,
+    },
+  };
+
+  // Get status presence style
+  const getStatusColor = (attendance_status: number): string => {
+    switch (attendance_status) {
+      case 1:
+        return "bg-gray-100 border-gray-500 text-gray-500";
+      case 5:
+        return "bg-green-100 border-green-500 text-green-500";
+      case 6:
+        return "bg-orange-100 border-orange-500 text-orange-500";
+      case 7:
+        return "bg-red-100 border-red-500 text-red-500";
+      default:
+        return ""; // Default classes if none of the cases match
+    }
+  };
 
   // Close Open for Informasi Kelas
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -130,6 +251,8 @@ const StudentClassroomPage = () => {
   if (error) {
     return <p>{error}</p>;
   }
+
+  console.log(presences);
 
   return (
     <>
@@ -277,8 +400,10 @@ const StudentClassroomPage = () => {
                     {course.brief_description}
                   </p>
                 </div>
-                <div className="absolute right-2 top-2 lg:right-4 lg:top-4 bg-primary5 text-primary3 font-semibold px-3 py-2 text-sm lg:text-base rounded-md hidden group-hover:block">
-                  Lanjutkan Belajar
+                <div className="absolute w-full h-full hidden group-hover:flex left-0 items-center justify-center">
+                  <p className="bg-primary5 text-primary3 font-semibold px-3 py-2 text-sm lg:text-base rounded-md">
+                    Lanjutkan Belajar
+                  </p>
                 </div>
               </Link>
             ))}
@@ -354,10 +479,10 @@ const StudentClassroomPage = () => {
         </div>
 
         {/* Statistik Log Kehadiran */}
-        <div className="bg-primary5 rounded-xl p-4">
+        <div className="h-max rounded-xl p-4 bg-gradient-to-r from-slate-50 to-sky-50">
           {/* Judul Statistik */}
           <div className="flex gap-2 md:gap-4 mb-4 items-center">
-            <div className="h-6 w-6 lg:h-8 lg:w-8 bg-white bg-opacity-40 fill-white rounded-full flex items-center justify-center">
+            <div className="h-6 w-6 lg:h-8 lg:w-8 bg-primary5 fill-primary3 rounded-full flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 -960 960 960"
@@ -366,9 +491,46 @@ const StudentClassroomPage = () => {
                 <path d="M120-240q-33 0-56.5-23.5T40-320q0-33 23.5-56.5T120-400h10.5q4.5 0 9.5 2l182-182q-2-5-2-9.5V-600q0-33 23.5-56.5T400-680q33 0 56.5 23.5T480-600q0 2-2 20l102 102q5-2 9.5-2h21q4.5 0 9.5 2l142-142q-2-5-2-9.5V-640q0-33 23.5-56.5T840-720q33 0 56.5 23.5T920-640q0 33-23.5 56.5T840-560h-10.5q-4.5 0-9.5-2L678-420q2 5 2 9.5v10.5q0 33-23.5 56.5T600-320q-33 0-56.5-23.5T520-400v-10.5q0-4.5 2-9.5L420-522q-5 2-9.5 2H400q-2 0-20-2L198-340q2 5 2 9.5v10.5q0 33-23.5 56.5T120-240Z" />
               </svg>
             </div>
-            <h2 className="text-base md:text-lg lg:text-xl text-white">
+            <h2 className="text-base md:text-lg lg:text-xl">
               Statistik Kehadiran Anda
             </h2>
+          </div>
+          <div className="flex gap-2 items-center">
+            <ReactApexChart
+              options={chartOptions}
+              series={chartOptions.series}
+              type="donut"
+              height={180}
+            />
+            <div className="w-40 flex flex-col gap-2">
+              <div className="w-full flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <div className="w-6 h-6 rounded-md bg-[#3B82F6]" />
+                  <p className="text-xs lg:text-sm">Hadir</p>
+                </div>
+                <p className="font-semibold text-xs lg:text-sm">
+                  {presences.statistic.attended_percentage}%
+                </p>
+              </div>
+              <div className="w-full flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <div className="w-6 h-6 rounded-md bg-[#dddddd]" />
+                  <p className="text-xs lg:text-sm">Izin</p>
+                </div>
+                <p className="font-semibold text-xs lg:text-sm">
+                  {presences.statistic.absent_percentage}%
+                </p>
+              </div>
+              <div className="w-full flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <div className="w-6 h-6 rounded-md bg-[#000000]" />
+                  <p className="text-xs lg:text-sm">Tidak Hadir</p>
+                </div>
+                <p className="font-semibold text-xs lg:text-sm">
+                  {presences.statistic.unattended_percentage}%
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -389,75 +551,80 @@ const StudentClassroomPage = () => {
               Log Kehadiran
             </h2>
             <p className="text-xs lg:text-sm text-white font-semibold bg-gradient-to-r from-blue-500 to-emerald-600 px-1.5 lg:px-2 py-0.5 lg:py-1 rounded-md">
-              Minggu ini
+              Semua Pertemuan
             </p>
           </div>
           {/* List Log Kehadiran */}
-          <div className="flex flex-col gap-2 lg:gap-3">
-            <div className="flex justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 items-center gap-4 cursor-pointer transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]">
-              {/* Informasi Log Kehadiran */}
-              <div>
-                <div className="flex gap-2 md:gap-3 lg:gap-4 items-center mb-2">
-                  <p className="bg-gradient-to-r from-blue-500 to-blue-700 px-1.5 lg:px-2 py-1 rounded-md text-white font-semibold text-[10px] lg:text-sm">
-                    Pertemuan 4
-                  </p>
-                  <p className="font-medium text-sm lg:text-base">
-                    Bengkel Koding DS-01
-                  </p>
-                </div>
-                <div className="flex justify-between">
-                  {/* Waktu Kehadiran */}
-                  <div className="text-neutral2 fill-neutral2 flex gap-6">
-                    <p className="text-[10px] lg:text-sm flex items-center gap-0.5 lg:gap-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -960 960 960"
-                        className="w-3 h-3 lg:w-4 lg:h-4"
+          {presences?.presences.data.length > 0 ? (
+            <div className="flex flex-col gap-2 lg:gap-3">
+              {presences?.presences.data.map((presence) => (
+                <div
+                  key={presence.id}
+                  className="flex justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 items-center gap-4 transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
+                >
+                  {/* Informasi Log Kehadiran */}
+                  <div>
+                    <div className="flex gap-2 md:gap-3 lg:gap-4 items-center mb-2">
+                      <p className="min-w-max bg-gradient-to-r from-blue-500 to-blue-700 px-1.5 lg:px-2 py-1 rounded-md text-white font-semibold text-[10px] lg:text-sm">
+                        Pertemuan {presence.week}
+                      </p>
+                      <p className="font-medium text-sm lg:text-base">
+                        {presence.classroom_name}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      {/* Waktu Kehadiran */}
+                      <div className="text-neutral2 fill-neutral2 flex gap-6">
+                        <p className="text-[10px] lg:text-sm flex items-center gap-0.5 lg:gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 -960 960 960"
+                            className="w-3 h-3 lg:w-4 lg:h-4"
+                          >
+                            <path d="M580-240q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z" />
+                          </svg>
+                          {presence.day}, {presence.presence_date_formatted}
+                        </p>
+                        <p className="text-[10px] lg:text-sm flex items-center gap-0.5 lg:gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 -960 960 960"
+                            className="w-3 h-3 lg:w-4 lg:h-4"
+                          >
+                            <path d="M520-496v-144q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v159q0 8 3 15.5t9 13.5l132 132q11 11 28 11t28-11q11-11 11-28t-11-28L520-496ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z" />
+                          </svg>
+                          {presence.time_start} - {presence.time_end} WIB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Status Kehadiran */}
+                  <div className="w-max bg-primary5 p-1.5 lg:p-2 rounded-lg">
+                    {/* Judul Status */}
+                    <div className="mb-0.5 lg:mb-2">
+                      <p className="min-w-max text-xs lg:text-sm">
+                        Status Absensi
+                      </p>
+                    </div>
+                    {/* Informasi Lengkap Status */}
+                    <div>
+                      <p
+                        className={`border-2 border-dashed font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md text-center ${getStatusColor(
+                          presence.attendance_status
+                        )}`}
                       >
-                        <path d="M580-240q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z" />
-                      </svg>
-                      Selasa, 27 Jul 2024
-                    </p>
-                    <p className="text-[10px] lg:text-sm flex items-center gap-0.5 lg:gap-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -960 960 960"
-                        className="w-3 h-3 lg:w-4 lg:h-4"
-                      >
-                        <path d="M520-496v-144q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v159q0 8 3 15.5t9 13.5l132 132q11 11 28 11t28-11q11-11 11-28t-11-28L520-496ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z" />
-                      </svg>
-                      12.30 - 14.10 WIB
-                    </p>
+                        {presence.attendance_status_label}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* Status Kehadiran */}
-              <div className="w-max bg-primary5 p-1.5 lg:p-2 rounded-lg">
-                {/* Judul Status */}
-                <div className="mb-0.5 lg:mb-2">
-                  <p className="text-xs lg:text-sm">Status Absensi</p>
-                </div>
-                {/* Informasi Lengkap Status */}
-                <div>
-                  <p className="bg-red-100 border-2 border-dashed border-red-500 text-red-500 font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md">
-                    Tidak hadir
-                  </p>
-                  {/* <p className="bg-green-100 border-2 border-dashed border-green-500 text-green-500 font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md">
-                    Hadir
-                  </p>
-                  <p className="bg-yellow-100 border-2 border-dashed border-yellow-500 text-yellow-500 font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md">
-                    Belum hadir
-                  </p>
-                  <p className="bg-blue-100 border-2 border-dashed border-blue-500 text-blue-500 font-medium py-0.5 lg:py-1 px-1.5 lg:px-2 text-xs lg:text-sm rounded-md">
-                    Izin
-                  </p> */}
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
-          <div className="p-4 rounded-xl border border-neutral4 text-center text-xs md:text-sm lg:text-base">
-            Anda belum memiliki log kehadiran!
-          </div>
+          ) : (
+            <div className="p-4 rounded-xl border border-neutral4 text-center text-xs md:text-sm lg:text-base">
+              Anda belum memiliki log kehadiran!
+            </div>
+          )}
         </div>
 
         {/* Tugas */}
@@ -483,15 +650,24 @@ const StudentClassroomPage = () => {
               {classroom.assignments.map((assignment) => (
                 <Link
                   key={assignment.id}
-                  href={`${classroom.id}/assignment/${assignment.id}`}
+                  href={
+                    assignment.deadline < today || assignment.start_time > today
+                      ? "#"
+                      : `${classroom.id}/assignment/${assignment.id}`
+                  }
                   className={`group relative overflow-hidden flex flex-col md:flex-row justify-between rounded-xl border border-neutral4 p-2 md:p-3 lg:p-4 md:items-center gap-2 md:gap-3 lg:gap-4 transition-all duration-200 ease-in-out transform ${
                     assignment.deadline < today || assignment.start_time > today
                       ? "cursor-default"
                       : "cursor-pointer hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px]"
                   }`}
-                  onClick={(e) =>
-                    assignment.deadline < today && e.preventDefault()
-                  }
+                  onClick={(e) => {
+                    if (
+                      assignment.deadline < today ||
+                      assignment.start_time > today
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   {assignment.deadline < today ||
                     (assignment.start_time > today ? (
