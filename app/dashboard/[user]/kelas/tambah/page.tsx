@@ -176,7 +176,6 @@ const DashboardTambahKelasPage: React.FC = () => {
                 ? undefined
                 : Number(value)
               : value,
-          // name === "total_class_session" ? value === "" ? undefined : Number(value): value,
         };
         console.log(`${name}: ${updatedData[name]}`);
         return updatedData;
@@ -274,7 +273,6 @@ const DashboardTambahKelasPage: React.FC = () => {
           // Pastikan ini sesuai dengan perubahan tipe response
           if (response && response.data && response.data.length > 0) {
             const classroomData = response.data[0]; // ambil dari array
-            console.log("hasil", classroomData);
 
             // setFormDataEdit dengan data yang sudah difetch
             setFormDataEdit({
@@ -294,7 +292,7 @@ const DashboardTambahKelasPage: React.FC = () => {
               start_date: classroomData.start_date,
               max_absent: classroomData.max_absent,
             });
-            console.log("sidosen", classroomData.lecture_id);
+
             const namaDosen = mapLectureToName(classroomData.lecture_id);
             setSearchTerm(namaDosen);
           } else {
@@ -336,7 +334,7 @@ const DashboardTambahKelasPage: React.FC = () => {
             const classroomData = response.data[0];
 
             const mappedLectureId = classroomData.lecture_id;
-            console.log("Mapped Lecture ID HALLO:", mappedLectureId);
+
             setFormData((prevData) => ({
               ...prevData,
               lecture_id: mappedLectureId,

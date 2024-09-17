@@ -97,7 +97,7 @@ const HomeDashboardKelasPage = () => {
     [role_user]
   );
 
-  const [isSearching, setIsSearching] = useState(false); // State untuk status pencarian
+  const [isSearching, setIsSearching] = useState(false);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
