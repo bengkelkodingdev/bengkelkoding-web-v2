@@ -1,10 +1,9 @@
 "use client";
 import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useRef, useState } from "react";
-import { ClassFormData } from "@/app/interface/Kelas";
+import { ClassFormData, EditFormClassroom } from "@/app/interface/Kelas";
 
 import Button from "@/app/component/general/Button";
-import Input from "@/app/component/general/Input";
 import { toast, ToastContainer } from "react-toastify";
 import {
   SelectLecture,
@@ -13,7 +12,7 @@ import {
 } from "@/app/interface/SelectData";
 
 import { useSearchParams } from "next/navigation";
-import { getDetailClassroom } from "@/app/api/admin/api-kelas/getDetail-kelas";
+
 import InputBasic from "@/app/component/general/InputBasic";
 import {
   createClassroom,
@@ -21,7 +20,11 @@ import {
   getSelectPaths,
   getSelectPeriods,
   updateClassroom,
-} from "@/app/api/ApiKelas";
+} from "@/app/api/kelas";
+import {
+  findDetailClassroom,
+  getDetailClassroom,
+} from "@/app/api/detailClassroom";
 
 const DashboardTambahKelasPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -46,6 +49,8 @@ const DashboardTambahKelasPage: React.FC = () => {
     max_absent: undefined,
     total_class_session: undefined,
   });
+
+  const [formDataEdit, setFormDataEdit] = useState<EditFormClassroom>();
 
   const [selectedDosenId, setSelectedDosenId] = useState<number | undefined>(
     undefined
@@ -97,38 +102,25 @@ const DashboardTambahKelasPage: React.FC = () => {
     }
   };
 
-  // Fungsi mapping untuk mendapatkan ID berdasarkan nama
-  const mapLectureToId = (lectureName: string): number => {
-    console.log(
-      "Mencari ID untuk nama dosen:",
-      lectureName.trim().toLowerCase()
-    );
-
+  // cari nama dosen
+  const mapLectureToName = (lectureId: number) => {
     const lecture = selectLectureApi.find((lec) => {
-      const trimmedLectureName = lectureName.trim().toLowerCase();
-      const trimmedLecName = lec.name.trim().toLowerCase();
-      console.log(`Comparing "${trimmedLectureName}" with "${trimmedLecName}"`);
-      return trimmedLecName === trimmedLectureName;
+      console.log(`Comparing "${lectureId}" with "${lec.id}"`);
+      return lec.id === lectureId; // Langsung membandingkan
     });
 
     if (lecture) {
-      console.log("Dosen ditemukan:", lecture); // Log jika ditemukan
+      console.log("Dosen ditemukan:", lecture.name); // Log nama dosen jika ditemukan
     } else {
-      console.warn("Dosen tidak ditemukan untuk nama:", lectureName); // Log jika tidak ditemukan
+      console.warn(`Dosen tidak ditemukan untuk ID: ${lectureId}`); // Tidak mencoba mengakses undefined
       console.log("Data selectLectureApi yang tersedia:", selectLectureApi); // Log data yang ada di selectLectureApi
     }
 
-    return lecture ? lecture.id : 0; // Mengembalikan 0 jika tidak ditemukan
+    return lecture ? lecture.name : "Dosen tidak ditemukan"; // Mengembalikan pesan default jika tidak ditemukan
   };
 
-  // const mapPathToId = (pathName: string): number => {
-  //   const path = selectPathApi.find((p) => p.name === pathName);
-  //   return path ? path.id : 0; // Mengembalikan 0 jika tidak ditemukan
-  // };
-
-  const mapPeriodToId = (periodName: string): number => {
-    const period = selectPeriodApi.find((p) => p.period === periodName);
-    return period ? period.id : 0; // Mengembalikan 0 jika tidak ditemukan
+  const changeFormatTime = (time: string) => {
+    return time.slice(0, 5);
   };
 
   // Fungsi untuk menangani perubahan pada input pencarian dosen
@@ -166,52 +158,65 @@ const DashboardTambahKelasPage: React.FC = () => {
       setDescriptionCharCount(value.length);
     }
 
-    setFormData((prevData) => {
-      const updatedData = {
-        ...prevData,
-        [name]:
-          name === "day" ||
-          name === "lecture_id" ||
-          name === "path_id" ||
-          name === "period_id" ||
-          name === "quota" ||
-          name === "task_percent" ||
-          name === "uts_percent" ||
-          name === "uas_percent" ||
-          name === "max_absent" ||
-          name === "total_class_session"
-            ? value === ""
-              ? undefined
-              : Number(value)
-            : value,
-      };
-      console.log(`${name}: ${updatedData[name]}`);
-      return updatedData;
-    });
+    if (StatusForm) {
+      setFormDataEdit((prevData) => {
+        const updatedData = {
+          ...prevData,
+          [name]:
+            name === "day" ||
+            name === "lecture_id" ||
+            name === "path_id" ||
+            name === "period_id" ||
+            name === "quota" ||
+            name === "task_percent" ||
+            name === "uts_percent" ||
+            name === "uas_percent" ||
+            name === "max_absent"
+              ? value === ""
+                ? undefined
+                : Number(value)
+              : value,
+        };
+        console.log(`${name}: ${updatedData[name]}`);
+        return updatedData;
+      });
+    } else {
+      setFormData((prevData) => {
+        const updatedData = {
+          ...prevData,
+          [name]:
+            name === "day" ||
+            name === "lecture_id" ||
+            name === "path_id" ||
+            name === "period_id" ||
+            name === "quota" ||
+            name === "task_percent" ||
+            name === "uts_percent" ||
+            name === "uas_percent" ||
+            name === "max_absent" ||
+            name === "total_class_session"
+              ? value === ""
+                ? undefined
+                : Number(value)
+              : value,
+        };
+        console.log(`${name}: ${updatedData[name]}`);
+        return updatedData;
+      });
+    }
   };
 
   // eksperimen
-
-  // Fungsi untuk mengkonversi nama hari ke nomor
-  const convertDayToNumber = (day: string): number => {
-    const daysMap = {
-      Minggu: 0,
-      Senin: 1,
-      Selasa: 2,
-      Rabu: 3,
-      Kamis: 4,
-      Jumat: 5,
-      Sabtu: 6,
-    };
-    return daysMap[day] ?? 0; // Mengembalikan 0 jika hari tidak ditemukan
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (StatusForm) {
       try {
-        const response = await updateClassroom(formData, parseInt(IdClassroom));
+        const response = await updateClassroom(
+          formDataEdit,
+          parseInt(IdClassroom)
+        );
         toast.success("Berhasil Mengubah Kelas 😁");
         window.location.href = `./`;
       } catch (error) {
@@ -263,60 +268,73 @@ const DashboardTambahKelasPage: React.FC = () => {
 
   useEffect(() => {
     if (StatusForm && IdClassroom) {
-      getDetailClassroom(IdClassroom)
+      findDetailClassroom(IdClassroom)
         .then((response) => {
-          if (response.data && response.data.classroom) {
-            const classroomData = response.data.classroom;
+          // Pastikan ini sesuai dengan perubahan tipe response
+          if (response && response.data && response.data.length > 0) {
+            const classroomData = response.data[0]; // ambil dari array
 
-            // console.log("Data Dosen dari API:", classroomData.lecture);
-            // console.log("Data selectLectureApi:", selectLectureApi);
-
-            const mappedLectureId = mapLectureToId(classroomData.lecture);
-            console.log("Mapped Lecture ID:", mappedLectureId);
-
-            // Map data dari server ke format yang dibutuhkan oleh aplikasi
-            setFormData({
+            // setFormDataEdit dengan data yang sudah difetch
+            setFormDataEdit({
               name: classroomData.name,
-              lecture_id: mappedLectureId, // Fungsi untuk mendapatkan ID dari nama dosen
-              path_id: 1, // Pastikan path_id adalah number
-              period_id: mapPeriodToId(classroomData.period), // Pastikan period_id adalah number
+              lecture_id: classroomData.lecture_id,
+              path_id: classroomData.path_id,
+              period_id: classroomData.period_id,
               description: classroomData.description,
               quota: classroomData.quota,
-              day: convertDayToNumber(classroomData.day), // Mengkonversi nama hari ke nomor
-              time_start: classroomData.time_start.replace(".", ":"),
-              time_end: classroomData.time_end.replace(".", ":"),
+              day: classroomData.day,
+              time_start: changeFormatTime(classroomData.time_start),
+              time_end: changeFormatTime(classroomData.time_end),
               room: classroomData.room,
-              task_percent: parseInt(
-                classroomData.task_percent.replace("%", "")
-              ), // Menghapus % dan konversi ke number
-              uts_percent: parseInt(classroomData.uts_percent.replace("%", "")),
-              uas_percent: parseInt(classroomData.uas_percent.replace("%", "")),
+              task_percent: classroomData.task_percent,
+              uts_percent: classroomData.uts_percent,
+              uas_percent: classroomData.uas_percent,
               start_date: classroomData.start_date,
               max_absent: classroomData.max_absent,
-              total_class_session: classroomData.total_session, // Ini perlu ada di formData jika Anda ingin menggunakannya
             });
-            setSearchTerm(classroomData.lecture.trim());
+
+            const namaDosen = mapLectureToName(classroomData.lecture_id);
+            setSearchTerm(namaDosen);
           } else {
             toast.error("Data kelas tidak ditemukan");
           }
         })
         .catch((error) => {
           console.error("Error fetching classroom details:", error);
-          toast.error("Gagal memuat detail kelas");
+
+          // Jika error berasal dari server, tampilkan pesan error dari response
+          if (error.response) {
+            console.error("1Error response data:", error.response.data);
+            console.error("1Error status:", error.response.status);
+            toast.error(
+              `1Gagal memuat detail kelas: ${
+                error.response.data.message || "Unknown error"
+              }`
+            );
+          } else if (error.request) {
+            // Jika request dibuat tetapi tidak ada respons
+            console.error("2Error request:", error.request);
+            toast.error(
+              "2Gagal memuat detail kelas: Tidak ada respons dari server."
+            );
+          } else {
+            // Kesalahan lain yang mungkin terjadi
+            console.error("3Error message:", error.message);
+            toast.error(`3Gagal memuat detail kelas: ${error.message}`);
+          }
         });
     }
-  }, [StatusForm, IdClassroom]);
+  }, [StatusForm, IdClassroom, selectLectureApi]);
 
   useEffect(() => {
     if (StatusForm === "edit" && selectLectureApi.length > 0 && IdClassroom) {
-      getDetailClassroom(IdClassroom)
+      findDetailClassroom(IdClassroom)
         .then((response) => {
-          if (response.data && response.data.classroom) {
-            const classroomData = response.data.classroom;
-            setSearchTerm(classroomData.lecture.trim());
+          if (response) {
+            const classroomData = response.data[0];
 
-            const mappedLectureId = mapLectureToId(classroomData.lecture);
-            console.log("Mapped Lecture ID HALLO:", mappedLectureId);
+            const mappedLectureId = classroomData.lecture_id;
+
             setFormData((prevData) => ({
               ...prevData,
               lecture_id: mappedLectureId,
@@ -328,7 +346,7 @@ const DashboardTambahKelasPage: React.FC = () => {
         })
         .catch((error) => {
           console.error("Error fetching classroom details:", error);
-          toast.error("Gagal memuat detail kelas");
+          toast.error("2Gagal memuat detail kelas catch 2");
         });
     }
   }, [StatusForm, selectLectureApi, IdClassroom]); // Dependensi termasuk selectLectureApi
@@ -350,7 +368,11 @@ const DashboardTambahKelasPage: React.FC = () => {
                 type="text"
                 label="Nama"
                 name="name"
-                value={formData.name}
+                value={
+                  StatusForm === "edit"
+                    ? formDataEdit?.name || ""
+                    : formData.name
+                }
                 onChange={handleChange}
                 required
               />
@@ -396,7 +418,12 @@ const DashboardTambahKelasPage: React.FC = () => {
                   name="path_id"
                   id="path_id"
                   className="mt-1 block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                  value={formData.path_id === undefined ? "" : formData.path_id}
+                  // value={formData.path_id === undefined ? "" : formData.path_id}
+                  value={
+                    StatusForm === "edit"
+                      ? formDataEdit?.path_id || ""
+                      : formData.path_id
+                  }
                   onChange={handleChange}
                   required
                 >
@@ -417,8 +444,13 @@ const DashboardTambahKelasPage: React.FC = () => {
                   name="period_id"
                   id="period_id"
                   className="mt-1 block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                  // value={
+                  //   formData.period_id === undefined ? "" : formData.period_id
+                  // }
                   value={
-                    formData.period_id === undefined ? "" : formData.period_id
+                    StatusForm === "edit"
+                      ? formDataEdit?.period_id || ""
+                      : formData.period_id
                   }
                   onChange={handleChange}
                   required
@@ -441,7 +473,11 @@ const DashboardTambahKelasPage: React.FC = () => {
                 name="description"
                 id="description"
                 className="h-[82%] mt-1  shadow-sm block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                value={formData.description}
+                value={
+                  StatusForm === "edit"
+                    ? formDataEdit?.description || ""
+                    : formData.description
+                }
                 onChange={handleChange}
                 maxLength={maxDescriptionLength}
                 required
@@ -470,7 +506,11 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="number"
               label="Kuota"
               name="quota"
-              value={formData.quota}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.quota || ""
+                  : formData.quota
+              }
               onChange={handleChange}
               required
             />
@@ -483,7 +523,9 @@ const DashboardTambahKelasPage: React.FC = () => {
                 name="day"
                 id="day"
                 className="mt-1 block w-full px-3 py-2 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                value={formData.day}
+                value={
+                  StatusForm === "edit" ? formDataEdit?.day || "" : formData.day
+                }
                 onChange={handleChange}
                 required
               >
@@ -503,7 +545,11 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="time"
               label="Jam Mulai"
               name="time_start"
-              value={formData.time_start}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.time_start || ""
+                  : formData.time_start
+              }
               onChange={handleChange}
               required
             />
@@ -511,7 +557,11 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="time"
               label="Jam selesai"
               name="time_end"
-              value={formData.time_end}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.time_end || ""
+                  : formData.time_end
+              }
               onChange={handleChange}
               required
             />
@@ -519,7 +569,9 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="text"
               label="Ruangan"
               name="room"
-              value={formData.room}
+              value={
+                StatusForm === "edit" ? formDataEdit?.room || "" : formData.room
+              }
               onChange={handleChange}
               required
             />
@@ -538,7 +590,11 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="number"
               label="Tugas"
               name="task_percent"
-              value={formData.task_percent}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.task_percent || ""
+                  : formData.task_percent
+              }
               onChange={handleChange}
               required
             />
@@ -546,7 +602,11 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="number"
               label="UTS"
               name="uts_percent"
-              value={formData.uts_percent}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.uts_percent || ""
+                  : formData.uts_percent
+              }
               onChange={handleChange}
               required
             />
@@ -554,7 +614,11 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="number"
               label="UAS"
               name="uas_percent"
-              value={formData.uas_percent}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.uas_percent || ""
+                  : formData.uas_percent
+              }
               onChange={handleChange}
               required
             />
@@ -570,23 +634,37 @@ const DashboardTambahKelasPage: React.FC = () => {
               type="number"
               label="Maksimal izin"
               name="max_absent"
-              value={formData.max_absent}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.max_absent || ""
+                  : formData.max_absent
+              }
               onChange={handleChange}
               required
             />
-            <InputBasic
-              type="number"
-              label="Jumlah Pertemuan"
-              name="total_class_session"
-              value={formData.total_class_session}
-              onChange={handleChange}
-              required
-            />
+
+            {StatusForm ? (
+              <></>
+            ) : (
+              <InputBasic
+                type="number"
+                label="Jumlah Pertemuan"
+                name="total_class_session"
+                value={formData.total_class_session}
+                onChange={handleChange}
+                required
+              />
+            )}
+
             <InputBasic
               type="date"
               label="Mulai Pertemuan"
               name="start_date"
-              value={formData.start_date}
+              value={
+                StatusForm === "edit"
+                  ? formDataEdit?.start_date || ""
+                  : formData.start_date
+              }
               onChange={handleChange}
               required
             />

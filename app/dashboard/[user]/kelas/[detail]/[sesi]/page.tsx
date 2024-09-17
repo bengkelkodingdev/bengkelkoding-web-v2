@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  getDetailQrSessionAdmin,
-  getDetailQrSessionLecture,
-} from "@/app/api/admin/api-kelas/presensi/getDetailPresensi";
-import {
-  getGenerateQrAdmin,
-  getGenerateQrLecture,
-} from "@/app/api/admin/api-kelas/presensi/getGenerateQr";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -17,10 +9,6 @@ import Modal from "@/app/component/general/Modal";
 
 import Keterangan from "@/app/component/general/Keterangan";
 import { detailSesi, Student } from "@/app/interface/DetailSesi";
-import {
-  postManualPresenceAdmin,
-  postManualPresenceLecture,
-} from "@/app/api/admin/api-kelas/presensi/postManualPresence";
 
 import Cookies from "js-cookie";
 
@@ -28,8 +16,20 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import {
   postUpdateStatusAbsenceAdmin,
+  postUpdateStatusAbsenceAssistant,
   postUpdateStatusAbsenceLecture,
-} from "@/app/api/ApiAbsence";
+} from "@/app/api/absence";
+import {
+  getDetailQrSessionAdmin,
+  getDetailQrSessionAssistant,
+  getDetailQrSessionLecture,
+  getGenerateQrAdmin,
+  getGenerateQrAssistant,
+  getGenerateQrLecture,
+  postManualPresenceAdmin,
+  postManualPresenceAssistant,
+  postManualPresenceLecture,
+} from "@/app/api/presensi";
 
 const DetailKelasPageSesi = () => {
   // const router = useRouter();
@@ -118,8 +118,21 @@ const DetailKelasPageSesi = () => {
           fetchDetailSession();
 
           setIsKetModalOpen(false);
-        } else if (role_user == "lecture" || role_user == "assistent") {
+        } else if (role_user == "lecture") {
           const response = await postUpdateStatusAbsenceLecture(
+            selectedIdClassroom,
+            selectedIdAbsence,
+            status, // Status 2 for "Approved" and 3 for "Rejected"
+            keterangan
+          );
+          toast.success(`Absen Mahasiswa ${actionText} 😁`);
+
+          // mari dapatkan datanya lagi
+          fetchDetailSession();
+
+          setIsKetModalOpen(false);
+        } else if (role_user == "assistant") {
+          const response = await postUpdateStatusAbsenceAssistant(
             selectedIdClassroom,
             selectedIdAbsence,
             status, // Status 2 for "Approved" and 3 for "Rejected"
@@ -157,8 +170,14 @@ const DetailKelasPageSesi = () => {
       if (role_user == "superadmin" || role_user == "admin") {
         updateData = await postManualPresenceAdmin(Number(sesi), updatedStatus);
         fetchDetailSession();
-      } else if (role_user == "lecture" || role_user == "assistent") {
+      } else if (role_user == "lecture") {
         updateData = await postManualPresenceLecture(
+          Number(sesi),
+          updatedStatus
+        );
+        fetchDetailSession();
+      } else if (role_user == "assistant") {
+        updateData = await postManualPresenceAssistant(
           Number(sesi),
           updatedStatus
         );
@@ -181,8 +200,11 @@ const DetailKelasPageSesi = () => {
         presenceData = await getDetailQrSessionAdmin(parseInt(sesi));
 
         setdetailClassRoom(presenceData);
-      } else if (role_user == "lecture" || role_user == "assistent") {
+      } else if (role_user == "lecture") {
         presenceData = await getDetailQrSessionLecture(parseInt(sesi));
+        setdetailClassRoom(presenceData);
+      } else if (role_user == "assistant") {
+        presenceData = await getDetailQrSessionAssistant(parseInt(sesi));
         setdetailClassRoom(presenceData);
       }
     } catch (error) {
@@ -208,8 +230,11 @@ const DetailKelasPageSesi = () => {
       if (role_user == "superadmin" || role_user == "admin") {
         const presenceQr = await getGenerateQrAdmin(sesi);
         setQrText(presenceQr.qr_code);
-      } else if (role_user == "lecture" || role_user == "assistent") {
+      } else if (role_user == "lecture") {
         const presenceQr = await getGenerateQrLecture(sesi);
+        setQrText(presenceQr.qr_code);
+      } else if (role_user == "assistant") {
+        const presenceQr = await getGenerateQrAssistant(sesi);
         setQrText(presenceQr.qr_code);
       }
     } catch (error) {

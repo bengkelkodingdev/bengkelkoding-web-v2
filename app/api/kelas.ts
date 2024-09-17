@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { KelasRespon } from "@/app/interface/Kelas";
+import { EditFormClassroom, KelasRespon } from "@/app/interface/Kelas";
 import { ClassFormData } from "@/app/interface/Kelas";
 import {
   SelectDosenRespon,
@@ -136,7 +136,7 @@ export const createClassroom = async (data: ClassFormData) => {
 };
 
 export const updateClassroom = async (
-  data: ClassFormData,
+  data: EditFormClassroom,
   idClassroom: number
 ) => {
   const access_token = Cookies.get("access_token");

@@ -1,5 +1,6 @@
 interface Submission {
   id: number;
+  task_id: number;
   name: string;
   status: string;
   status_label: string;

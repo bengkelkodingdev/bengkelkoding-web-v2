@@ -8,7 +8,10 @@ export const getAllAbsence = async (): Promise<AxiosResponse> =>
 export const getAllAbsenceLecture = async (): Promise<AxiosResponse> =>
   createRequest(`/api/v1/lecture/presences/absences`);
 
-// post update status in absence
+export const getAllAbsenceAssistant = async (): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/assistant/presences/absences`);
+
+// post update status in absence termasuk didalam sesi pertemuan ada izin
 export const postUpdateStatusAbsenceAdmin = async (
   idClassroom: number,
   idAbsence: number,

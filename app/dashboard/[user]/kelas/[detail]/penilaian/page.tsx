@@ -3,10 +3,16 @@
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { getSubmissionAdmin } from "@/app/api/ApiPenugasan";
+
 import { SubmissionResponse } from "@/app/interface/Submission";
 import InputBasic from "@/app/component/general/InputBasic";
-import Input from "@/app/component/general/Input";
+
+import {
+  getSubmissionAdmin,
+  getSubmissionAssistant,
+  getSubmissionLecture,
+  postGradeAdmin,
+} from "@/app/api/penugasan";
 
 export default function PenilaianTugas() {
   const searchParams = useSearchParams();
@@ -29,9 +35,41 @@ export default function PenilaianTugas() {
           perPage
         );
         setSubmission(response);
+      } else if (role_user === "lecture") {
+        response = await getSubmissionLecture(
+          IdClassroom,
+          IdAssignment,
+          currentPage,
+          perPage
+        );
+        setSubmission(response);
+      } else if (role_user === "assistant") {
+        response = await getSubmissionAssistant(
+          IdClassroom,
+          IdAssignment,
+          currentPage,
+          perPage
+        );
+        setSubmission(response);
       }
     } catch (error) {
       console.error("Error fetching submission:", error);
+    }
+  };
+
+  const handleGrade = async (inputScore: number, taskId: number) => {
+    try {
+      let response;
+      if (role_user === "superadmin" || role_user === "admin") {
+        response = await postGradeAdmin(
+          IdClassroom,
+          IdAssignment,
+          taskId,
+          inputScore
+        );
+      }
+    } catch (error) {
+      console.error("Error submit score:", error);
     }
   };
 
@@ -82,6 +120,7 @@ export default function PenilaianTugas() {
             <th scope="col" className="px-6 py-3">
               Nilai
             </th>
+
             <th scope="col" className="px-6 py-3">
               Aksi
             </th>
@@ -143,18 +182,25 @@ export default function PenilaianTugas() {
                     type="number"
                     value={submission.grade}
                     className="w-14 font-semibold border [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-lg border-slate-200 text-center p-2"
-                    onChange={(e) => {
-                      const updatedGrade = e.target.value;
-                      setSubmission((prevSubmission) => ({
-                        ...prevSubmission,
-                        grade: updatedGrade,
-                      }));
-                    }}
+                    defaultValue={submission.grade}
                   />
                 </td>
+
                 <td className="px-6 py-4">
-                  <button className="ml-2 px-4 py-2 bg-primary1 text-white rounded-md">
-                    submit
+                  <button
+                    className="ml-2 px-4 py-2 bg-primary1 text-white rounded-md"
+                    onClick={() => {
+                      const inputScore = Number(
+                        (
+                          document.querySelector(
+                            `input[name='grade']`
+                          ) as HTMLInputElement
+                        ).value
+                      ); // Ambil nilai dari input
+                      handleGrade(inputScore, submission.task_id); // Panggil handleGrade dengan nilai yang diinput
+                    }}
+                  >
+                    Submit
                   </button>
                 </td>
               </tr>

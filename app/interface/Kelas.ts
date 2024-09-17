@@ -1,5 +1,3 @@
-import { Dosen } from "./Dosen";
-
 export interface Kelas {
   id: number;
   path: number;
@@ -100,12 +98,6 @@ export interface pagination {
   };
 }
 
-interface Lecture {
-  identity_code: string;
-  name: string;
-  role: string;
-}
-
 export interface Assignment {
   id: string;
   title: string;
@@ -173,4 +165,26 @@ export interface ClassInformation {
   id?: number;
   title: string;
   description: string;
+}
+
+export interface EditFormClassroom {
+  name: string;
+  lecture_id: number;
+  period_id: number;
+  path_id: number;
+  description: string;
+  day: number;
+  time_start: string;
+  time_end: string;
+  room: string;
+  quota: number;
+  task_percent: number;
+  uts_percent: number;
+  uas_percent: number;
+  max_absent: number;
+  start_date: string;
+}
+
+export interface EditFormClassroomResponse {
+  data: EditFormClassroom[];
 }

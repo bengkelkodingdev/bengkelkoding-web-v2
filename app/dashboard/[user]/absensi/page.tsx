@@ -14,10 +14,11 @@ import { toast, ToastContainer } from "react-toastify";
 import PdfViewer from "@/app/component/general/PDFView";
 import {
   getAllAbsence,
+  getAllAbsenceAssistant,
   getAllAbsenceLecture,
   postUpdateStatusAbsenceAdmin,
   postUpdateStatusAbsenceLecture,
-} from "@/app/api/ApiAbsence";
+} from "@/app/api/absence";
 
 // dropdown
 const StatusFilterDropdown = ({
@@ -81,8 +82,10 @@ const HomeDashboardAbsensiPage = () => {
       // Check the user's role and fetch data accordingly
       if (role_user === "superadmin" || role_user === "admin") {
         response = await getAllAbsence();
-      } else if (role_user === "lecture" || role_user === "assistent") {
+      } else if (role_user === "lecture") {
         response = await getAllAbsenceLecture();
+      } else if (role_user === "assistant") {
+        response = await getAllAbsenceAssistant();
       }
 
       if (response) {
@@ -92,7 +95,6 @@ const HomeDashboardAbsensiPage = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
       window.location.reload();
-      // Optionally, you can add error handling logic here, such as setting an error state
     }
   }, [role_user]);
 
@@ -479,7 +481,7 @@ const HomeDashboardAbsensiPage = () => {
                       </td>
 
                       <td className="px-6 py-4">
-                        Pertemuan {izin.presence.id}
+                        Pertemuan {izin.presence.week}
                       </td>
                       <td className="px-6 py-4">
                         {izin.approve_changed_at_formatted}

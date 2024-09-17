@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "@/app/component/general/Modal";
 import EditForm from "@/app/component/general/EditForm";
 
@@ -12,32 +12,47 @@ import {
   ClassroomData,
   Presence,
 } from "@/app/interface/Kelas";
-import {
-  getDetailClassroom,
-  getDetailClassroomLecture,
-} from "@/app/api/admin/api-kelas/getDetail-kelas";
 
 import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import Cookies from "js-cookie";
-import {
-  updatePresenceAdmin,
-  updatePresenceLecture,
-} from "@/app/api/admin/api-kelas/presensi/updatePresence";
+
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import {
-  deleteAssigmentAdmin,
-  getAssigmentAdmin,
-} from "@/app/api/admin/api-kelas/tugas/API-Assgiment";
+
 import EditFormInfo from "@/app/component/general/EditFormInfo";
+
+import PostFormInfo from "@/app/component/general/PostFormInfo";
 import {
   deleteInformationAdmin,
+  deleteInformationAssistant,
+  deleteInformationLecture,
   postInformationAdmin,
+  postInformationAssistant,
+  postInformationLecture,
   updateInformationAdmin,
-} from "@/app/api/admin/api-kelas/informasi/API-Information";
-import PostFormInfo from "@/app/component/general/PostFormInfo";
+  updateInformationAssistant,
+  updateInformationLecture,
+} from "@/app/api/information";
+import {
+  deleteAssigmentAdmin,
+  deleteAssigmentAssistant,
+  deleteAssigmentLecture,
+  getAssigmentAdmin,
+} from "@/app/api/penugasan";
+import {
+  updatePresenceAdmin,
+  updatePresenceAssistant,
+  updatePresenceLecture,
+} from "@/app/api/presensi";
+import {
+  getDetailClassroom,
+  getDetailClassroomAssistant,
+  getDetailClassroomLecture,
+} from "@/app/api/detailClassroom";
+import splitTextByURL from "@/app/lib/validUrl";
+import Button from "@/app/component/general/Button";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -81,6 +96,7 @@ const DashboardDetailKelasPage = () => {
   const sections = [
     { id: "pertemuan", label: "Pertemuan" },
     { id: "mahasiswa", label: "Mahasiswa" },
+    { id: "asisten", label: "Asisten" },
     { id: "tugas", label: "Tugas" },
     { id: "kursus", label: "Kursus" },
     { id: "informasi", label: "Informasi" },
@@ -179,8 +195,13 @@ const DashboardDetailKelasPage = () => {
           updatedMeeting.id,
           updatedMeeting.presence_date
         );
-      } else if (role_user === "lecture" || role_user === "assistant") {
+      } else if (role_user === "lecture") {
         updatedData = await updatePresenceLecture(
+          updatedMeeting.id,
+          updatedMeeting.presence_date
+        );
+      } else if (role_user === "assistant") {
+        updatedData = await updatePresenceAssistant(
           updatedMeeting.id,
           updatedMeeting.presence_date
         );
@@ -202,6 +223,18 @@ const DashboardDetailKelasPage = () => {
       let response;
       if (role_user === "superadmin" || role_user === "admin") {
         response = await postInformationAdmin(
+          idClassroom,
+          savedInfo.title,
+          savedInfo.description
+        );
+      } else if (role_user === "lecture") {
+        response = await postInformationLecture(
+          idClassroom,
+          savedInfo.title,
+          savedInfo.description
+        );
+      } else if (role_user === "assistant") {
+        response = await postInformationAssistant(
           idClassroom,
           savedInfo.title,
           savedInfo.description
@@ -233,6 +266,26 @@ const DashboardDetailKelasPage = () => {
         );
       }
 
+      if (role_user === "lecture") {
+        response = await updateInformationLecture(
+          idClassroom,
+          idInfo,
+          savedInfo.title,
+          savedInfo.description,
+          access
+        );
+      }
+
+      if (role_user === "assistant") {
+        response = await updateInformationAssistant(
+          idClassroom,
+          idInfo,
+          savedInfo.title,
+          savedInfo.description,
+          access
+        );
+      }
+
       handleCloseModalInfo();
       fetchClassrooms(); // Memuat ulang data kelas setelah menyimpan
       toast.success(`Informasi berhasil diperbarui 😁`);
@@ -243,18 +296,31 @@ const DashboardDetailKelasPage = () => {
 
   const handleDeleteInfo = async (idClassroom, idInfo) => {
     try {
-      await deleteInformationAdmin(idClassroom, idInfo, access);
-      toast.success(`Berhasil menghapus tugas 😁`);
+      if (role_user === "superadmin" || role_user === "admin") {
+        await deleteInformationAdmin(idClassroom, idInfo, access);
+      } else if (role_user === "lecture") {
+        await deleteInformationLecture(idClassroom, idInfo, access);
+      } else if (role_user === "assistant") {
+        await deleteInformationAssistant(idClassroom, idInfo, access);
+      }
+      toast.success(`Berhasil menghapus Informasi 😁`);
       fetchClassrooms();
     } catch (error) {
-      console.error("Gagal menghapus tugas:", error);
-      toast.error(`Gagal menghapus tugas`);
+      console.error("Gagal menghapus Informasi:", error);
+      toast.error(`Gagal menghapus Informasi`);
     }
   };
 
   const handleDelete = async (idClassroom, idAssignment) => {
     try {
-      await deleteAssigmentAdmin(idClassroom, idAssignment);
+      if (role_user === "superadmin" || role_user === "admin") {
+        await deleteAssigmentAdmin(idClassroom, idAssignment);
+      } else if (role_user === "lecture") {
+        await deleteAssigmentLecture(idClassroom, idAssignment);
+      } else if (role_user === "assistant") {
+        await deleteAssigmentAssistant(idClassroom, idAssignment);
+      }
+
       toast.success(`Berhasil menghapus tugas 😁`);
       fetchClassrooms();
     } catch (error) {
@@ -265,6 +331,7 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
+  // AKU UBAH SESUATU DISINI KARENA MENUNGGU API ASSIGMENT LECTURE + ASSISTANT (283-286 *BUKA TUTUP YANG ATAS)
   const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
@@ -272,14 +339,18 @@ const DashboardDetailKelasPage = () => {
       if (role_user === "superadmin" || role_user === "admin") {
         getClassroomDetails = getDetailClassroom(parts[4]);
         getAssignments = getAssigmentAdmin(parts[4]);
-      } else if (role_user === "lecture" || role_user === "assistant") {
+      } else if (role_user === "lecture") {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
 
         // KALO UDAH ADA APINYA PERLU GANTI
         // getAssignments = getAssigmentLecture(parts[4]);
-      }
+      } else if (role_user === "assistant") {
+        getClassroomDetails = getDetailClassroomAssistant(parts[4]);
 
-      // const [response] = await Promise.all([getClassroomDetails]);
+        // KALO UDAH ADA APINYA PERLU GANTI
+        // getAssignments = getAssigmentLecture(parts[4]);
+      }
+      //     const [response] = await Promise.all([getClassroomDetails]);
 
       const [response, responseAssigment] = await Promise.all([
         getClassroomDetails,
@@ -367,19 +438,6 @@ const DashboardDetailKelasPage = () => {
   useEffect(() => {
     fetchClassrooms();
   }, []);
-
-  function isValidURL(url: string): boolean {
-    const urlPattern = new RegExp(
-      "^(https?:\\/\\/)?" + // Protocol
-        "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" + // Domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR IP (v4) address
-        "(\\:\\d+)?(\\/[-a-zA-Z\\d%_.~+]*)*" + // Port and path
-        "(\\?[;&a-zA-Z\\d%_.~+=-]*)?" + // Query string
-        "(\\#[-a-zA-Z\\d_]*)?$",
-      "i"
-    );
-    return urlPattern.test(url);
-  }
 
   if (loading)
     return (
@@ -1112,7 +1170,9 @@ const DashboardDetailKelasPage = () => {
                             <th scope="col" className="px-6 py-3">
                               Nama
                             </th>
-
+                            <th scope="col" className="px-6 py-3">
+                              Nilai Akhir
+                            </th>
                             <th scope="col" className="px-6 py-3">
                               Aksi
                             </th>
@@ -1140,19 +1200,11 @@ const DashboardDetailKelasPage = () => {
                                   </div>
                                 </td>
 
+                                <td className="p-2 text-center">{index + 1}</td>
+
                                 <td className="px-6 py-4">
                                   <div className="flex gap-1">
-                                    <button className="block bg-yellow-200 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        height="18px"
-                                        viewBox="0 0 24 24"
-                                        width="18px"
-                                      >
-                                        <path d="M0 0h24v24H0V0z" fill="none" />
-                                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                      </svg>
-                                    </button>
+                                    <Button text="Submit" />
                                   </div>
                                 </td>
                               </tr>
@@ -1173,6 +1225,9 @@ const DashboardDetailKelasPage = () => {
                           </th>
                           <th scope="col" className="px-6 py-3">
                             Nim
+                          </th>
+                          <th scope="col" className=" text-center py-3">
+                            Nilai Akhir
                           </th>
                           <th scope="col" className="px-6 py-3">
                             Aksi
@@ -1204,9 +1259,148 @@ const DashboardDetailKelasPage = () => {
                               <td className="px-6 py-4">
                                 {student.identity_code}
                               </td>
+                              <td className=" text-center py-4 ">
+                                {index + 1}
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center justify-center gap-1">
+                                  {student.id % 2 == 0 ? (
+                                    <Button text="Submit" />
+                                  ) : (
+                                    <button className="block bg-yellow-400 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="18px"
+                                        viewBox="0 0 24 24"
+                                        width="18px"
+                                      >
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                      </svg>
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              )}
+
+              {/* Asisten */}
+              {activeSection === "asisten" && (
+                <div id="asisten" className="mx-auto">
+                  {isMobile ? (
+                    <div className="overflow-auto">
+                      <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                        <thead className="text-sm text-neutral2 bg-gray-100">
+                          <tr>
+                            <th scope="col" className="p-2">
+                              No
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              Nama
+                            </th>
+
+                            <th scope="col" className="px-6 py-3">
+                              Aksi
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {kelas.flatMap((kelasItem) =>
+                            kelasItem.students.map((student, index) => (
+                              <tr
+                                key={student.id}
+                                className="bg-white border-b hover:bg-gray-50"
+                              >
+                                <td className="p-2 text-center">{index + 1}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-xs flex flex-col gap-1">
+                                    <p className="font-medium text-neutral2">
+                                      {student.name}
+                                    </p>
+                                    <p className="font-normal text-neutral2">
+                                      {student.identity_code}
+                                    </p>
+                                    <p className="font-normal text-neutral2">
+                                      Semester {student.semester}
+                                    </p>
+                                  </div>
+                                </td>
+
+                                <td className="px-6 py-4">
+                                  <div className="flex gap-1">
+                                    <button className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="18px"
+                                        viewBox="0 0 24 24"
+                                        width="18px"
+                                      >
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
+                      <thead className="text-sm text-neutral2 bg-gray-100">
+                        <tr>
+                          <th scope="col" className="p-4">
+                            <div className="flex items-center">No</div>
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Nama
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Nim
+                          </th>
+
+                          <th scope="col" className="px-6 py-3">
+                            Aksi
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kelas.flatMap((kelasItem) =>
+                          kelasItem.students.map((student, index) => (
+                            <tr
+                              key={student.id}
+                              className="bg-white border-b hover:bg-gray-50"
+                            >
+                              <td className="w-4 p-4">
+                                <div className="flex items-center">
+                                  {index + 1}
+                                </div>
+                              </td>
+                              <td className="px-2 py-4 whitespace-nowrap">
+                                <div className="text-xs flex flex-col gap-1">
+                                  <p className="font-medium text-neutral2">
+                                    {student.name}
+                                  </p>
+                                  <p className="font-normal text-neutral2">
+                                    Semester {student.semester}
+                                  </p>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                {student.identity_code}
+                              </td>
+
                               <td className="px-6 py-4">
                                 <div className="flex gap-1">
-                                  <button className="block bg-yellow-200 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
+                                  <button className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150">
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
                                       height="18px"
@@ -1214,7 +1408,7 @@ const DashboardDetailKelasPage = () => {
                                       width="18px"
                                     >
                                       <path d="M0 0h24v24H0V0z" fill="none" />
-                                      <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                                     </svg>
                                   </button>
                                 </div>
@@ -1234,29 +1428,6 @@ const DashboardDetailKelasPage = () => {
                   {/* list Tugas */}
                   <h3 className="font-semibold mb-3">Tabel Penugasan</h3>
                   <div className="flex flex-col sm:flex-row sm:row gap-2  w-full justify-between items-center">
-                    {/* <div className="relative ml-2">
-                      <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                        <svg
-                          className="w-5 h-5 text-neutral3"
-                          aria-hidden="true"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        id="table-search"
-                        className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                        placeholder="Cari Tugas"
-                      />
-                    </div> */}
                     {/* Search */}
                     <div className=" w-auto flex ">
                       <input
@@ -1716,7 +1887,8 @@ const DashboardDetailKelasPage = () => {
                   </div>
 
                   {/* list informasi */}
-                  <div className=" mt-4">
+
+                  <div className="mt-4">
                     <div className="flex flex-col gap-2">
                       {/* detail informasi */}
                       {kelasItem.class_informations.map((informasi, index) => (
@@ -1725,7 +1897,7 @@ const DashboardDetailKelasPage = () => {
                           className="w-full flex flex-col lg:flex-row justify-between items-center rounded-md border border-gray-200 hover:shadow-lg transition-all ease-out duration-200 cursor-pointer"
                         >
                           <div className="flex flex-col w-full">
-                            <div className="iconInfo lg:hidden items-center flex  p-2  rounded-full">
+                            <div className="iconInfo lg:hidden items-center flex p-2 rounded-full">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 height="34px"
@@ -1737,9 +1909,9 @@ const DashboardDetailKelasPage = () => {
                               </svg>
                             </div>
                             {/* card */}
-                            <div className="detailInformasi h-auto flex w-full   gap-2">
+                            <div className="detailInformasi h-auto flex w-full gap-2">
                               {/* icon */}
-                              <div className="iconInfo lg:flex items-center hidden justify-center p-2  rounded-full">
+                              <div className="iconInfo lg:flex items-center hidden justify-center p-2 rounded-full">
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   height="34px"
@@ -1750,7 +1922,6 @@ const DashboardDetailKelasPage = () => {
                                   <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
                                 </svg>
                               </div>
-
                               {/* info */}
                               <div className="info-content w-full px-4 rounded-md">
                                 {/* judul */}
@@ -1758,18 +1929,9 @@ const DashboardDetailKelasPage = () => {
                                   {informasi.title}
                                 </h4>
                                 {/* descrip */}
-                                {isValidURL(informasi.description) ? (
-                                  <Link
-                                    href={`${informasi.description}`}
-                                    target="_blank"
-                                  >
-                                    <p className="text-primary2 text-sm mt-2 break-words">
-                                      {informasi.description}
-                                    </p>
-                                  </Link>
-                                ) : (
-                                  <p className="text-neutral2 text-sm mt-2">
-                                    {informasi.description}
+                                {informasi.description && (
+                                  <p className="text-sm mt-2 break-words">
+                                    {splitTextByURL(informasi.description)}
                                   </p>
                                 )}
                               </div>
@@ -1831,26 +1993,25 @@ const DashboardDetailKelasPage = () => {
                       isOpen={isModalOpen}
                       onClose={handleCloseModalInfo}
                     >
-                      {selectedInformation &&
-                        (selectedInformation.id ? (
-                          <EditFormInfo
-                            user={selectedInformation}
-                            onSave={(updatedInfo) =>
-                              handleUpdateInfo(
-                                updatedInfo,
-                                kelasItem.classroom.id,
-                                selectedInformation.id
-                              )
-                            }
-                          />
-                        ) : (
-                          <PostFormInfo
-                            user={selectedInformation}
-                            onSave={(newInfo) =>
-                              handleSaveInfo(newInfo, kelasItem.classroom.id)
-                            }
-                          />
-                        ))}
+                      {selectedInformation && selectedInformation.id ? (
+                        <EditFormInfo
+                          user={selectedInformation}
+                          onSave={(updatedInfo) =>
+                            handleUpdateInfo(
+                              updatedInfo,
+                              kelasItem.classroom.id,
+                              selectedInformation.id
+                            )
+                          }
+                        />
+                      ) : (
+                        <PostFormInfo
+                          user={selectedInformation}
+                          onSave={(newInfo) =>
+                            handleSaveInfo(newInfo, kelasItem.classroom.id)
+                          }
+                        />
+                      )}
                     </Modal>
                   </div>
                 </div>
