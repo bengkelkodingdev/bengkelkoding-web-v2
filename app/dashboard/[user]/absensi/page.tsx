@@ -481,7 +481,7 @@ const HomeDashboardAbsensiPage = () => {
                       </td>
 
                       <td className="px-6 py-4">
-                        Pertemuan {izin.presence.id}
+                        Pertemuan {izin.presence.week}
                       </td>
                       <td className="px-6 py-4">
                         {izin.approve_changed_at_formatted}
