@@ -17,12 +17,23 @@ import { toast, ToastContainer } from "react-toastify";
 import InputBasic from "@/app/component/general/InputBasic";
 import {
   createAssigment,
+  createAssigmentAssistant,
+  createAssigmentLecture,
   getDetailAssignmentAdmin,
+  getDetailAssignmentAssistant,
+  getDetailAssignmentLecture,
   updateAssignmentAdmin,
+  updateAssignmentAssistant,
+  updateAssignmentLecture,
 } from "@/app/api/penugasan";
+
+import Cookies from "js-cookie";
 
 export default function DetailTambahKelas() {
   const searchParams = useSearchParams();
+
+  const role_user = Cookies.get("user_role");
+
   const IdClassroom = searchParams.get("idClassroom");
   const idAssignment = searchParams.get("idAssignment"); // Cek apakah ada idAssignment
   // State untuk input
@@ -106,19 +117,49 @@ export default function DetailTambahKelas() {
   };
   useEffect(() => {
     if (idAssignment && IdClassroom) {
-      getDetailAssignmentAdmin(IdClassroom, idAssignment)
-        .then((data) => {
-          setJudul(data.title);
-          setJenis(data.type);
-          setDescription(data.description);
-          setStartTime(data.start_time);
-          setDeadline(data.deadline);
-          // Tambahkan data lainnya jika diperlukan
-        })
-        .catch((error) => {
-          console.error("Error fetching assignment details:", error);
-          toast.error("Gagal memuat detail tugas", error);
-        });
+      if (role_user == "superadmin" || role_user == "admin") {
+        getDetailAssignmentAdmin(IdClassroom, idAssignment)
+          .then((data) => {
+            setJudul(data.title);
+            setJenis(data.type);
+            setDescription(data.description);
+            setStartTime(data.start_time);
+            setDeadline(data.deadline);
+            // Tambahkan data lainnya jika diperlukan
+          })
+          .catch((error) => {
+            console.error("Error fetching assignment details:", error);
+            toast.error("Gagal memuat detail tugas", error);
+          });
+      } else if (role_user == "lecture") {
+        getDetailAssignmentLecture(IdClassroom, idAssignment)
+          .then((data) => {
+            setJudul(data.title);
+            setJenis(data.type);
+            setDescription(data.description);
+            setStartTime(data.start_time);
+            setDeadline(data.deadline);
+            // Tambahkan data lainnya jika diperlukan
+          })
+          .catch((error) => {
+            console.error("Error fetching assignment details:", error);
+            toast.error("Gagal memuat detail tugas", error);
+          });
+      } else if (role_user == "assistant") {
+        getDetailAssignmentAssistant(IdClassroom, idAssignment)
+          .then((data) => {
+            setJudul(data.title);
+            setJenis(data.type);
+            setDescription(data.description);
+            setStartTime(data.start_time);
+            setDeadline(data.deadline);
+            // Tambahkan data lainnya jika diperlukan
+          })
+          .catch((error) => {
+            console.error("Error fetching assignment details:", error);
+            toast.error("Gagal memuat detail tugas", error);
+          });
+      }
     }
   }, [idAssignment, IdClassroom]);
 
@@ -142,12 +183,28 @@ export default function DetailTambahKelas() {
     setIsStatus(true);
     try {
       if (idAssignment) {
-        await updateAssignmentAdmin(formData, IdClassroom, idAssignment);
-        toast.success("Tugas berhasil diperbarui");
+        if (role_user == "superadmin" || role_user == "admin") {
+          await updateAssignmentAdmin(formData, IdClassroom, idAssignment);
+          toast.success("Tugas berhasil diperbarui");
+        } else if (role_user == "lecture") {
+          await updateAssignmentLecture(formData, IdClassroom, idAssignment);
+          toast.success("Tugas berhasil diperbarui");
+        } else if (role_user == "assistant") {
+          await updateAssignmentAssistant(formData, IdClassroom, idAssignment);
+          toast.success("Tugas berhasil diperbarui");
+        }
       } else {
         // Tambah tugas baru jika tidak dalam mode edit
-        await createAssigment(formData, IdClassroom);
-        toast.success("Tugas berhasil ditambahkan");
+        if (role_user == "superadmin" || role_user == "admin") {
+          await createAssigment(formData, IdClassroom);
+          toast.success("Tugas berhasil ditambahkan");
+        } else if (role_user == "lecture") {
+          await createAssigmentLecture(formData, IdClassroom);
+          toast.success("Tugas berhasil ditambahkan");
+        } else if (role_user == "assistant") {
+          await createAssigmentAssistant(formData, IdClassroom);
+          toast.success("Tugas berhasil ditambahkan");
+        }
       }
       window.location.href = `./`;
     } catch (error) {

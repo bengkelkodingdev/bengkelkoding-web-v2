@@ -40,6 +40,7 @@ import {
   deleteAssigmentAssistant,
   deleteAssigmentLecture,
   getAssigmentAdmin,
+  getAssigmentLecture,
 } from "@/app/api/penugasan";
 import {
   updatePresenceAdmin,
@@ -343,7 +344,7 @@ const DashboardDetailKelasPage = () => {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
 
         // KALO UDAH ADA APINYA PERLU GANTI
-        // getAssignments = getAssigmentLecture(parts[4]);
+        getAssignments = getAssigmentLecture(parts[4]);
       } else if (role_user === "assistant") {
         getClassroomDetails = getDetailClassroomAssistant(parts[4]);
 
@@ -1173,7 +1174,7 @@ const DashboardDetailKelasPage = () => {
                             <th scope="col" className="px-6 py-3">
                               Nilai Akhir
                             </th>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-6 py-3 text-center">
                               Aksi
                             </th>
                           </tr>
@@ -1229,7 +1230,7 @@ const DashboardDetailKelasPage = () => {
                           <th scope="col" className=" text-center py-3">
                             Nilai Akhir
                           </th>
-                          <th scope="col" className="px-6 py-3">
+                          <th scope="col" className="px-6 py-3 text-center">
                             Aksi
                           </th>
                         </tr>
@@ -1264,21 +1265,7 @@ const DashboardDetailKelasPage = () => {
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center justify-center gap-1">
-                                  {student.id % 2 == 0 ? (
-                                    <Button text="Submit" />
-                                  ) : (
-                                    <button className="block bg-yellow-400 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        height="18px"
-                                        viewBox="0 0 24 24"
-                                        width="18px"
-                                      >
-                                        <path d="M0 0h24v24H0V0z" fill="none" />
-                                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                      </svg>
-                                    </button>
-                                  )}
+                                  <Button text="Konfirmasi" />
                                 </div>
                               </td>
                             </tr>
@@ -1293,6 +1280,13 @@ const DashboardDetailKelasPage = () => {
               {/* Asisten */}
               {activeSection === "asisten" && (
                 <div id="asisten" className="mx-auto">
+                  <div className="Info mb-3 flex justify-between items-center">
+                    <div className="infoHead">
+                      <h3>Informasi Asisten</h3>
+                      <p>Berikut list asisten pada kelas</p>
+                    </div>
+                    <Button text="+ Tambah Asisten" />
+                  </div>
                   {isMobile ? (
                     <div className="overflow-auto">
                       <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
