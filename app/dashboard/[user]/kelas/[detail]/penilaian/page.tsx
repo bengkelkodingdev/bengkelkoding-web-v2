@@ -12,6 +12,8 @@ import {
   getSubmissionAssistant,
   getSubmissionLecture,
   postGradeAdmin,
+  postGradeAssistant,
+  postGradeLecture,
 } from "@/app/api/penugasan";
 
 export default function PenilaianTugas() {
@@ -62,6 +64,24 @@ export default function PenilaianTugas() {
       let response;
       if (role_user === "superadmin" || role_user === "admin") {
         response = await postGradeAdmin(
+          IdClassroom,
+          IdAssignment,
+          taskId,
+          inputScore
+        );
+      }
+
+      if (role_user === "lecture") {
+        response = await postGradeLecture(
+          IdClassroom,
+          IdAssignment,
+          taskId,
+          inputScore
+        );
+      }
+
+      if (role_user === "assistant") {
+        response = await postGradeAssistant(
           IdClassroom,
           IdAssignment,
           taskId,
