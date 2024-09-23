@@ -6,14 +6,27 @@ import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { StudentRespon } from "@/app/interface/UserManagement";
-import { getAllAssistantData, getAllStudentData } from "@/app/api/manageUser";
+import {
+  deleteStudent,
+  getAllAssistantData,
+  getAllStudentData,
+} from "@/app/api/manageUser";
 
 const HomeDashboardPenggunaMahasiswa = () => {
   const access_token = Cookies.get("access_token");
   const role_user = Cookies.get("user_role");
 
-  const [DataAssistant, setDataAssistant] = useState<StudentRespon>();
+  const [DataStudent, setDataStudent] = useState<StudentRespon>();
   const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 10; // Jumlah data per halaman
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   const fetchData = useCallback(async () => {
     if (!access_token) {
@@ -23,16 +36,21 @@ const HomeDashboardPenggunaMahasiswa = () => {
       let response;
       // Check the user's role and fetch data accordingly
       if (role_user && (role_user === "superadmin" || role_user === "admin")) {
-        response = await getAllStudentData();
+        response = await getAllStudentData(
+          searchTerm,
+          currentPage,
+          itemsPerPage
+        );
       }
-
-      console.log(response);
 
       if (response) {
-        setDataAssistant(response);
+        setDataStudent(response);
+        setTotalPages(response.meta.pagination.total_pages); // Set total halaman dari meta pagination API
       }
-    } catch (error) {}
-  }, [role_user]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, [role_user, searchTerm, access_token, currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchData();
@@ -46,6 +64,20 @@ const HomeDashboardPenggunaMahasiswa = () => {
 
     return () => window.removeEventListener("resize", handleResize);
   }, [fetchData]);
+
+  const handleDelete = async (idStudent: number, nameStudent: string) => {
+    try {
+      await deleteStudent(idStudent);
+      toast.success(`Berhasil Menghapus Mahasiswa ${nameStudent} 😁`);
+      fetchData();
+    } catch (error) {
+      console.error("Failed to delete classroom", error);
+      toast.error(`Gagal Menghapus Dosen 😔: ${error.message}`);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+    }
+  };
 
   return (
     <>
@@ -73,12 +105,13 @@ const HomeDashboardPenggunaMahasiswa = () => {
             <input
               type="text"
               id="table-search"
+              onChange={handleSearchChange}
               className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-              placeholder="Cari asisten"
+              placeholder="Cari mahasiswa"
             />
           </div>
           <Link
-            href={"asisten/tambah"}
+            href={"mahasiswa/tambah"}
             className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
           >
             <svg
@@ -90,7 +123,7 @@ const HomeDashboardPenggunaMahasiswa = () => {
               <path d="M0 0h24v24H0V0z" fill="none" />
               <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
             </svg>
-            <p>Asisten</p>
+            <p>Mahasiswa</p>
           </Link>
         </div>
 
@@ -124,8 +157,8 @@ const HomeDashboardPenggunaMahasiswa = () => {
             </tr>
           </thead>
           <tbody>
-            {DataAssistant && DataAssistant.data ? (
-              DataAssistant.data.map((listAsisten, index) => (
+            {DataStudent && DataStudent.data ? (
+              DataStudent.data.map((listStudent, index) => (
                 <tr key={index} className="bg-white border-b hover:bg-gray-50">
                   <td className="w-4 p-4">
                     <div className="flex items-center">
@@ -138,13 +171,13 @@ const HomeDashboardPenggunaMahasiswa = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 font-semibold">
-                    {listAsisten.name}
+                    {listStudent.name}
                   </td>
-                  <td className="px-6 py-4">{listAsisten.nim}</td>
-                  <td className="px-6 py-4">{listAsisten.email}</td>
+                  <td className="px-6 py-4">{listStudent.nim}</td>
+                  <td className="px-6 py-4">{listStudent.email}</td>
                   <td className="px-6 py-4">
                     <p className="w-max px-4 rounded-sm text-green-600 bg-green-100">
-                      {listAsisten.is_active ? (
+                      {listStudent.is_active ? (
                         <p className="w-max px-4 rounded-sm text-green-600 bg-green-100">
                           Aktif
                         </p>
@@ -158,7 +191,13 @@ const HomeDashboardPenggunaMahasiswa = () => {
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
                       <Link
-                        href={"/"}
+                        href={{
+                          pathname: `mahasiswa/tambah`,
+                          query: {
+                            idStudent: listStudent.id,
+                            status: "edit",
+                          },
+                        }}
                         className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -171,8 +210,10 @@ const HomeDashboardPenggunaMahasiswa = () => {
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                       </Link>
-                      <Link
-                        href={"/"}
+                      <button
+                        onClick={() =>
+                          handleDelete(listStudent.id, listStudent.name)
+                        }
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -184,7 +225,7 @@ const HomeDashboardPenggunaMahasiswa = () => {
                           <path d="M0 0h24v24H0V0z" fill="none" />
                           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                         </svg>
-                      </Link>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -203,66 +244,42 @@ const HomeDashboardPenggunaMahasiswa = () => {
           aria-label="Table navigation"
         >
           <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-            Showing <span className="font-semibold text-gray-900">1-10</span> of{" "}
-            <span className="font-semibold text-gray-900">1000</span>
+            Menampilkan halaman {currentPage} dari {totalPages}
           </span>
           <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
+                disabled={currentPage === 1}
               >
                 Sebelumnya
-              </a>
+              </button>
             </li>
+            {[...Array(totalPages)].map((_, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`flex items-center justify-center px-3 h-8 leading-tight ${
+                    currentPage === index + 1
+                      ? "text-blue-600 bg-blue-50 border-blue-300"
+                      : "text-neutral3 bg-white border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
             <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                aria-current="page"
-                className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
+                disabled={currentPage === totalPages}
               >
                 Selanjutnya
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
