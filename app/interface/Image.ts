@@ -22,6 +22,7 @@ interface Meta {
 export interface ImageSimple {
   id: number;
   title: string;
+  description: string;
   file: string;
   path_name: string;
   full_url: string;

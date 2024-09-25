@@ -7,8 +7,10 @@ import Cookies from "js-cookie";
 
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import { ImageRespon } from "@/app/interface/Image";
-import { getAllImage } from "@/app/api/imageAsset";
+import { ImageRespon, ImageSimple } from "@/app/interface/Image";
+import { deleteImage, findImageData, getAllImage } from "@/app/api/imageAsset";
+import Pagination from "@/app/component/general/PaginationCustom";
+import Modal from "@/app/component/general/Modal";
 
 const HomeDashboardAsetGambarPage = () => {
   const access_token = Cookies.get("access_token");
@@ -17,12 +19,30 @@ const HomeDashboardAsetGambarPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const itemsPerPage = 10; // Jumlah data per halaman
+  const itemsPerPage = 20; // Jumlah data per halaman
 
   const [DataImage, setDataImage] = useState<ImageRespon>();
+  const [selectedImage, setSelectedImage] = useState<ImageSimple | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [copied, setCopied] = useState<number | null>(null);
+
+  const handleCopy = (url: string, index: number) => {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopied(index); // Track the copied image
+        setTimeout(() => {
+          setCopied(null); // Reset after 2 seconds
+        }, 2000);
+      })
+      .catch((error) => console.error("Failed to copy", error));
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const fetchData = useCallback(async () => {
@@ -47,6 +67,33 @@ const HomeDashboardAsetGambarPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleImageClick = async (id: number) => {
+    try {
+      const response = await findImageData(String(id));
+      setSelectedImage(response.data); // Set the selected image
+      setIsModalOpen(true); // Open the modal
+    } catch (error) {
+      console.error("Error fetching image data:", error);
+    }
+  };
+
+  // Close the modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null); // Clear the selected image
+  };
+
+  const handleDelete = async (idImage) => {
+    try {
+      await deleteImage(idImage, access_token);
+      toast.success(`Berhasil menghapus image 😁`);
+      fetchData();
+    } catch (error) {
+      console.error("Gagal menghapus tugas:", error);
+      toast.error(`Gagal menghapus image`);
+    }
+  };
 
   return (
     <>
@@ -74,8 +121,9 @@ const HomeDashboardAsetGambarPage = () => {
             <input
               type="text"
               id="table-search"
+              onChange={handleSearchChange}
               className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-              placeholder="Cari gambar"
+              placeholder="Cari Gambar"
             />
           </div>
           <Link
@@ -91,7 +139,7 @@ const HomeDashboardAsetGambarPage = () => {
               <path d="M0 0h24v24H0V0z" fill="none" />
               <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
             </svg>
-            <p>Aset Gambar</p>
+            <p>Gambar</p>
           </Link>
         </div>
 
@@ -137,12 +185,13 @@ const HomeDashboardAsetGambarPage = () => {
                   </td>
                   <td className="px-6 py-4">
                     <Image
-                      // src={`${listImage.full_url}`}
-                      src={"/img/kursus-image-1.png"}
+                      src={`${listImage.full_url}`}
+                      // src={"/img/kursus-image-1.png"}
                       alt="Aset Image"
                       width={96}
                       height={150}
-                      className="max-w-24 rounded-md"
+                      className="max-w-24 rounded-md transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
+                      onClick={() => handleImageClick(listImage.id)}
                     />
                   </td>
                   <td scope="row" className="px-6 py-4 whitespace-nowrap ">
@@ -156,8 +205,46 @@ const HomeDashboardAsetGambarPage = () => {
                   <td className="px-6 py-4">{listImage.path_name}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
+                      {/* buatkan tombol utnuk copy nilai dari listImage.full_url */}
+
+                      <button
+                        className={`block bg-blue2 p-1 rounded-md fill-white transition-all ease-in-out duration-150 ${
+                          copied === index ? "bg-green-500" : "hover:bg-blue1"
+                        }`}
+                        onClick={() => handleCopy(listImage.full_url, index)}
+                        title={copied === index ? "Copied!" : "Copy URL"}
+                      >
+                        {copied === index ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="20px"
+                            viewBox="0 0 24 24"
+                            width="20px"
+                            fill="white"
+                          >
+                            <path d="M0 0h24v24H0V0z" fill="none" />
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.59l-3.3-3.3a.996.996 0 111.41-1.41L11 13.17l5.3-5.3a.996.996 0 111.41 1.41L11 16.59z" />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="20px"
+                            viewBox="0 -960 960 960"
+                            width="20px"
+                            fill="white"
+                          >
+                            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560h-80v120H280v-120h-80v560Zm280-560q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z" />
+                          </svg>
+                        )}
+                      </button>
                       <Link
-                        href={"/"}
+                        href={{
+                          pathname: `aset-gambar/tambah`,
+                          query: {
+                            idImage: listImage.id,
+                            status: "edit",
+                          },
+                        }}
                         className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -170,8 +257,8 @@ const HomeDashboardAsetGambarPage = () => {
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                       </Link>
-                      <Link
-                        href={"/"}
+                      <button
+                        onClick={() => handleDelete(listImage.id)}
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -183,7 +270,7 @@ const HomeDashboardAsetGambarPage = () => {
                           <path d="M0 0h24v24H0V0z" fill="none" />
                           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z" />
                         </svg>
-                      </Link>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -197,75 +284,74 @@ const HomeDashboardAsetGambarPage = () => {
             )}
           </tbody>
         </table>
-        <nav
+        {/* <nav
           className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
           aria-label="Table navigation"
         >
           <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-            Showing <span className="font-semibold text-gray-900">1-10</span> of{" "}
-            <span className="font-semibold text-gray-900">1000</span>
+            Menampilkan halaman {currentPage} dari {totalPages}
           </span>
           <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
+                disabled={currentPage === 1}
               >
                 Sebelumnya
-              </a>
+              </button>
             </li>
+            {[...Array(totalPages)].map((_, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`flex items-center justify-center px-3 h-8 leading-tight ${
+                    currentPage === index + 1
+                      ? "text-blue-600 bg-blue-50 border-blue-300"
+                      : "text-neutral3 bg-white border-gray-300 hover:bg-gray-100 hover:text-neutral2"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
             <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                aria-current="page"
-                className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
+                disabled={currentPage === totalPages}
               >
                 Selanjutnya
-              </a>
+              </button>
             </li>
           </ul>
-        </nav>
+        </nav> */}
+
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
+
+      {/* Modal to display larger image */}
+      {selectedImage && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          title={selectedImage.title}
+        >
+          <Image
+            src={selectedImage.full_url}
+            alt={selectedImage.title}
+            width={500}
+            height={500}
+          />
+        </Modal>
+      )}
+      <ToastContainer />
     </>
   );
 };
