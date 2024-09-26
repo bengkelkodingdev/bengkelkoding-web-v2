@@ -92,7 +92,6 @@ const StudentClassroomTaskDetailPage = () => {
         comment
       );
       setSuccess("File uploaded successfully!");
-      console.log("Response:", response.data);
     } catch (err: any) {
       setError(`Upload failed: ${err.message}`);
     }
@@ -100,10 +99,7 @@ const StudentClassroomTaskDetailPage = () => {
 
   const handlePostSubmitTask = async () => {
     try {
-      const response = await postSubmitTask(
-        id_classroom,
-        id_assignment,
-      );
+      const response = await postSubmitTask(id_classroom, id_assignment);
     } catch (err: any) {
       setError(`Failed to Confirm Submit Task: ${err.message}`);
     }

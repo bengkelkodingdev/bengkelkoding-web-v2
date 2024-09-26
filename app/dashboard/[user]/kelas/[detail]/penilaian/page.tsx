@@ -2,6 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 import Cookies from "js-cookie";
 
 import { SubmissionResponse } from "@/app/interface/Submission";
@@ -69,6 +71,7 @@ export default function PenilaianTugas() {
           taskId,
           inputScore
         );
+        toast.success("Berhasil Menilai Mahasiswa 😁");
       }
 
       if (role_user === "lecture") {
@@ -78,6 +81,7 @@ export default function PenilaianTugas() {
           taskId,
           inputScore
         );
+        toast.success("Berhasil Menilai Mahasiswa 😁");
       }
 
       if (role_user === "assistant") {
@@ -87,9 +91,11 @@ export default function PenilaianTugas() {
           taskId,
           inputScore
         );
+        toast.success("Berhasil Menilai Mahasiswa 😁");
       }
     } catch (error) {
       console.error("Error submit score:", error);
+      toast.error("Gagal Menilai Mahasiswa 😔");
     }
   };
 
@@ -282,6 +288,7 @@ export default function PenilaianTugas() {
           </li>
         </ul>
       </nav>
+      <ToastContainer />
     </div>
   );
 }

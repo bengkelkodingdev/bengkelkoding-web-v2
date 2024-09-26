@@ -51,7 +51,6 @@ const DashboardTambahPenggunaAdminPage = () => {
                 : Boolean(value)
               : value,
         };
-        console.log(`${name}: ${updatedData[name]}`);
         return updatedData;
       });
 

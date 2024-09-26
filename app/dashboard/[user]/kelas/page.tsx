@@ -102,7 +102,6 @@ const HomeDashboardKelasPage = () => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    console.log("Current search term:", value);
   };
 
   useEffect(() => {

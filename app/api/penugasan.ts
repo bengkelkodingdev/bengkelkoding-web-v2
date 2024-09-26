@@ -144,7 +144,7 @@ export const updateAssignmentAdmin = async (
         },
       }
     );
-    console.log("Response dari server:", response.data);
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -338,7 +338,7 @@ export const updateAssignmentLecture = async (
         },
       }
     );
-    console.log("Response dari server:", response.data);
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -532,7 +532,7 @@ export const updateAssignmentAssistant = async (
         },
       }
     );
-    console.log("Response dari server:", response.data);
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

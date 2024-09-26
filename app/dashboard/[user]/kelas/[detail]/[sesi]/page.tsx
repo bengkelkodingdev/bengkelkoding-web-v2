@@ -443,12 +443,12 @@ const DetailKelasPageSesi = () => {
   const presentCount = countPresentStudents(detailClassRoom.students);
 
   // 2024-07-15
-
+  // HAPUS ALIF
   // test 2024-04-05
   // const today = new Date().toISOString().split("T")[0];
   const today = "2024-04-04";
   const isDateMatching = detailClassRoom.presence.presence_date === today;
-  console.log("sesi sekarang", sesi);
+
   let count = 1;
   return (
     <>

@@ -104,6 +104,12 @@ export default function DetailTambahKelas() {
 
   const maxDescriptionLength = 255;
 
+  const formatDateTime = (dateString: string) => {
+    // Pastikan format sesuai dengan yang diharapkan input datetime-local
+    const date = new Date(dateString);
+    return date.toISOString().slice(0, 16); // Format YYYY-MM-DDTHH:MM
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -123,9 +129,11 @@ export default function DetailTambahKelas() {
             setJudul(data.title);
             setJenis(data.type);
             setDescription(data.description);
-            setStartTime(data.start_time);
-            setDeadline(data.deadline);
-            // Tambahkan data lainnya jika diperlukan
+            const formattedStartTime = formatDateTime(data.start_time);
+            const formattedDeadline = formatDateTime(data.deadline);
+
+            setStartTime(formattedStartTime);
+            setDeadline(formattedDeadline);
           })
           .catch((error) => {
             console.error("Error fetching assignment details:", error);
@@ -137,9 +145,11 @@ export default function DetailTambahKelas() {
             setJudul(data.title);
             setJenis(data.type);
             setDescription(data.description);
-            setStartTime(data.start_time);
-            setDeadline(data.deadline);
-            // Tambahkan data lainnya jika diperlukan
+            const formattedStartTime = formatDateTime(data.start_time);
+            const formattedDeadline = formatDateTime(data.deadline);
+
+            setStartTime(formattedStartTime);
+            setDeadline(formattedDeadline);
           })
           .catch((error) => {
             console.error("Error fetching assignment details:", error);
@@ -151,9 +161,11 @@ export default function DetailTambahKelas() {
             setJudul(data.title);
             setJenis(data.type);
             setDescription(data.description);
-            setStartTime(data.start_time);
-            setDeadline(data.deadline);
-            // Tambahkan data lainnya jika diperlukan
+            const formattedStartTime = formatDateTime(data.start_time);
+            const formattedDeadline = formatDateTime(data.deadline);
+
+            setStartTime(formattedStartTime);
+            setDeadline(formattedDeadline);
           })
           .catch((error) => {
             console.error("Error fetching assignment details:", error);
@@ -250,6 +262,7 @@ export default function DetailTambahKelas() {
                 type="datetime-local"
                 label="Waktu Mulai"
                 name="Waktu Mulai"
+                value={start_time}
                 onChange={(e) => setStartTime(e.target.value)}
                 // onChange={(e) => handleDateTimeChange(e, "start")}
                 required
@@ -259,6 +272,7 @@ export default function DetailTambahKelas() {
                 type="datetime-local"
                 label="Waktu Selesai"
                 name="Waktu Selesai"
+                value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 // onChange={(e) => handleDateTimeChange(e, "end")}
                 required

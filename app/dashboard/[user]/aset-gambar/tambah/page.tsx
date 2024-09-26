@@ -102,28 +102,22 @@ export default function DashboardUploadImagePage() {
     formData.append("title", judul);
     formData.append("description", description);
     if (file) {
-      console.log("File yang akan diupload:", file);
       formData.append("file", file);
     }
 
-    console.log(judul, description, file);
-
     setIsStatus(true);
     try {
-      console.log("masku try");
       if (StatusForm) {
-        console.log("if ");
         await updateImage(formData, IdImage);
         toast.success("Image berhasil diperbarui");
       } else {
         // Tambah tugas baru jika tidak dalam mode edit
         await addImage(formData);
-        console.log("else ");
+
         toast.success("Image berhasil diperbarui");
       }
       window.location.href = `./`;
     } catch (error) {
-      console.log("gagal ");
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error response data:", error.response.data);
         toast.error("Gagal menyimpan tugas");

@@ -71,12 +71,7 @@ const DashboardTambahKelasPage: React.FC = () => {
     try {
       const response = await getSelectLecture();
 
-      console.log("Data dosen berhasil di-fetch: ", response.data);
       setSelectLectureApi(response.data);
-      console.log(
-        "State selectLectureApi setelah di-update:",
-        selectLectureApi
-      );
     } catch (error) {
       console.error("Gagal mengambil data dosen:", error);
     }
@@ -85,7 +80,7 @@ const DashboardTambahKelasPage: React.FC = () => {
   const fetchSelectPaths = async () => {
     try {
       const response = await getSelectPaths();
-      // console.log("responnan: ", response);
+
       setSelectPathApi(response.data);
     } catch (error) {
       console.error("error", error);
@@ -95,7 +90,7 @@ const DashboardTambahKelasPage: React.FC = () => {
   const fetchSelectPeriods = async () => {
     try {
       const response = await getSelectPeriods();
-      // console.log("responnan: ", response);
+
       setSelectPeriodApi(response.data);
     } catch (error) {
       console.error("error", error);
@@ -105,15 +100,12 @@ const DashboardTambahKelasPage: React.FC = () => {
   // cari nama dosen
   const mapLectureToName = (lectureId: number) => {
     const lecture = selectLectureApi.find((lec) => {
-      console.log(`Comparing "${lectureId}" with "${lec.id}"`);
       return lec.id === lectureId; // Langsung membandingkan
     });
 
     if (lecture) {
-      console.log("Dosen ditemukan:", lecture.name); // Log nama dosen jika ditemukan
     } else {
       console.warn(`Dosen tidak ditemukan untuk ID: ${lectureId}`); // Tidak mencoba mengakses undefined
-      console.log("Data selectLectureApi yang tersedia:", selectLectureApi); // Log data yang ada di selectLectureApi
     }
 
     return lecture ? lecture.name : "Dosen tidak ditemukan"; // Mengembalikan pesan default jika tidak ditemukan
@@ -139,7 +131,6 @@ const DashboardTambahKelasPage: React.FC = () => {
       ...prevData,
       lecture_id: dosenId,
     }));
-    console.log(`Selected Dosen ID: ${dosenId}`);
   };
 
   // Filter dosen berdasarkan pencarian
@@ -177,7 +168,6 @@ const DashboardTambahKelasPage: React.FC = () => {
                 : Number(value)
               : value,
         };
-        console.log(`${name}: ${updatedData[name]}`);
         return updatedData;
       });
     } else {
@@ -200,7 +190,6 @@ const DashboardTambahKelasPage: React.FC = () => {
                 : Number(value)
               : value,
         };
-        console.log(`${name}: ${updatedData[name]}`);
         return updatedData;
       });
     }

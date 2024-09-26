@@ -68,7 +68,7 @@ export const updateImage = async (data: FormData, imageId: string) => {
         },
       }
     );
-    console.log("Response dari server:", response.data);
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

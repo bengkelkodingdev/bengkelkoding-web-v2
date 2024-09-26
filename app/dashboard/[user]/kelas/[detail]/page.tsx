@@ -78,8 +78,8 @@ const DashboardDetailKelasPage = () => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 500);
   // PASTIKAN DIHAPUS
-  // const today = new Date().toISOString().split("T")[0];
-  const today = "2024-04-04";
+  const today = new Date().toISOString().split("T")[0];
+  // const today = "2024-10-25";
 
   useEffect(() => {
     const handleResize = () => {
@@ -332,7 +332,7 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
-  // AKU UBAH SESUATU DISINI KARENA MENUNGGU API ASSIGMENT LECTURE + ASSISTANT (283-286 *BUKA TUTUP YANG ATAS)
+  // AKU UBAH SESUATU DISINI KARENA MENUNGGU API ASSIGMENT LECTURE + ASSISTANT - (UDAH DI IMPLEMENT Assigment)
   const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
