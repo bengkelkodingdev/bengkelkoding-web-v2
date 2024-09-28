@@ -11,6 +11,7 @@ import {
   getAllAssistantData,
   getAllStudentData,
 } from "@/app/api/manageUser";
+import Pagination from "@/app/component/general/PaginationCustom";
 
 const HomeDashboardPenggunaMahasiswa = () => {
   const access_token = Cookies.get("access_token");
@@ -26,6 +27,7 @@ const HomeDashboardPenggunaMahasiswa = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const fetchData = useCallback(async () => {
@@ -239,7 +241,12 @@ const HomeDashboardPenggunaMahasiswa = () => {
             )}
           </tbody>
         </table>
-        <nav
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+        {/* <nav
           className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
           aria-label="Table navigation"
         >
@@ -282,7 +289,7 @@ const HomeDashboardPenggunaMahasiswa = () => {
               </button>
             </li>
           </ul>
-        </nav>
+        </nav> */}
       </div>
       <ToastContainer />
     </>
