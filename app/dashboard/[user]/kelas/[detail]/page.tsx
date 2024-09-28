@@ -40,6 +40,7 @@ import {
   deleteAssigmentAssistant,
   deleteAssigmentLecture,
   getAssigmentAdmin,
+  getAssigmentAssistant,
   getAssigmentLecture,
 } from "@/app/api/penugasan";
 import {
@@ -342,14 +343,10 @@ const DashboardDetailKelasPage = () => {
         getAssignments = getAssigmentAdmin(parts[4]);
       } else if (role_user === "lecture") {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
-
-        // KALO UDAH ADA APINYA PERLU GANTI
         getAssignments = getAssigmentLecture(parts[4]);
       } else if (role_user === "assistant") {
         getClassroomDetails = getDetailClassroomAssistant(parts[4]);
-
-        // KALO UDAH ADA APINYA PERLU GANTI
-        // getAssignments = getAssigmentLecture(parts[4]);
+        getAssignments = getAssigmentAssistant(parts[4]);
       }
       //     const [response] = await Promise.all([getClassroomDetails]);
 

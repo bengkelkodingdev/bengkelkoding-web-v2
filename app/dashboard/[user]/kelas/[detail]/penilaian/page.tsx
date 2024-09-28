@@ -17,6 +17,7 @@ import {
   postGradeAssistant,
   postGradeLecture,
 } from "@/app/api/penugasan";
+import { stringify } from "querystring";
 
 export default function PenilaianTugas() {
   const searchParams = useSearchParams();
@@ -28,6 +29,15 @@ export default function PenilaianTugas() {
   const [page, setPage] = useState(1); // Halaman saat ini
   const [perPage] = useState(10); // Jumlah data per halaman
 
+  const [grades, setGrades] = useState<{ [key: number]: number | null }>({});
+
+  const handleGradeChange = (id: number, inputScore: number) => {
+    setGrades((prevGrades) => ({
+      ...prevGrades,
+      [id]: inputScore, // Simpan nilai berdasarkan id submission
+    }));
+  };
+
   const fetchDataSubmission = async (currentPage: number) => {
     try {
       let response;
@@ -38,7 +48,6 @@ export default function PenilaianTugas() {
           currentPage,
           perPage
         );
-        setSubmission(response);
       } else if (role_user === "lecture") {
         response = await getSubmissionLecture(
           IdClassroom,
@@ -46,7 +55,6 @@ export default function PenilaianTugas() {
           currentPage,
           perPage
         );
-        setSubmission(response);
       } else if (role_user === "assistant") {
         response = await getSubmissionAssistant(
           IdClassroom,
@@ -54,8 +62,27 @@ export default function PenilaianTugas() {
           currentPage,
           perPage
         );
-        setSubmission(response);
       }
+
+      if (response) {
+        setSubmission(response);
+
+        // Inisialisasi grades dari data response
+        const initialGrades = response.data.reduce(
+          (acc: any, submission: any) => {
+            acc[submission.id] =
+              submission.grade !== null ? submission.grade : ""; // Set nilai grade
+            return acc;
+          },
+          {}
+        );
+
+        setGrades(initialGrades); // Simpan nilai grades ke state
+      }
+      console.log(
+        "nilai respons",
+        response.data.map((submission: any) => submission.grade)
+      );
     } catch (error) {
       console.error("Error fetching submission:", error);
     }
@@ -203,12 +230,20 @@ export default function PenilaianTugas() {
                 </td>
                 <td className="px-6 py-4">
                   <InputBasic
+                    // placeholder={submission.id.toString()}
                     label=""
-                    name="grade"
+                    name={`grade-${submission.id}`}
                     type="number"
-                    value={submission.grade}
-                    className="w-14 font-semibold border [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-lg border-slate-200 text-center p-2"
-                    defaultValue={submission.grade}
+                    className="w-14 font-semibold border ..."
+                    value={
+                      grades && grades[submission.id] !== undefined
+                        ? grades[submission.id]
+                        : ""
+                    }
+                    onChange={(e) =>
+                      handleGradeChange(submission.id, parseInt(e.target.value))
+                    }
+                    required
                   />
                 </td>
 
@@ -216,13 +251,7 @@ export default function PenilaianTugas() {
                   <button
                     className="ml-2 px-4 py-2 bg-primary1 text-white rounded-md"
                     onClick={() => {
-                      const inputScore = Number(
-                        (
-                          document.querySelector(
-                            `input[name='grade']`
-                          ) as HTMLInputElement
-                        ).value
-                      ); // Ambil nilai dari input
+                      const inputScore = grades[submission.id] || 0; // Ambil nilai dari state grades
                       handleGrade(inputScore, submission.task_id); // Panggil handleGrade dengan nilai yang diinput
                     }}
                   >
