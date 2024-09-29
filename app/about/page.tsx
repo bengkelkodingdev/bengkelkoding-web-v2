@@ -169,9 +169,8 @@ const AboutPage = () => {
         ))}
       </article>
 
-      <article className="max-w-5xl mx-auto my-10 lg:mb-20 grid grid-cols-3 gap-8">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index}>
+      {/* <article className="max-w-5xl mx-auto my-10 lg:mb-20 grid grid-cols-3 gap-8">
+          <div>
             <div className="w-full max-h-72 overflow-hidden rounded-lg">
               <Image
                 src={
@@ -193,8 +192,7 @@ const AboutPage = () => {
               </p>
             </div>
           </div>
-        ))}
-      </article>
+      </article> */}
 
       <article className="max-w-5xl mx-auto my-10">
         <div className="pb-10 text-center">
