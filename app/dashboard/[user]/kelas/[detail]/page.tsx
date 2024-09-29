@@ -8,6 +8,7 @@ import EditForm from "@/app/component/general/EditForm";
 import { usePathname } from "next/navigation";
 import {
   Assignment,
+  Assistant,
   ClassInformation,
   ClassroomData,
   Presence,
@@ -40,6 +41,8 @@ import {
   deleteAssigmentAssistant,
   deleteAssigmentLecture,
   getAssigmentAdmin,
+  getAssigmentAssistant,
+  getAssigmentLecture,
 } from "@/app/api/penugasan";
 import {
   updatePresenceAdmin,
@@ -53,6 +56,9 @@ import {
 } from "@/app/api/detailClassroom";
 import splitTextByURL from "@/app/lib/validUrl";
 import Button from "@/app/component/general/Button";
+import { Student } from "@/app/interface/DetailSesi";
+import EditFormAsisten from "@/app/component/general/EditFormAsisten";
+import PostFormAsisten from "@/app/component/general/PostFormAsisten";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -64,6 +70,10 @@ const DashboardDetailKelasPage = () => {
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
   const [selectedInformation, setSelectedInformation] =
     useState<ClassInformation | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedAssistant, setSelectedAssistant] = useState<Assistant | null>(
+    null
+  );
 
   const [kelas, setKelas] = useState<ClassroomData[]>([]);
   const [tugas, setTugas] = useState<Assignment[]>([]);
@@ -77,8 +87,8 @@ const DashboardDetailKelasPage = () => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 500);
   // PASTIKAN DIHAPUS
-  // const today = new Date().toISOString().split("T")[0];
-  const today = "2024-04-04";
+  const today = new Date().toISOString().split("T")[0];
+  // const today = "2024-10-25";
 
   useEffect(() => {
     const handleResize = () => {
@@ -155,6 +165,83 @@ const DashboardDetailKelasPage = () => {
     setSelectedMeeting(null);
   };
 
+  // Assistant
+  const handleOpenModalAssist = (assistant?: Assistant) => {
+    if (assistant) {
+      // Jika ada parameter, gunakan untuk mengedit
+      setSelectedAssistant(assistant);
+    } else {
+      // Jika tidak ada parameter, buat objek baru
+      const newAssistant = { name: "", nim: "" };
+      setSelectedAssistant(newAssistant);
+    }
+    setIsModalOpen(true); // Buka modal
+  };
+
+  const handleSaveAssist = async (
+    savedAsisten: Assistant,
+    idClassroom: number
+  ) => {
+    try {
+      let response;
+      if (role_user === "superadmin" || role_user === "admin") {
+        // response = await postInformationAdmin(
+        //   idClassroom,
+        //   savedInfo.title,
+        //   savedInfo.description
+        // );
+      } else if (role_user === "lecture") {
+        // response = await postInformationLecture(
+        //   idClassroom,
+        //   savedInfo.title,
+        //   savedInfo.description
+        // );
+      }
+
+      handleCloseModalInfo();
+      fetchClassrooms();
+      toast.success(`Asisten berhasil ditambahkan😁`);
+    } catch (error) {
+      toast.error(`Gagal menambahkan Asisten`, error);
+    }
+  };
+
+  const handleUpdateAssist = async (
+    savedInfo: Assistant,
+    idClassroom: number,
+    idAssisten: number
+  ) => {
+    try {
+      let response;
+      if (role_user === "superadmin" || role_user === "admin") {
+        // response = await updateInformationAdmin(
+        //   idClassroom,
+        //   idAssisten,
+        //   savedInfo.name,
+        //   savedInfo.nim,
+        //   access
+        // );
+      }
+
+      if (role_user === "lecture") {
+        // response = await updateInformationLecture(
+        //   idClassroom,
+        //   idInfo,
+        //   savedInfo.title,
+        //   savedInfo.description,
+        //   access
+        // );
+      }
+
+      handleCloseModalInfo();
+      fetchClassrooms(); // Memuat ulang data kelas setelah menyimpan
+      toast.success(`Informasi berhasil diperbarui 😁`);
+    } catch (error) {
+      toast.error(`Gagal memperbarui informasi`, error);
+    }
+  };
+  //  ----
+
   const handleOpenModalInfo = (information?: ClassInformation) => {
     if (information) {
       // Jika ada parameter, gunakan untuk mengedit
@@ -215,6 +302,7 @@ const DashboardDetailKelasPage = () => {
     }
   };
 
+  // Info handle
   const handleSaveInfo = async (
     savedInfo: ClassInformation,
     idClassroom: number
@@ -311,6 +399,8 @@ const DashboardDetailKelasPage = () => {
     }
   };
 
+  // ----
+
   const handleDelete = async (idClassroom, idAssignment) => {
     try {
       if (role_user === "superadmin" || role_user === "admin") {
@@ -331,7 +421,6 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
-  // AKU UBAH SESUATU DISINI KARENA MENUNGGU API ASSIGMENT LECTURE + ASSISTANT (283-286 *BUKA TUTUP YANG ATAS)
   const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
@@ -341,14 +430,10 @@ const DashboardDetailKelasPage = () => {
         getAssignments = getAssigmentAdmin(parts[4]);
       } else if (role_user === "lecture") {
         getClassroomDetails = getDetailClassroomLecture(parts[4]);
-
-        // KALO UDAH ADA APINYA PERLU GANTI
-        // getAssignments = getAssigmentLecture(parts[4]);
+        getAssignments = getAssigmentLecture(parts[4]);
       } else if (role_user === "assistant") {
         getClassroomDetails = getDetailClassroomAssistant(parts[4]);
-
-        // KALO UDAH ADA APINYA PERLU GANTI
-        // getAssignments = getAssigmentLecture(parts[4]);
+        getAssignments = getAssigmentAssistant(parts[4]);
       }
       //     const [response] = await Promise.all([getClassroomDetails]);
 
@@ -1173,7 +1258,7 @@ const DashboardDetailKelasPage = () => {
                             <th scope="col" className="px-6 py-3">
                               Nilai Akhir
                             </th>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-6 py-3 text-center">
                               Aksi
                             </th>
                           </tr>
@@ -1229,7 +1314,7 @@ const DashboardDetailKelasPage = () => {
                           <th scope="col" className=" text-center py-3">
                             Nilai Akhir
                           </th>
-                          <th scope="col" className="px-6 py-3">
+                          <th scope="col" className="px-6 py-3 text-center">
                             Aksi
                           </th>
                         </tr>
@@ -1264,21 +1349,7 @@ const DashboardDetailKelasPage = () => {
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center justify-center gap-1">
-                                  {student.id % 2 == 0 ? (
-                                    <Button text="Submit" />
-                                  ) : (
-                                    <button className="block bg-yellow-400 p-1 rounded-md fill-white hover:bg-yellow-100 transition-all ease-in-out duration-150">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        height="18px"
-                                        viewBox="0 0 24 24"
-                                        width="18px"
-                                      >
-                                        <path d="M0 0h24v24H0V0z" fill="none" />
-                                        <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                      </svg>
-                                    </button>
-                                  )}
+                                  <Button text="Konfirmasi" />
                                 </div>
                               </td>
                             </tr>
@@ -1290,9 +1361,34 @@ const DashboardDetailKelasPage = () => {
                 </div>
               )}
 
-              {/* Asisten */}
+              {/* Asisten DISINI ALIF*/}
               {activeSection === "asisten" && (
                 <div id="asisten" className="mx-auto">
+                  <div className="Info mb-3 flex justify-between items-center">
+                    <div className="infoHead">
+                      <h3>Informasi Asisten</h3>
+                      <p>Berikut list asisten pada kelas</p>
+                    </div>
+                    {/* button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOpenModalAssist();
+                      }}
+                      className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="20px"
+                        viewBox="0 0 24 24"
+                        width="20px"
+                      >
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
+                      </svg>
+                      <p>Tambah Asisten</p>
+                    </button>
+                  </div>
                   {isMobile ? (
                     <div className="overflow-auto">
                       <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
@@ -1419,6 +1515,35 @@ const DashboardDetailKelasPage = () => {
                       </tbody>
                     </table>
                   )}
+                  <Modal
+                    title={
+                      selectedAssistant?.id
+                        ? "Update Asisten"
+                        : "Tambah Asisten"
+                    }
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModalInfo}
+                  >
+                    {selectedAssistant && selectedAssistant.id ? (
+                      <EditFormAsisten
+                        user={selectedAssistant}
+                        onSave={(updatedInfo) =>
+                          handleUpdateAssist(
+                            updatedInfo,
+                            kelasItem.classroom.id,
+                            selectedAssistant.id
+                          )
+                        }
+                      />
+                    ) : (
+                      <PostFormAsisten
+                        user={selectedAssistant}
+                        onSave={(newAsisten) =>
+                          handleSaveAssist(newAsisten, kelasItem.classroom.id)
+                        }
+                      />
+                    )}
+                  </Modal>
                 </div>
               )}
 
@@ -1865,8 +1990,7 @@ const DashboardDetailKelasPage = () => {
                         Search
                       </button>
                     </div>
-                    <Link
-                      href={"#"}
+                    <button
                       onClick={(e) => {
                         e.preventDefault();
                         handleOpenModalInfo();
@@ -1883,7 +2007,7 @@ const DashboardDetailKelasPage = () => {
                         <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
                       </svg>
                       <p>Tambah Informasi</p>
-                    </Link>
+                    </button>
                   </div>
 
                   {/* list informasi */}

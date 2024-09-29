@@ -30,7 +30,14 @@ interface Student {
   identity_code: string;
   name: string;
   email: string;
-  semester: number;
+  semester?: number;
+}
+
+export interface Assistant {
+  id?: number;
+  name: string;
+  nim: string;
+  image?: string;
 }
 
 export interface ClassroomData {

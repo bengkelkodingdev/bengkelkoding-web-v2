@@ -34,6 +34,24 @@ export interface UpDosenData {
   password: string;
 }
 
+export interface UpAsistenData {
+  id: number;
+  identity_code: string;
+  name: string;
+  email: string;
+  is_active: boolean;
+  password: string;
+}
+
+export interface UpStudentData {
+  id: number;
+  identity_code: string;
+  name: string;
+  email: string;
+  is_active: boolean;
+  password: string;
+}
+
 interface PaginationLinks {
   next: string | null;
   previous: string | null;

@@ -19,6 +19,7 @@ import {
   postUpdateStatusAbsenceAdmin,
   postUpdateStatusAbsenceLecture,
 } from "@/app/api/absence";
+import Pagination from "@/app/component/general/PaginationCustom";
 
 // dropdown
 const StatusFilterDropdown = ({
@@ -51,6 +52,11 @@ const HomeDashboardAbsensiPage = () => {
   const access_token = Cookies.get("access_token");
   const role_user = Cookies.get("user_role");
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 20;
+
   const [keterangan, setKeterangan] = useState("");
   const [selectedIdClassroom, setSelectedIdClassroom] = useState<number | null>(
     null
@@ -76,16 +82,29 @@ const HomeDashboardAbsensiPage = () => {
   const [DataAbsence, setDataAbsence] = useState<Absence[]>();
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
   const fetchData = useCallback(async () => {
     try {
       let response;
       // Check the user's role and fetch data accordingly
       if (role_user === "superadmin" || role_user === "admin") {
-        response = await getAllAbsence();
+        response = await getAllAbsence(searchTerm, currentPage, itemsPerPage);
       } else if (role_user === "lecture") {
-        response = await getAllAbsenceLecture();
+        response = await getAllAbsenceLecture(
+          searchTerm,
+          currentPage,
+          itemsPerPage
+        );
       } else if (role_user === "assistant") {
-        response = await getAllAbsenceAssistant();
+        response = await getAllAbsenceAssistant(
+          searchTerm,
+          currentPage,
+          itemsPerPage
+        );
       }
 
       if (response) {
@@ -96,7 +115,7 @@ const HomeDashboardAbsensiPage = () => {
       console.error("Error fetching data:", error);
       window.location.reload();
     }
-  }, [role_user]);
+  }, [role_user, searchTerm, access_token, currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchData();
@@ -232,12 +251,15 @@ const HomeDashboardAbsensiPage = () => {
         <div className="flex  flex-col w-full md:flex-row sm:justify-between items-center gap-2 pb-4">
           <div className="grid grid-cols-2 gap-5 sm:gap-1 md:gap-1 ">
             {/* Search */}
-            <input
-              type="text"
-              id="table-search"
-              className=" w-full  sm:w-full lg:w-[300px] p-2 pl-3 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-              placeholder="Cari Mahasiswa"
-            />
+            <div className=" ml-2">
+              <input
+                type="text"
+                id="table-search"
+                onChange={handleSearchChange}
+                className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
+                placeholder="Cari Mahasiswa"
+              />
+            </div>
 
             <StatusFilterDropdown onFilterChange={handleFilterChange} />
           </div>
@@ -615,74 +637,11 @@ const HomeDashboardAbsensiPage = () => {
         </Modal>
 
         {/* pagination */}
-        {/* <nav
-          className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-          aria-label="Table navigation"
-        >
-          <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-            Showing <span className="font-semibold text-gray-900">1-10</span> of{" "}
-            <span className="font-semibold text-gray-900">1000</span>
-          </span>
-          <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
-              >
-                Sebelumnya
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                aria-current="page"
-                className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
-              >
-                Selanjutnya
-              </a>
-            </li>
-          </ul>
-        </nav> */}
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>{" "}
       <ToastContainer />
     </>

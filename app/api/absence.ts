@@ -2,14 +2,32 @@ import { AxiosResponse } from "axios";
 import { createPostRequest, createRequest } from "@/app/api/request";
 
 // get all absence
-export const getAllAbsence = async (): Promise<AxiosResponse> =>
-  createRequest(`/api/v1/admin/presences/absences`);
+export const getAllAbsence = async (
+  search: string,
+  page: number,
+  limit: number
+): Promise<AxiosResponse> =>
+  createRequest(
+    `/api/v1/admin/presences/absences?search=${search}&page=${page}&limit=${limit}`
+  );
 
-export const getAllAbsenceLecture = async (): Promise<AxiosResponse> =>
-  createRequest(`/api/v1/lecture/presences/absences`);
+export const getAllAbsenceLecture = async (
+  search: string,
+  page: number,
+  limit: number
+): Promise<AxiosResponse> =>
+  createRequest(
+    `/api/v1/lecture/presences/absences?search=${search}&page=${page}&limit=${limit}`
+  );
 
-export const getAllAbsenceAssistant = async (): Promise<AxiosResponse> =>
-  createRequest(`/api/v1/assistant/presences/absences`);
+export const getAllAbsenceAssistant = async (
+  search: string,
+  page: number,
+  limit: number
+): Promise<AxiosResponse> =>
+  createRequest(
+    `/api/v1/assistant/presences/absences?search=${search}&page=${page}&limit=${limit}`
+  );
 
 // post update status in absence termasuk didalam sesi pertemuan ada izin
 export const postUpdateStatusAbsenceAdmin = async (

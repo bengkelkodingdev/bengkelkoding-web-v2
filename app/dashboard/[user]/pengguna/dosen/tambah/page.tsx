@@ -37,12 +37,6 @@ const DashboardTambahPenggunaAdminPage = () => {
     const { name, value } = e.target;
 
     if (StatusForm) {
-      // Mode Edit
-      // setFormDataEdit((prevData) => ({
-      //   ...prevData,
-      //   [name]: value,
-      // }));
-
       setFormDataEdit((prevData) => {
         const updatedData = {
           ...prevData,
@@ -57,7 +51,6 @@ const DashboardTambahPenggunaAdminPage = () => {
                 : Boolean(value)
               : value,
         };
-        console.log(`${name}: ${updatedData[name]}`);
         return updatedData;
       });
 
@@ -162,11 +155,6 @@ const DashboardTambahPenggunaAdminPage = () => {
           // Pastikan ini sesuai dengan perubahan tipe response
           if (response) {
             const lectureData = response.data; // ambil dari array
-            console.log("hasil", lectureData);
-
-            console.log("--------------------");
-
-            console.log("nama", lectureData.email);
 
             setFormDataEdit({
               id: lectureData.id,
@@ -188,7 +176,7 @@ const DashboardTambahPenggunaAdminPage = () => {
             console.error("1Error response data:", error.response.data);
             console.error("1Error status:", error.response.status);
             toast.error(
-              `1Gagal memuat detail lecture: ${
+              `Gagal memuat detail lecture: ${
                 error.response.data.message || "Unknown error"
               }`
             );
@@ -196,12 +184,12 @@ const DashboardTambahPenggunaAdminPage = () => {
             // Jika request dibuat tetapi tidak ada respons
             console.error("2Error request:", error.request);
             toast.error(
-              "2Gagal memuat detail lecture: Tidak ada respons dari server."
+              "Gagal memuat detail lecture: Tidak ada respons dari server."
             );
           } else {
             // Kesalahan lain yang mungkin terjadi
             console.error("3Error message:", error.message);
-            toast.error(`3Gagal memuat detail lecture: ${error.message}`);
+            toast.error(`Gagal memuat detail lecture: ${error.message}`);
           }
         });
     }
