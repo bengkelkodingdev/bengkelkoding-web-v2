@@ -8,6 +8,7 @@ import EditForm from "@/app/component/general/EditForm";
 import { usePathname } from "next/navigation";
 import {
   Assignment,
+  Assistant,
   ClassInformation,
   ClassroomData,
   Presence,
@@ -55,6 +56,9 @@ import {
 } from "@/app/api/detailClassroom";
 import splitTextByURL from "@/app/lib/validUrl";
 import Button from "@/app/component/general/Button";
+import { Student } from "@/app/interface/DetailSesi";
+import EditFormAsisten from "@/app/component/general/EditFormAsisten";
+import PostFormAsisten from "@/app/component/general/PostFormAsisten";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -66,6 +70,10 @@ const DashboardDetailKelasPage = () => {
   const [selectedMeeting, setSelectedMeeting] = useState<Presence | null>(null);
   const [selectedInformation, setSelectedInformation] =
     useState<ClassInformation | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedAssistant, setSelectedAssistant] = useState<Assistant | null>(
+    null
+  );
 
   const [kelas, setKelas] = useState<ClassroomData[]>([]);
   const [tugas, setTugas] = useState<Assignment[]>([]);
@@ -157,6 +165,83 @@ const DashboardDetailKelasPage = () => {
     setSelectedMeeting(null);
   };
 
+  // Assistant
+  const handleOpenModalAssist = (assistant?: Assistant) => {
+    if (assistant) {
+      // Jika ada parameter, gunakan untuk mengedit
+      setSelectedAssistant(assistant);
+    } else {
+      // Jika tidak ada parameter, buat objek baru
+      const newAssistant = { name: "", nim: "" };
+      setSelectedAssistant(newAssistant);
+    }
+    setIsModalOpen(true); // Buka modal
+  };
+
+  const handleSaveAssist = async (
+    savedAsisten: Assistant,
+    idClassroom: number
+  ) => {
+    try {
+      let response;
+      if (role_user === "superadmin" || role_user === "admin") {
+        // response = await postInformationAdmin(
+        //   idClassroom,
+        //   savedInfo.title,
+        //   savedInfo.description
+        // );
+      } else if (role_user === "lecture") {
+        // response = await postInformationLecture(
+        //   idClassroom,
+        //   savedInfo.title,
+        //   savedInfo.description
+        // );
+      }
+
+      handleCloseModalInfo();
+      fetchClassrooms();
+      toast.success(`Asisten berhasil ditambahkan😁`);
+    } catch (error) {
+      toast.error(`Gagal menambahkan Asisten`, error);
+    }
+  };
+
+  const handleUpdateAssist = async (
+    savedInfo: Assistant,
+    idClassroom: number,
+    idAssisten: number
+  ) => {
+    try {
+      let response;
+      if (role_user === "superadmin" || role_user === "admin") {
+        // response = await updateInformationAdmin(
+        //   idClassroom,
+        //   idAssisten,
+        //   savedInfo.name,
+        //   savedInfo.nim,
+        //   access
+        // );
+      }
+
+      if (role_user === "lecture") {
+        // response = await updateInformationLecture(
+        //   idClassroom,
+        //   idInfo,
+        //   savedInfo.title,
+        //   savedInfo.description,
+        //   access
+        // );
+      }
+
+      handleCloseModalInfo();
+      fetchClassrooms(); // Memuat ulang data kelas setelah menyimpan
+      toast.success(`Informasi berhasil diperbarui 😁`);
+    } catch (error) {
+      toast.error(`Gagal memperbarui informasi`, error);
+    }
+  };
+  //  ----
+
   const handleOpenModalInfo = (information?: ClassInformation) => {
     if (information) {
       // Jika ada parameter, gunakan untuk mengedit
@@ -217,6 +302,7 @@ const DashboardDetailKelasPage = () => {
     }
   };
 
+  // Info handle
   const handleSaveInfo = async (
     savedInfo: ClassInformation,
     idClassroom: number
@@ -313,6 +399,8 @@ const DashboardDetailKelasPage = () => {
     }
   };
 
+  // ----
+
   const handleDelete = async (idClassroom, idAssignment) => {
     try {
       if (role_user === "superadmin" || role_user === "admin") {
@@ -333,7 +421,6 @@ const DashboardDetailKelasPage = () => {
 
   // end modal --
 
-  // AKU UBAH SESUATU DISINI KARENA MENUNGGU API ASSIGMENT LECTURE + ASSISTANT - (UDAH DI IMPLEMENT Assigment)
   const fetchClassrooms = async () => {
     try {
       let getClassroomDetails, getAssignments;
@@ -1274,7 +1361,7 @@ const DashboardDetailKelasPage = () => {
                 </div>
               )}
 
-              {/* Asisten */}
+              {/* Asisten DISINI ALIF*/}
               {activeSection === "asisten" && (
                 <div id="asisten" className="mx-auto">
                   <div className="Info mb-3 flex justify-between items-center">
@@ -1282,7 +1369,25 @@ const DashboardDetailKelasPage = () => {
                       <h3>Informasi Asisten</h3>
                       <p>Berikut list asisten pada kelas</p>
                     </div>
-                    <Button text="+ Tambah Asisten" />
+                    {/* button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOpenModalAssist();
+                      }}
+                      className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="20px"
+                        viewBox="0 0 24 24"
+                        width="20px"
+                      >
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
+                      </svg>
+                      <p>Tambah Asisten</p>
+                    </button>
                   </div>
                   {isMobile ? (
                     <div className="overflow-auto">
@@ -1410,6 +1515,35 @@ const DashboardDetailKelasPage = () => {
                       </tbody>
                     </table>
                   )}
+                  <Modal
+                    title={
+                      selectedAssistant?.id
+                        ? "Update Asisten"
+                        : "Tambah Asisten"
+                    }
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModalInfo}
+                  >
+                    {selectedAssistant && selectedAssistant.id ? (
+                      <EditFormAsisten
+                        user={selectedAssistant}
+                        onSave={(updatedInfo) =>
+                          handleUpdateAssist(
+                            updatedInfo,
+                            kelasItem.classroom.id,
+                            selectedAssistant.id
+                          )
+                        }
+                      />
+                    ) : (
+                      <PostFormAsisten
+                        user={selectedAssistant}
+                        onSave={(newAsisten) =>
+                          handleSaveAssist(newAsisten, kelasItem.classroom.id)
+                        }
+                      />
+                    )}
+                  </Modal>
                 </div>
               )}
 
@@ -1856,8 +1990,7 @@ const DashboardDetailKelasPage = () => {
                         Search
                       </button>
                     </div>
-                    <Link
-                      href={"#"}
+                    <button
                       onClick={(e) => {
                         e.preventDefault();
                         handleOpenModalInfo();
@@ -1874,7 +2007,7 @@ const DashboardDetailKelasPage = () => {
                         <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
                       </svg>
                       <p>Tambah Informasi</p>
-                    </Link>
+                    </button>
                   </div>
 
                   {/* list informasi */}
