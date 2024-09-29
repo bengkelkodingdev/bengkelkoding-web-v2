@@ -374,44 +374,48 @@ const ContentPath = ({ selectedMenu }) => {
           <div className="info-kelas">
             <div className="overflow-x-auto border p-5 flex flex-col justify-center rounded-md">
               <div className="text-sm text-left rtl:text-right text-neutral3 rounded-md overflow-hidden">
-                {kelasPath.data.map((KelasPathItem) => (
+                {kelasPath.data.map((kelasPathItem) => (
                   <div
-                    key={KelasPathItem.id}
+                    key={kelasPathItem.id}
                     className="bg-white border border-gray-200 rounded-md shadow-sm p-4 mb-4"
                   >
                     <div className="text-xs mb-2">
                       <p className="font-medium text-neutral2">
-                        {KelasPathItem.name}
+                        {kelasPathItem.name}
                       </p>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="font-semibold">Hari:</span>
-                      <span>{KelasPathItem.day}</span>
+                      <span>{kelasPathItem.day}</span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="font-semibold">Jam:</span>
                       <span>
-                        {KelasPathItem.time_start}-{KelasPathItem.time_end}
+                        {kelasPathItem.time_start}-{kelasPathItem.time_end}
                       </span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="font-semibold">Ruang:</span>
-                      <span>{KelasPathItem.room}</span>
+                      <span>{kelasPathItem.room}</span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="font-semibold">Kuota:</span>
                       <span>
-                        {KelasPathItem.student_count}/{KelasPathItem.quota}
+                        {kelasPathItem.student_count}/{kelasPathItem.quota}
                       </span>
                     </div>
                     <div className="flex justify-center mt-4">
                       {login ? (
-                        <Button
-                          text="Masuk"
-                          onClick={() =>
-                            handleOpenModalAktivasiToken(KelasPathItem.id)
-                          }
-                        />
+                        kelasPathItem.student_count >= kelasPathItem.quota ? (
+                          <Button text="Penuh" theme="tertiary" disabled className="hover:bg-white" />
+                        ) : (
+                          <Button
+                            text="Masuk"
+                            onClick={() =>
+                              handleOpenModalAktivasiToken(kelasPathItem.id)
+                            }
+                          />
+                        )
                       ) : (
                         <Button
                           text="Masuk"
@@ -464,36 +468,40 @@ const ContentPath = ({ selectedMenu }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {kelasPath.data.map((KelasPathItem) => (
+                  {kelasPath.data.map((kelasPathItem) => (
                     <tr
-                      key={KelasPathItem.id}
+                      key={kelasPathItem.id}
                       className="bg-white border-b hover:bg-gray-50"
                     >
                       <td scope="row" className="px-6 py-4 whitespace-nowrap">
                         <div className="text-xs">
                           <p className="font-medium text-neutral2">
-                            {KelasPathItem.name}
+                            {kelasPathItem.name}
                           </p>
                         </div>
                       </td>
-                      <td className="px-6 py-4">{KelasPathItem.day}</td>
+                      <td className="px-6 py-4">{kelasPathItem.day}</td>
                       <td className="px-6 py-4 text-center">
-                        {KelasPathItem.time_start}-{KelasPathItem.time_end}
+                        {kelasPathItem.time_start}-{kelasPathItem.time_end}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        {KelasPathItem.room}
+                        {kelasPathItem.room}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        {KelasPathItem.student_count}/{KelasPathItem.quota}
+                        {kelasPathItem.student_count}/{kelasPathItem.quota}
                       </td>
                       <td className="py-4 flex justify-center">
                         {login ? (
-                          <Button
-                            text="Masuk"
-                            onClick={() =>
-                              handleOpenModalAktivasiToken(KelasPathItem.id)
-                            }
-                          />
+                          kelasPathItem.student_count >= kelasPathItem.quota ? (
+                            <Button text="Penuh" theme="tertiary" disabled className="hover:bg-white" />
+                          ) : (
+                            <Button
+                              text="Masuk"
+                              onClick={() =>
+                                handleOpenModalAktivasiToken(kelasPathItem.id)
+                              }
+                            />
+                          )
                         ) : (
                           <Button
                             text="Masuk"
