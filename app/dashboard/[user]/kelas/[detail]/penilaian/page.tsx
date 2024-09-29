@@ -79,10 +79,6 @@ export default function PenilaianTugas() {
 
         setGrades(initialGrades); // Simpan nilai grades ke state
       }
-      console.log(
-        "nilai respons",
-        response.data.map((submission: any) => submission.grade)
-      );
     } catch (error) {
       console.error("Error fetching submission:", error);
     }
