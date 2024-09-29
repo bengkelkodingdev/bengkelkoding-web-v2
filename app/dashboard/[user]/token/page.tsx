@@ -1,7 +1,29 @@
+"use client";
+import Button from "@/app/component/general/Button";
+import Input from "@/app/component/general/Input";
+import Modal from "@/app/component/general/Modal";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 const HomeDashboardTokenPage = () => {
+  // Modal generate token
+  const [isModalGenerateTokenOpen, setIsModalGenerateTokenOpen] =
+    useState(false);
+  const handleOpenModalGenerateToken = () => {
+    setIsModalGenerateTokenOpen(true);
+  };
+  const handleCloseModalGenerateToken = () => {
+    setIsModalGenerateTokenOpen(false);
+  };
+  // Modal export token
+  const [isModalExportTokenOpen, setIsModalExportTokenOpen] = useState(false);
+  const handleOpenModalExportToken = () => {
+    setIsModalExportTokenOpen(true);
+  };
+  const handleCloseModalExportToken = () => {
+    setIsModalExportTokenOpen(false);
+  };
+
   return (
     <>
       <div className="relative overflow-x-auto">
@@ -32,21 +54,59 @@ const HomeDashboardTokenPage = () => {
               placeholder="Cari kategori"
             />
           </div>
-          <Link
-            href={"kategori-kelas/tambah"}
-            className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20px"
-              viewBox="0 0 24 24"
-              width="20px"
+          <div className="flex gap-2">
+            <div>
+              <p className="text-xs text-neutral2">Filter Status</p>
+              <div className="flex gap-2">
+                <select
+                  className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
+                  name="isUsed"
+                  id="isUsed"
+                >
+                  <option value="Semua">Semua</option>
+                  <option value="Digunakan">Digunakan</option>
+                  <option value="Belum Digunakan">Belum Digunakan</option>
+                </select>
+                <select
+                  className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
+                  name="expired"
+                  id="expired"
+                >
+                  <option value="Semua">Semua</option>
+                  <option value="Kadaluarsa">Kadaluarsa</option>
+                  <option value="Belum Kadaluarsa">Belum Kadaluarsa</option>
+                </select>
+              </div>
+            </div>
+            <div
+              onClick={() => handleOpenModalGenerateToken()}
+              className="cursor-pointer flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
             >
-              <path d="M0 0h24v24H0V0z" fill="none" />
-              <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
-            </svg>
-            <p>Kategori</p>
-          </Link>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 -960 960 960"
+                width="20px"
+              >
+                <path d="M480-80 120-280v-400l360-200 360 200v400L480-80ZM364-590q23-24 53-37t63-13q33 0 63 13t53 37l120-67-236-131-236 131 120 67Zm76 396v-131q-54-14-87-57t-33-98q0-11 1-20.5t4-19.5l-125-70v263l240 133Zm40-206q33 0 56.5-23.5T560-480q0-33-23.5-56.5T480-560q-33 0-56.5 23.5T400-480q0 33 23.5 56.5T480-400Zm40 206 240-133v-263l-125 70q3 10 4 19.5t1 20.5q0 55-33 98t-87 57v131Z" />
+              </svg>
+              <p>Generate Token</p>
+            </div>
+            <div
+              onClick={() => handleOpenModalExportToken()}
+              className="cursor-pointer flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 -960 960 960"
+                width="20px"
+              >
+                <path d="M240-40q-33 0-56.5-23.5T160-120v-440q0-33 23.5-56.5T240-640h120v80H240v440h480v-440H600v-80h120q33 0 56.5 23.5T800-560v440q0 33-23.5 56.5T720-40H240Zm200-280v-447l-64 64-56-57 160-160 160 160-56 57-64-64v447h-80Z" />
+              </svg>
+              <p>Export Token</p>
+            </div>
+          </div>
         </div>
 
         {/* Table */}
@@ -213,6 +273,81 @@ const HomeDashboardTokenPage = () => {
           </ul>
         </nav>
       </div>
+      <Modal
+        title="Generate Token"
+        isOpen={isModalGenerateTokenOpen}
+        onClose={handleCloseModalGenerateToken}
+      >
+        <div className="mt-4">
+          <Input
+            label=""
+            type="number"
+            name="token"
+            placeholder="Masukkan Jumlah Token"
+            required
+            // onChange={(e) => setToken(e.target.value)}
+          />
+          <div className="flex justify-between">
+            <Input
+              label="Start Date"
+              type="date"
+              name="token"
+              placeholder="Masukkan Jumlah Token"
+              required
+              // onChange={(e) => setToken(e.target.value)}
+            />{" "}
+            <Input
+              label="End Date"
+              type="date"
+              name="token"
+              placeholder="Masukkan Jumlah Token"
+              required
+              // onChange={(e) => setToken(e.target.value)}
+            />
+          </div>
+          <Button
+            text="Generate Token"
+            className="w-full"
+            // onClick={handlePostActivateToken}
+          />
+        </div>
+      </Modal>
+      <Modal
+        title="Export Token"
+        isOpen={isModalExportTokenOpen}
+        onClose={handleCloseModalExportToken}
+      >
+        <div className="mt-4">
+          <div className="mb-4">
+            <p className="text-xs text-neutral2">Filter Data</p>
+            <div className="flex justify-between">
+              <select
+                className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
+                name="isUsed"
+                id="isUsed"
+              >
+                <option value="Semua">Semua</option>
+                <option value="Digunakan">Digunakan</option>
+                <option value="Belum Digunakan">Belum Digunakan</option>
+              </select>
+              <select
+                className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
+                name="expired"
+                id="expired"
+              >
+                <option value="Semua">Semua</option>
+                <option value="Kadaluarsa">Kadaluarsa</option>
+                <option value="Belum Kadaluarsa">Belum Kadaluarsa</option>
+              </select>
+            </div>
+          </div>
+          <Button
+            text="Export Token"
+            className="w-full"
+            // onClick={handlePostActivateToken}
+          />
+        </div>
+      </Modal>
     </>
   );
 };
