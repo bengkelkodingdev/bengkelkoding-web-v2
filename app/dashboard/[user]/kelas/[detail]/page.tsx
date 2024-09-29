@@ -861,8 +861,8 @@ const DashboardDetailKelasPage = () => {
 
   return (
     <>
-      {kelas.map((kelasItem) => (
-        <div>
+      {kelas.map((kelasItem, index) => (
+        <div key={index}>
           <h1 className="text-3xl mb-2 sm:mb-4 sm:text-5xl">
             {kelasItem.classroom.name}
           </h1>
