@@ -55,9 +55,10 @@ export const createPostRequest = async (
 export const createPutRequest = async (
   url: string,
   data: any,
-  access_token: string
+  access_token?: string
 ): Promise<AxiosResponse> => {
   try {
+    const access_token = Cookies.get("access_token");
     const config = { headers: { Authorization: `Bearer ${access_token}` } };
     const response: AxiosResponse = await Axios.put(
       `${API_URL}${url}`,

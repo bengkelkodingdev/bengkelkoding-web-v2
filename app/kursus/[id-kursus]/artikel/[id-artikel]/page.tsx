@@ -1,14 +1,19 @@
 "use client";
 import { getDetailArticles, getListArticles } from "@/app/api/student/course";
-import Footer from "@/app/component/general/Footer";
-import Header from "@/app/component/general/Header";
-import MarkdownEditor from "@uiw/react-markdown-editor";
 import { marked } from "marked";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import dynamic from "next/dynamic";
+
+const MarkdownReader = dynamic(
+  () => import("@/app/component/general/MarkdownReader"),
+  { ssr: false }
+);
 
 const ArticlesPage = () => {
+  const current_classroom_id = Cookies.get("current_classroom_id");
   const url = usePathname();
   const pathParts = url.split("/");
   const idKursus = Number(pathParts[2]);
@@ -103,7 +108,8 @@ const ArticlesPage = () => {
     fetchData();
   }, [idKursus, idArtikel]);
 
-  const text = marked(detailArticle.content);
+  // const text = marked(detailArticle.content);
+  const markdownToHtml = marked(detailArticle.content);
 
   const renderIcon = (isCompleted: boolean) => {
     if (isCompleted) {
@@ -134,12 +140,12 @@ const ArticlesPage = () => {
 
   return (
     <div
-      className="scroll-smooth h-screen flex flex-col"
+      className="fixed scroll-smooth min-h-screen max-h-screen w-screen flex flex-col"
       data-color-mode="light"
     >
       <header className="flex-shrink-0 px-10 py-4 border-b flex justify-between items-center">
         <Link
-          href={""}
+          href={`/dashboard/student/classroom/${current_classroom_id}`}
           className="w-max p-2 hover:bg-neutral5 text-black flex gap-2 rounded-sm items-center font-medium"
         >
           <div>
@@ -231,7 +237,9 @@ const ArticlesPage = () => {
                       {section.articles.map((article) => (
                         <Link
                           key={article.id}
-                          href={`${article.id}`}
+                          href={`${
+                            article.completed == false ? "#" : `${article.id}`
+                          }`}
                           className={`flex items-center hover:underline cursor-pointer py-1 gap-3 ${
                             article.id == idArtikel
                               ? "text-black font-semibold"
@@ -279,11 +287,14 @@ const ArticlesPage = () => {
           </nav>
         )}
         <article className="w-full py-4 overflow-auto">
-          <div
+          {/* <div
             dangerouslySetInnerHTML={{ __html: text }}
             className="prose prose-slate mx-auto"
-          />
+          /> */}
           {/* <MarkdownEditor.Markdown source={detailArticle.content} className="prose prose-slate mx-auto" /> */}
+          <div className="w-[50%] p-4 prose prose-slate mx-auto">
+            <MarkdownReader content={markdownToHtml.toString()} />
+          </div>
         </article>
       </main>
       <footer className="flex-shrink-0 grid grid-cols-3 px-10 py-4 border-t">

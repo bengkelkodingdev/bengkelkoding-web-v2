@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { createPostRequest, createRequest } from "../request";
+import { createPostRequest, createPutRequest, createRequest } from "../request";
 
 // Get Statistics
 export const getStudentStatistics = async (): Promise<AxiosResponse> =>
@@ -53,3 +53,25 @@ export const postSubmitTask = async (
   createPostRequest(
     `/api/v1/mobile/student/assignment/classroom/${classroom_id}/assignments/${assignment_id}/task/submit`
   );
+
+// Get Presences This Week
+export const getPresencesThisWeek = async (): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/student/dashboard/presences`);
+
+// Get All Presences
+export const getPresences = async (
+  classroom_id: number
+): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/student/classrooms/${classroom_id}/presences`);
+
+// Put Profile
+export const putStudentProfile = async (
+  old_password: string,
+  new_password: string,
+  retype_password: string
+): Promise<AxiosResponse> =>
+  createPutRequest("/api/v1/auth/profile", {
+    old_password: old_password,
+    new_password: new_password,
+    retype_password: retype_password,
+  });
