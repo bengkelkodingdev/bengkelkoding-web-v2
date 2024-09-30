@@ -1320,6 +1320,7 @@ const DashboardDetailKelasPage = () => {
                         </tr>
                       </thead>
                       <tbody>
+                        {/* sini student */}
                         {kelas.flatMap((kelasItem) =>
                           kelasItem.students.map((student, index) => (
                             <tr
@@ -1408,22 +1409,19 @@ const DashboardDetailKelasPage = () => {
                         </thead>
                         <tbody>
                           {kelas.flatMap((kelasItem) =>
-                            kelasItem.students.map((student, index) => (
+                            kelasItem.assistants.map((asisten, index) => (
                               <tr
-                                key={student.id}
+                                key={asisten.id}
                                 className="bg-white border-b hover:bg-gray-50"
                               >
                                 <td className="p-2 text-center">{index + 1}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <div className="text-xs flex flex-col gap-1">
                                     <p className="font-medium text-neutral2">
-                                      {student.name}
+                                      {asisten.name}
                                     </p>
                                     <p className="font-normal text-neutral2">
-                                      {student.identity_code}
-                                    </p>
-                                    <p className="font-normal text-neutral2">
-                                      Semester {student.semester}
+                                      {asisten.nim}
                                     </p>
                                   </div>
                                 </td>
@@ -1470,9 +1468,10 @@ const DashboardDetailKelasPage = () => {
                       </thead>
                       <tbody>
                         {kelas.flatMap((kelasItem) =>
-                          kelasItem.students.map((student, index) => (
+                          // sini asisten table
+                          kelasItem.assistants.map((asisten, index) => (
                             <tr
-                              key={student.id}
+                              key={asisten.id}
                               className="bg-white border-b hover:bg-gray-50"
                             >
                               <td className="w-4 p-4">
@@ -1480,19 +1479,15 @@ const DashboardDetailKelasPage = () => {
                                   {index + 1}
                                 </div>
                               </td>
+
                               <td className="px-2 py-4 whitespace-nowrap">
                                 <div className="text-xs flex flex-col gap-1">
                                   <p className="font-medium text-neutral2">
-                                    {student.name}
-                                  </p>
-                                  <p className="font-normal text-neutral2">
-                                    Semester {student.semester}
+                                    {asisten.name}
                                   </p>
                                 </div>
                               </td>
-                              <td className="px-6 py-4">
-                                {student.identity_code}
-                              </td>
+                              <td className="px-6 py-4">{asisten.nim}</td>
 
                               <td className="px-6 py-4">
                                 <div className="flex gap-1">
