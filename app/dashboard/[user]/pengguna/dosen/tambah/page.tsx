@@ -37,19 +37,27 @@ const DashboardTambahPenggunaAdminPage = () => {
     const { name, value } = e.target;
 
     if (StatusForm) {
+      // setFormDataEdit((prevData) => {
+      //   const updatedData = {
+      //     ...prevData,
+      //     [name]:
+      //       name === "name" ||
+      //       name === "identity_code" ||
+      //       name === "email" ||
+      //       name === "password" ||
+      //       name === "is_active"
+      //         ? value === ""
+      //           ? undefined
+      //           : Boolean(value)
+      //         : value,
+      //   };
+      //   return updatedData;
+      // });
+
       setFormDataEdit((prevData) => {
         const updatedData = {
           ...prevData,
-          [name]:
-            name === "name" ||
-            name === "identity_code" ||
-            name === "email" ||
-            name === "password" ||
-            name === "is_active"
-              ? value === ""
-                ? undefined
-                : Boolean(value)
-              : value,
+          [name]: value,
         };
         return updatedData;
       });
