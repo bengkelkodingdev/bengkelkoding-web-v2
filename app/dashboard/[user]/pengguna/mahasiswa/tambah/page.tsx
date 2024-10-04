@@ -41,18 +41,8 @@ const DashboardTambahPenggunaAdminPage = () => {
       setFormDataEdit((prevData) => {
         const updatedData = {
           ...prevData,
-          [name]:
-            name === "name" ||
-            name === "identity_code" ||
-            name === "email" ||
-            name === "password" ||
-            name === "is_active"
-              ? value === ""
-                ? undefined
-                : Boolean(value)
-              : value,
+          [name]: value, // Menggunakan value langsung tanpa konversi ke boolean
         };
-
         return updatedData;
       });
 

@@ -42,6 +42,7 @@ export interface Assistant {
 
 export interface ClassroomData {
   students: Student[];
+  assistants: Assistant[];
   classroom: Kelas;
   presences: Presence[];
   courses: Courses[];
