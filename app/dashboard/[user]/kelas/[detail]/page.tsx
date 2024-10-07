@@ -82,8 +82,8 @@ const DashboardDetailKelasPage = () => {
 
   const [activeSection, setActiveSection] = useState("pertemuan");
 
-  const { dayNameStart, timeStart, dateStart } = formatDateStart();
-  const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
+  // const { dayNameStart, timeStart, dateStart } = formatDateStart();
+  // const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 500);
   // PASTIKAN DIHAPUS
@@ -462,63 +462,34 @@ const DashboardDetailKelasPage = () => {
     }
   };
 
-  function formatDateStart() {
-    let time;
-    tugas.map((tugasItem, index = 0) => {
-      time = tugasItem.start_time;
+  // Fungsi untuk mengambil nama hari
+  const dayFormated = (startTime: string | number | Date) => {
+    const date = new Date(startTime);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date");
+    }
+    const options: Intl.DateTimeFormatOptions = { weekday: "long" };
+    return date.toLocaleDateString("id-ID", options);
+  };
+
+  // Fungsi untuk mengambil waktu (jam)
+  const hourFormated = (startTime) => {
+    const date = new Date(startTime);
+    return date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
-    const days = [
-      "Minggu",
-      "Senin",
-      "Selasa",
-      "Rabu",
-      "Kamis",
-      "Jumat",
-      "Sabtu",
-    ];
-    const date = new Date(time);
-    const dayNameStart = days[date.getDay()];
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
+  };
 
-    return {
-      dayNameStart,
-      timeStart: `${hours}:${minutes}`,
-      dateStart: `${day}-${month}-${year}`,
-    };
-  }
-
-  function formatDateEnd() {
-    let time;
-    tugas.map((tugasItem, index = 0) => {
-      time = tugasItem.deadline;
+  // Fungsi untuk mengambil tanggal (dd-mm-yyyy)
+  const dateFormated = (startTime) => {
+    const date = new Date(startTime);
+    return date.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
-    const days = [
-      "Minggu",
-      "Senin",
-      "Selasa",
-      "Rabu",
-      "Kamis",
-      "Jumat",
-      "Sabtu",
-    ];
-    const date = new Date(time);
-    const dayNameEnd = days[date.getDay()];
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-
-    return {
-      dayNameEnd,
-      timeEnd: `${hours}:${minutes}`,
-      dateEnd: `${day}-${month}-${year}`,
-    };
-  }
+  };
 
   useEffect(() => {
     fetchClassrooms();
@@ -1607,9 +1578,12 @@ const DashboardDetailKelasPage = () => {
                               </svg>
                               <div className="detail-time">
                                 <div>
-                                  {dayNameStart} - {timeStart}
+                                  {dayFormated(tugasItem.start_time)} -{" "}
+                                  {hourFormated(tugasItem.start_time)}
                                 </div>
-                                <div className="font-semibold">{dateStart}</div>
+                                <div className="font-semibold">
+                                  {dateFormated(tugasItem.start_time)}
+                                </div>
                               </div>
                             </div>
                             <div className="h-5 w-[1px] rounded-full bg-slate-500 mx-4 "></div>
@@ -1626,9 +1600,12 @@ const DashboardDetailKelasPage = () => {
                               </svg>
                               <div className="detail-time">
                                 <div>
-                                  {dayNameStart} - {timeStart}
+                                  {dayFormated(tugasItem.deadline)} -{" "}
+                                  {hourFormated(tugasItem.deadline)}
                                 </div>
-                                <div className="font-semibold">{dateStart}</div>
+                                <div className="font-semibold">
+                                  {dateFormated(tugasItem.deadline)}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1796,18 +1773,20 @@ const DashboardDetailKelasPage = () => {
                                   </td>
                                   <td className="px-2 py-4  text-center">
                                     <div>
-                                      {dayNameStart} - {timeStart}
+                                      {dayFormated(tugasItem.start_time)} -{" "}
+                                      {hourFormated(tugasItem.start_time)}
                                     </div>
                                     <div className="font-semibold">
-                                      {dateStart}
+                                      {dateFormated(tugasItem.start_time)}
                                     </div>
                                   </td>
                                   <td className="px-2 py-4  text-center">
                                     <div>
-                                      {dayNameEnd} - {timeEnd}
+                                      {dayFormated(tugasItem.deadline)} -{" "}
+                                      {hourFormated(tugasItem.deadline)}
                                     </div>
                                     <div className="font-semibold">
-                                      {dateEnd}
+                                      {dateFormated(tugasItem.deadline)}
                                     </div>
                                   </td>
                                   <td className="px-6 py-4">
