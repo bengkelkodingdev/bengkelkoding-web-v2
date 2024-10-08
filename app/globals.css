@@ -69,3 +69,12 @@ caption {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* hidden error popup */
+nextjs-portal {
+  display: none;
+}
+body {
+  padding: 0 !important; 
+  overflow: auto !important;
+}
