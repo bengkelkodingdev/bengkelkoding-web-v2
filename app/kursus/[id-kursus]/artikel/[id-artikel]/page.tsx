@@ -61,6 +61,23 @@ const ArticlesPage = () => {
   });
 
   const [isNavVisible, setIsNavVisible] = useState(true);
+  useEffect(() => {
+    // Function to handle screen size check
+    const handleResize = () => {
+      const isSmallScreen = window.innerWidth < 768; // 768px is typical for tablets
+      setIsNavVisible(!isSmallScreen); // Set to false for phones and tablets, true for larger screens
+    };
+
+    // Set visibility on initial load
+    handleResize();
+
+    // Add event listener to handle screen resizing
+    window.addEventListener("resize", handleResize);
+
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [expandedSections, setExpandedSections] = useState(new Set());
 
   useEffect(() => {
@@ -160,7 +177,7 @@ const ArticlesPage = () => {
       className="fixed scroll-smooth min-h-screen max-h-screen w-screen flex flex-col"
       data-color-mode="light"
     >
-      <header className="flex-shrink-0 px-10 py-4 border-b flex justify-between items-center">
+      <header className="flex-shrink-0 px-4 md:px-10 py-4 border-b flex justify-between items-center">
         <Link
           href={
             user_role === "student"
@@ -182,7 +199,7 @@ const ArticlesPage = () => {
           </div>
           <p>{listArticles.title}</p>
         </Link>
-        <div className="block lg:hidden">
+        <div className="block lg:hidden" onClick={toggleNavVisibility}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"
@@ -320,12 +337,12 @@ const ArticlesPage = () => {
             className="prose prose-slate mx-auto"
           /> */}
           {/* <MarkdownEditor.Markdown source={detailArticle.content} className="prose prose-slate mx-auto" /> */}
-          <div className="w-[50%] p-4 prose prose-slate mx-auto">
+          <div className="lg:w-[50%] p-4 prose prose-slate mx-auto">
             <MarkdownReader content={markdownToHtml.toString()} />
           </div>
         </article>
       </main>
-      <footer className="flex-shrink-0 grid grid-cols-3 px-10 py-4 border-t">
+      <footer className="flex-shrink-0 grid grid-cols-3 px-4 md:px-10 py-4 border-t">
         <div>
           {detailArticle.prev !== null && (
             <Link
