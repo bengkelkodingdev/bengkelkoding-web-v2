@@ -405,17 +405,20 @@ const ContentPath = ({ selectedMenu }) => {
                       </span>
                     </div>
                     <div className="flex justify-center mt-4">
-                      {login ? (
-                        kelasPathItem.student_count >= kelasPathItem.quota ? (
-                          <Button text="Penuh" theme="tertiary" disabled className="hover:bg-white" />
-                        ) : (
-                          <Button
-                            text="Masuk"
-                            onClick={() =>
-                              handleOpenModalAktivasiToken(kelasPathItem.id)
-                            }
-                          />
-                        )
+                      {kelasPathItem.student_count >= kelasPathItem.quota ? (
+                        <Button
+                          text="Penuh"
+                          theme="tertiary"
+                          className="hover:bg-white"
+                          disabled
+                        />
+                      ) : login ? (
+                        <Button
+                          text="Masuk"
+                          onClick={() =>
+                            handleOpenModalAktivasiToken(kelasPathItem.id)
+                          }
+                        />
                       ) : (
                         <Button
                           text="Masuk"
@@ -491,17 +494,20 @@ const ContentPath = ({ selectedMenu }) => {
                         {kelasPathItem.student_count}/{kelasPathItem.quota}
                       </td>
                       <td className="py-4 flex justify-center">
-                        {login ? (
-                          kelasPathItem.student_count >= kelasPathItem.quota ? (
-                            <Button text="Penuh" theme="tertiary" disabled className="hover:bg-white" />
-                          ) : (
-                            <Button
-                              text="Masuk"
-                              onClick={() =>
-                                handleOpenModalAktivasiToken(kelasPathItem.id)
-                              }
-                            />
-                          )
+                        {kelasPathItem.student_count >= kelasPathItem.quota ? (
+                          <Button
+                            text="Penuh"
+                            theme="tertiary"
+                            className="hover:bg-white"
+                            disabled
+                          />
+                        ) : login ? (
+                          <Button
+                            text="Masuk"
+                            onClick={() =>
+                              handleOpenModalAktivasiToken(kelasPathItem.id)
+                            }
+                          />
                         ) : (
                           <Button
                             text="Masuk"
