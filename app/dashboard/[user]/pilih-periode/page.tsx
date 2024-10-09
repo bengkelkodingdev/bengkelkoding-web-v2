@@ -5,6 +5,8 @@ import {
   postSetActivePeriod,
 } from "@/app/api/superadmin/pilihPeriode";
 import Button from "@/app/component/general/Button";
+import Input from "@/app/component/general/Input";
+import Modal from "@/app/component/general/Modal";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -88,6 +90,16 @@ const HomeDashboardPilihPeriode = () => {
     }
   };
 
+  // Modal period
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  const [confirmChangePeriod, setConfirmChangePeriod] = useState("");
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -113,10 +125,7 @@ const HomeDashboardPilihPeriode = () => {
         <p className="text-neutral2 text-base mb-1">
           Pilih periode yang ingin anda terapkan di Aplikasi Bengkel Koding.
         </p>
-        <form
-          className="flex gap-2 items-center"
-          onSubmit={handlePostActivePeriod}
-        >
+        <form className="flex gap-2 items-center">
           <p className="text-neutral2 text-base mb-1">Period</p>
 
           {/* Year Dropdown */}
@@ -146,9 +155,40 @@ const HomeDashboardPilihPeriode = () => {
             <option value="even">Even</option>
           </select>
 
-          <Button text="Terapkan" type="submit" />
+          <Button text="Terapkan" type="button" onClick={handleOpenModal} />
         </form>
       </div>
+      <Modal
+        title="Aktivasi Token"
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      >
+        <div className="mt-4">
+          <p className="mb-4 text-sm">
+            Konfirmasi ganti periode dengan menginputkan teks berikut:{" "}
+            <b>
+              {selectedYear} {selectedSemester}
+            </b>
+          </p>
+          <Input
+            label=""
+            type="text"
+            name="confirmChangePeriod"
+            placeholder="Masukkan Teks Periode"
+            required
+            onChange={(e) => setConfirmChangePeriod(e.target.value)}
+          />
+          {selectedYear + " " + selectedSemester !== confirmChangePeriod ? (
+            <Button text="Ganti Periode" className="w-full hover:bg-white" theme="tertiary" disabled />
+          ) : (
+            <Button
+              text="Ganti Periode"
+              className="w-full"
+              onClick={() => handlePostActivePeriod}
+            />
+          )}
+        </div>
+      </Modal>
       <ToastContainer />
     </>
   );
