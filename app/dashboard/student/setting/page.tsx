@@ -1,6 +1,6 @@
 "use client";
 import { getProfile } from "@/app/api/general";
-import { putStudentProfile } from "@/app/api/student/dashboard";
+import { putProfile } from "@/app/api/auth";
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
 import Image from "next/image";
@@ -10,12 +10,6 @@ import { toast, ToastContainer } from "react-toastify";
 import Modal from "@/app/component/general/Modal";
 
 const StudentSettingPage = () => {
-  const [status, setStatus] = useState({
-    loading: true,
-    error: null,
-    success: null,
-  });
-
   const [profile, setProfile] = useState({
     id: 0,
     identity_code: "",
@@ -80,24 +74,17 @@ const StudentSettingPage = () => {
     }
 
     try {
-      await putStudentProfile(oldPassword, newPassword, retypePassword);
-      setStatus({
-        loading: false,
-        error: null,
-        success: "Berhasil Memperbarui profil!",
-      });
+      await putProfile(oldPassword, newPassword, retypePassword);
+
       toast.success("Berhasil Memperbarui profil!");
 
       // Reset form fields after successful update
       setOldPassword("");
       setNewPassword("");
       setRetypePassword("");
+
+      handleCloseModal();
     } catch (error) {
-      setStatus({
-        loading: false,
-        error: "Gagal Memperbarui Profil",
-        success: null,
-      });
       toast.error("Gagal Memperbarui Profil!");
     }
   };
@@ -202,13 +189,13 @@ const StudentSettingPage = () => {
           </p>
           <div className="flex gap-2">
             <Button
-              text="No"
+              text="Tidak"
               className="w-full"
               theme="tertiary"
               onClick={handleCloseModal}
             />
             <Button
-              text="Yes"
+              text="Ya"
               className="w-full"
               onClick={handlePutStudentProfile}
             />
