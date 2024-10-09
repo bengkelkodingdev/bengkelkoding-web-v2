@@ -63,15 +63,3 @@ export const getPresences = async (
   classroom_id: number
 ): Promise<AxiosResponse> =>
   createRequest(`/api/v1/student/classrooms/${classroom_id}/presences`);
-
-// Put Profile
-export const putStudentProfile = async (
-  old_password: string,
-  new_password: string,
-  retype_password: string
-): Promise<AxiosResponse> =>
-  createPutRequest("/api/v1/auth/profile", {
-    old_password: old_password,
-    new_password: new_password,
-    retype_password: retype_password,
-  });

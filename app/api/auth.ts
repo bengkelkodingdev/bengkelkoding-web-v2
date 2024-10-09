@@ -1,6 +1,7 @@
 import Axios, { AxiosResponse } from "axios";
 import { LoginResponse } from "../component/types/auth";
 import Cookies from "js-cookie";
+import { createPutRequest } from "./request";
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
@@ -40,3 +41,15 @@ export const logout = async (): Promise<void> => {
     throw new Error("Logout failed");
   }
 };
+
+// Change Profile /api/v1/auth/profile
+export const putProfile = async (
+  old_password: string,
+  new_password: string,
+  retype_password: string
+): Promise<AxiosResponse> =>
+  createPutRequest("/api/v1/auth/profile", {
+    old_password: old_password,
+    new_password: new_password,
+    retype_password: retype_password,
+  });
