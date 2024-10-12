@@ -1014,7 +1014,7 @@ const DashboardDetailKelasPage = () => {
                             <th scope="col" className="p-2">
                               No
                             </th>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-4 py-3">
                               Nama
                             </th>
 
@@ -1038,7 +1038,7 @@ const DashboardDetailKelasPage = () => {
                                 className="bg-white border-b hover:bg-gray-50"
                               >
                                 <td className="p-2 text-center">{index + 1}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-1 py-4 whitespace-nowrap">
                                   <div className="text-xs flex flex-col gap-1">
                                     <p className="font-medium text-neutral2">
                                       {asisten.name}
@@ -1058,7 +1058,16 @@ const DashboardDetailKelasPage = () => {
                                   } px-6 py-3 `}
                                 >
                                   <div className="flex gap-1">
-                                    <button className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150">
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteAssist(
+                                          kelasItem.classroom.id,
+                                          asisten.id
+                                        )
+                                      }
+                                      className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                                    >
+                                      {" "}
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         height="18px"
