@@ -3,13 +3,21 @@ import { getDetailArticles, getListArticles } from "@/app/api/student/course";
 import { marked } from "marked";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import dynamic from "next/dynamic";
 import {
   getAdminDetailArticles,
   getAdminListArticles,
 } from "@/app/api/admin/course";
+import {
+  getLectureDetailArticles,
+  getLectureListArticles,
+} from "@/app/api/dosen/courses";
+import {
+  getAssistantDetailArticles,
+  getAssistantListArticles,
+} from "@/app/api/assistant/courses";
 
 const MarkdownReader = dynamic(
   () => import("@/app/component/general/MarkdownReader"),
@@ -127,6 +135,26 @@ const ArticlesPage = () => {
           idArtikel
         );
         setDetailArticle(responseDetailArticle.data);
+      } else if (user_role === "assistant") {
+        // Response List Articles
+        const responseListArticles = await getAssistantListArticles(idKursus);
+        setListArticles(responseListArticles.data);
+        // Response Detail Article
+        const responseDetailArticle = await getAssistantDetailArticles(
+          idKursus,
+          idArtikel
+        );
+        setDetailArticle(responseDetailArticle.data);
+      } else if (user_role === "lecture") {
+        // Response List Articles
+        const responseListArticles = await getLectureListArticles(idKursus);
+        setListArticles(responseListArticles.data);
+        // Response Detail Article
+        const responseDetailArticle = await getLectureDetailArticles(
+          idKursus,
+          idArtikel
+        );
+        setDetailArticle(responseDetailArticle.data);
       } else {
         // Response List Articles
         const responseListArticles = await getListArticles(idKursus);
@@ -172,6 +200,12 @@ const ArticlesPage = () => {
     );
   };
 
+  const rolePaths = {
+    student: `/dashboard/student/classroom/${current_classroom_id}`,
+    lecture: `/dashboard/dosen/kelas/${current_classroom_id}`,
+    assistant: `/dashboard/asisten/kelas/${current_classroom_id}`,
+  };
+
   return (
     <div
       className="fixed scroll-smooth min-h-screen max-h-screen w-screen flex flex-col"
@@ -179,11 +213,7 @@ const ArticlesPage = () => {
     >
       <header className="flex-shrink-0 px-4 md:px-10 py-4 border-b flex justify-between items-center">
         <Link
-          href={
-            user_role === "student"
-              ? `/dashboard/student/classroom/${current_classroom_id}`
-              : `/dashboard/${user_role}/kursus`
-          }
+          href={rolePaths[user_role] || `/dashboard/${user_role}/kursus`}
           className="w-max p-2 hover:bg-neutral5 text-black flex gap-2 rounded-sm items-center font-medium"
         >
           <div>
@@ -287,7 +317,9 @@ const ArticlesPage = () => {
                           }`}
                         >
                           {user_role === "admin" ||
-                          user_role === "superadmin" ? (
+                          user_role === "superadmin" ||
+                          user_role === "assistant" ||
+                          user_role === "lecture" ? (
                             <div>{renderIcon(!article.completed)}</div>
                           ) : (
                             <div>

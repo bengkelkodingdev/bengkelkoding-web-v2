@@ -524,6 +524,8 @@ const DashboardDetailKelasPage = () => {
     fetchClassrooms();
   }, []);
 
+  Cookies.set("current_classroom_id", kelas[0]?.classroom.id.toString());
+
   if (loading)
     return (
       <div>
@@ -1926,37 +1928,52 @@ const DashboardDetailKelasPage = () => {
               {activeSection === "kursus" && (
                 <div id="kursus" className="mx-auto">
                   {/* list kursus */}
-                  <div className="col-span-2">
-                    <div className="flex flex-col gap-2">
-                      {/* list kursus */}
-                      {kelasItem.courses.map((courses, index) => (
-                        <div
+                  <section
+                    id="kursus"
+                    aria-label="Kursus Bengkel Koding"
+                    className="grid lg:max-w-screen-lg grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3"
+                  >
+                    {kelasItem.courses.length > 0 ? (
+                      kelasItem.courses.map((k, index) => (
+                        <Link
+                          href={`/kursus/${k.id}/artikel/${k.first_article_id}`}
                           key={index}
-                          className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
+                          target="_blank"
+                          className="max-w-[90%] lg:max-w-full mx-auto rounded-xl transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px] hover:scale-105"
                         >
-                          <Image
-                            src={`${courses.image}`}
-                            alt={""}
-                            width={180}
-                            height={140}
-                            loading="lazy"
-                            className="w-full lg:w-1/2 object-cover "
-                          />
-                          <div className="py-3 px-4">
-                            <h4 className="text-primary1 font-medium">
-                              {courses.title}
-                            </h4>
-                            <p className="text-neutral3 text-sm">
-                              {courses.author}
-                            </p>
-                            <p className="text-neutral2 text-sm mt-2">
-                              {courses.description}
-                            </p>
+                          <div className="h-full bg-white rounded-lg p-4">
+                            <Image
+                              src={k.image}
+                              alt={k.title}
+                              width={800}
+                              height={500}
+                              className="w-full h-auto rounded-md"
+                            />
+                            <div className="mt-2 flex flex-col justify-between gap-1">
+                              {/* Judul Kursus */}
+                              <p className="font-semibold text-base md:text-lg">
+                                {k.title}
+                              </p>
+
+                              {/* Deskripsi Kursus */}
+                              <div>
+                                <p className="text-sm text-neutral2">
+                                  {k.description}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        </Link>
+                      ))
+                    ) : (
+                      <div className="w-full mx-auto col-span-3 text-center">
+                        <p className="text-2xl md:text-3xl my-4">😔</p>
+                        <h2 className="font-semibold text-lg md:text-xl">
+                          Upss, kursus tidak ditemukan
+                        </h2>
+                      </div>
+                    )}
+                  </section>
                 </div>
               )}
 
