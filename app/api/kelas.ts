@@ -2,6 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import { EditFormClassroom, KelasRespon } from "@/app/interface/Kelas";
 import { ClassFormData } from "@/app/interface/Kelas";
 import {
+  SelectAssistant,
+  SelectAssistantRespon,
   SelectDosenRespon,
   SelectPathRespon,
   SelectPeriodRespon,
@@ -194,6 +196,92 @@ export const getSelectLecture = async (): Promise<SelectDosenRespon> => {
     return response.data;
   } catch (error) {
     console.error("Error fetching dosen:", error);
+    throw error;
+  }
+};
+
+// ---------
+
+// Select Assistant
+
+export const getSelectAssistant = async (
+  idClassroom: number
+): Promise<SelectAssistantRespon> => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/v1/admin/classrooms/${idClassroom}/assistants`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Assistant:", error);
+    throw error;
+  }
+};
+
+export const postAssistant = async (
+  classroomId: number,
+  assistantId: string
+) => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+  const apiUrl = `${API_URL}/api/v1/admin/classrooms/${classroomId}/assistants`;
+
+  try {
+    const response = await axios.post(
+      apiUrl,
+      {
+        assistant_id: assistantId.toString(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Gagal menyimpan asisten:", error);
+    throw error;
+  }
+};
+
+export const deleteAssistant = async (
+  classroomId: number,
+  assistantId: string
+) => {
+  const access_token = Cookies.get("access_token");
+
+  if (!access_token) {
+    throw new Error("Access token not found");
+  }
+  const apiUrl = `${API_URL}/api/v1/admin/classrooms/${classroomId}/assistants/${assistantId}`;
+
+  try {
+    const response = await axios.delete(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Gagal menghapus asisten:", error);
     throw error;
   }
 };

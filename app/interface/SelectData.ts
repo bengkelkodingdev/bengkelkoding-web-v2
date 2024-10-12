@@ -5,6 +5,12 @@ export interface SelectLecture {
   is_active: boolean;
 }
 
+export interface SelectAssistant {
+  id: string;
+  identity_code: string;
+  name: string;
+}
+
 export interface SelectPeriod {
   id: number;
   period: string;
@@ -21,6 +27,10 @@ export interface SelectPath {
 
 export interface SelectDosenRespon {
   data: SelectLecture[];
+}
+
+export interface SelectAssistantRespon {
+  data: SelectAssistant[];
 }
 
 export interface SelectPeriodRespon {

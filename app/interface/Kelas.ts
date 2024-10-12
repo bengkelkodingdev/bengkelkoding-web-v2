@@ -34,7 +34,7 @@ interface Student {
 }
 
 export interface Assistant {
-  id?: number;
+  id?: string;
   name: string;
   nim: string;
   image?: string;

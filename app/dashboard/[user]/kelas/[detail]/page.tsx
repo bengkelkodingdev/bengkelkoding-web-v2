@@ -59,6 +59,9 @@ import Button from "@/app/component/general/Button";
 import { Student } from "@/app/interface/DetailSesi";
 import EditFormAsisten from "@/app/component/general/EditFormAsisten";
 import PostFormAsisten from "@/app/component/general/PostFormAsisten";
+import { dateFormated, dayFormated, hourFormated } from "@/app/lib/formatDate";
+import { deleteAssistant, postAssistant } from "@/app/api/kelas";
+import SkeletonDetailKelas from "@/app/component/skleton/SkeletonDetailKelas";
 
 const DashboardDetailKelasPage = () => {
   const url = usePathname();
@@ -80,7 +83,7 @@ const DashboardDetailKelasPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [activeSection, setActiveSection] = useState("pertemuan");
+  const [activeSection, setActiveSection] = useState("asisten");
 
   // const { dayNameStart, timeStart, dateStart } = formatDateStart();
   // const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
@@ -178,66 +181,64 @@ const DashboardDetailKelasPage = () => {
     setIsModalOpen(true); // Buka modal
   };
 
+  // alif save asisten
+  // const handleSaveAssist = async (
+  //   savedAsisten: Assistant,
+  //   idClassroom: number
+  // ) => {
+  //   try {
+  //     //const response = await postAssistant(
+  //     //   idClassroom,
+  //     //
+  //     // );
+
+  //     handleCloseModalInfo();
+  //     fetchClassrooms();
+  //     toast.success(`Asisten berhasil ditambahkan😁`);
+  //   } catch (error) {
+  //     toast.error(`Gagal menambahkan Asisten`, error);
+  //   }
+  // };
+
   const handleSaveAssist = async (
-    savedAsisten: Assistant,
+    postedUser: Assistant,
     idClassroom: number
   ) => {
-    try {
-      let response;
-      if (role_user === "superadmin" || role_user === "admin") {
-        // response = await postInformationAdmin(
-        //   idClassroom,
-        //   savedInfo.title,
-        //   savedInfo.description
-        // );
-      } else if (role_user === "lecture") {
-        // response = await postInformationLecture(
-        //   idClassroom,
-        //   savedInfo.title,
-        //   savedInfo.description
-        // );
-      }
+    if (!postedUser.id) {
+      console.error("Assistant ID tidak ditemukan");
+      toast.error("Gagal menyimpan, assistant ID tidak valid");
+      return;
+    }
 
-      handleCloseModalInfo();
-      fetchClassrooms();
-      toast.success(`Asisten berhasil ditambahkan😁`);
+    try {
+      const response = await postAssistant(
+        idClassroom,
+        postedUser.id.toString()
+      );
+      toast.success("Asisten berhasil ditambahkan");
+      fetchClassrooms(); // Memuat ulang data kelas setelah menyimpan
     } catch (error) {
-      toast.error(`Gagal menambahkan Asisten`, error);
+      console.error("Gagal menyimpan asisten:", error);
+      toast.error("Gagal menambahkan Asisten");
     }
   };
 
-  const handleUpdateAssist = async (
-    savedInfo: Assistant,
-    idClassroom: number,
-    idAssisten: number
+  const handleDeleteAssist = async (
+    classroomId: number,
+    assistantId: string
   ) => {
+    if (!assistantId || !classroomId) {
+      console.error("Assistant ID atau Classroom ID tidak ditemukan");
+      return;
+    }
+
     try {
-      let response;
-      if (role_user === "superadmin" || role_user === "admin") {
-        // response = await updateInformationAdmin(
-        //   idClassroom,
-        //   idAssisten,
-        //   savedInfo.name,
-        //   savedInfo.nim,
-        //   access
-        // );
-      }
-
-      if (role_user === "lecture") {
-        // response = await updateInformationLecture(
-        //   idClassroom,
-        //   idInfo,
-        //   savedInfo.title,
-        //   savedInfo.description,
-        //   access
-        // );
-      }
-
-      handleCloseModalInfo();
-      fetchClassrooms(); // Memuat ulang data kelas setelah menyimpan
-      toast.success(`Informasi berhasil diperbarui 😁`);
+      const result = await deleteAssistant(classroomId, assistantId);
+      toast.success("Asisten berhasil dihapus");
+      fetchClassrooms(); // Memuat ulang data kelas setelah penghapusan
     } catch (error) {
-      toast.error(`Gagal memperbarui informasi`, error);
+      console.error("Gagal menghapus asisten:", error);
+      toast.error("Gagal menghapus Asisten");
     }
   };
   //  ----
@@ -462,371 +463,11 @@ const DashboardDetailKelasPage = () => {
     }
   };
 
-  // Fungsi untuk mengambil nama hari
-  const dayFormated = (startTime: string | number | Date) => {
-    const date = new Date(startTime);
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-    const options: Intl.DateTimeFormatOptions = { weekday: "long" };
-    return date.toLocaleDateString("id-ID", options);
-  };
-
-  // Fungsi untuk mengambil waktu (jam)
-  const hourFormated = (startTime) => {
-    const date = new Date(startTime);
-    return date.toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  // Fungsi untuk mengambil tanggal (dd-mm-yyyy)
-  const dateFormated = (startTime) => {
-    const date = new Date(startTime);
-    return date.toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
   useEffect(() => {
     fetchClassrooms();
   }, []);
 
-  if (loading)
-    return (
-      <div>
-        <h1 className="h-8 w-3/4 bg-gray-200 animate-pulse mb-4"></h1>
-
-        <div className="flex flex-col lg:flex-row gap-6 2xl:gap-10">
-          <div className="w-full">
-            <div className="grid grid-cols-2 lg:flex items-center gap-x-2 md:gap-5 text-xs text-neutral2">
-              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
-              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
-              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
-              <p className="h-4 w-1/4 bg-gray-200 animate-pulse"></p>
-            </div>
-            <p className="mt-4 h-4 w-full bg-gray-200 animate-pulse"></p>
-          </div>
-          <table className="min-w-max text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-            <thead className=" text-neutral2 bg-gray-100">
-              <tr>
-                <th scope="col" className="px-6 py-3 w-max">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </th>
-                <th scope="col" className="px-6 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-white border-b hover:bg-gray-50">
-                <td className="px-6 py-4 w-max">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </td>
-              </tr>
-              <tr className="bg-white border-b hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </td>
-              </tr>
-              <tr className="bg-white border-b hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <article className=" mx-auto">
-          {/* Navigasi untuk management active section */}
-          <nav className="flex">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <button
-                key={index}
-                className="w-max px-4 py-2 font-medium rounded-t-md transition-all ease-in-out duration-200 bg-gray-200 animate-pulse"
-              >
-                &nbsp;
-              </button>
-            ))}
-          </nav>
-
-          <section
-            id="group-content"
-            className="px-2 lg:px-4 py-4 w-full bg-slate-50 rounded-b-lg rounded-tr-lg"
-          >
-            {/* Pertemuan */}
-            <div id="pertemuan" className="mx-auto">
-              {/*Pertemuan */}
-              <div className="flex flex-col gap-3 Box-Pertemuan">
-                <div className="flex gap-5 flex-col-reverse md:flex-col-reverse lg:flex-row ">
-                  {/* list */}
-                  <div className="lg:w-[70%] shadow-md px-2 rounded-md">
-                    <div id="chart">
-                      <p className="p-2 h-4 w-1/4 bg-gray-200 animate-pulse"></p>
-                      <div className="h-36 bg-gray-200 animate-pulse"></div>
-                    </div>
-                  </div>
-                  {/* kontrak pertemuan */}
-                  <div className="lg:w-[30%]">
-                    <table className="w-full shadow-sm text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                      <thead className="text-sm text-neutral2 bg-gray-100">
-                        <tr>
-                          <th scope="col" className="px-6 py-3 w-max">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </th>
-                          <th scope="col" className="px-6 py-3"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="bg-white border-b hover:bg-gray-50">
-                          <td className="px-6 py-4 w-max">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                        </tr>
-                        <tr className="bg-white border-b hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                        </tr>
-                        <tr className="bg-white border-b hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div className="shadow-md">
-                  <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                    <thead className="text-neutral2 bg-gray-100">
-                      <tr>
-                        <th scope="col" className="p-4">
-                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Array.from({ length: 3 }).map((_, index) => (
-                        <tr
-                          key={index}
-                          className="bg-white border-b hover:bg-gray-50"
-                        >
-                          <td className="w-4 p-4">
-                            <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
-                          </td>
-
-                          <td className="px-6 py-3">
-                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-3">
-                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-3">
-                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-3 w-36">
-                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                          <td className="px-6 py-3">
-                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            {/* Mahasiswa */}
-            <div id="mahasiswa" className="mx-auto">
-              <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden">
-                <thead className="text-sm text-neutral2 bg-gray-100">
-                  <tr>
-                    <th scope="col" className="p-4">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <tr
-                      key={index}
-                      className="bg-white border-b hover:bg-gray-50"
-                    >
-                      <td className="w-4 p-4">
-                        <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Tugas */}
-            <div id="tugas" className="mx-auto mt-4">
-              <h3 className="font-semibold mb-3 h-4 w-1/4 bg-gray-200 animate-pulse"></h3>
-              <div className="flex w-full justify-between items-center">
-                <div className="relative ml-2">
-                  <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                    <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
-                  </div>
-                  <input
-                    type="text"
-                    id="table-search"
-                    className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-                    placeholder="Cari Tugas"
-                  />
-                </div>
-                <div className="w-max bg-gray-200 animate-pulse text-white hover:bg-primary2 focus:ring-primary5 px-3 py-2 lg:px-3 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300">
-                  &nbsp;
-                </div>
-              </div>
-              <table className="w-full text-sm text-left rtl:text-right text-neutral3 rounded-lg overflow-hidden mt-5 ">
-                <thead className="text-sm text-neutral2 bg-gray-100">
-                  <tr>
-                    <th scope="col" className="p-4">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <tr
-                      key={index}
-                      className="bg-white border-b hover:bg-gray-50"
-                    >
-                      <td className="w-4 p-4">
-                        <div className="h-4 w-4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 font-semibold">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 flex items-center justify-center">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 text-center font-semibold">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse"></div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Kursus */}
-            <div id="kursus" className="mx-auto">
-              {/* list kursus */}
-              <div className="col-span-2">
-                <div className="flex flex-col gap-2">
-                  {/* list kursus */}
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col md:flex-row rounded-md overflow-hidden border border-gray-200 hover:shadow-[rgba(7,_65,_210,_0.1)_0px_6px_10px] transition-all ease-out duration-200 cursor-pointer"
-                    >
-                      <div className="h-36 w-48 bg-gray-200 animate-pulse"></div>
-                      <div className="py-3 px-4 w-full">
-                        <div className="h-4 w-1/4 bg-gray-200 animate-pulse"></div>
-                        <div className="h-4 w-1/2 bg-gray-200 animate-pulse mt-2"></div>
-                        <div className="h-4 w-3/4 bg-gray-200 animate-pulse mt-2"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        </article>
-      </div>
-    );
+  if (loading) return <SkeletonDetailKelas />;
 
   if (error) return <p>Kelas Tidak ditemukan</p>;
 
@@ -1347,7 +988,11 @@ const DashboardDetailKelasPage = () => {
                         e.preventDefault();
                         handleOpenModalAssist();
                       }}
-                      className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+                      className={` ${
+                        role_user === "lecture" || role_user === "student"
+                          ? "hidden"
+                          : ""
+                      } flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1373,7 +1018,14 @@ const DashboardDetailKelasPage = () => {
                               Nama
                             </th>
 
-                            <th scope="col" className="px-6 py-3">
+                            <th
+                              scope="col"
+                              className={`${
+                                role_user == "lecture" || role_user == "student"
+                                  ? "hidden"
+                                  : ""
+                              } px-6 py-3 `}
+                            >
                               Aksi
                             </th>
                           </tr>
@@ -1397,7 +1049,14 @@ const DashboardDetailKelasPage = () => {
                                   </div>
                                 </td>
 
-                                <td className="px-6 py-4">
+                                <td
+                                  className={`${
+                                    role_user == "lecture" ||
+                                    role_user == "student"
+                                      ? "hidden"
+                                      : ""
+                                  } px-6 py-3 `}
+                                >
                                   <div className="flex gap-1">
                                     <button className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150">
                                       <svg
@@ -1432,7 +1091,14 @@ const DashboardDetailKelasPage = () => {
                             Nim
                           </th>
 
-                          <th scope="col" className="px-6 py-3">
+                          <th
+                            scope="col"
+                            className={`${
+                              role_user == "lecture" || role_user == "student"
+                                ? "hidden"
+                                : ""
+                            } px-6 py-3 `}
+                          >
                             Aksi
                           </th>
                         </tr>
@@ -1460,9 +1126,24 @@ const DashboardDetailKelasPage = () => {
                               </td>
                               <td className="px-6 py-4">{asisten.nim}</td>
 
-                              <td className="px-6 py-4">
+                              <td
+                                className={`${
+                                  role_user == "lecture" ||
+                                  role_user == "student"
+                                    ? "hidden"
+                                    : ""
+                                } px-6 py-3 `}
+                              >
                                 <div className="flex gap-1">
-                                  <button className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150">
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteAssist(
+                                        kelasItem.classroom.id,
+                                        asisten.id
+                                      )
+                                    }
+                                    className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                                  >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
                                       height="18px"
@@ -1490,25 +1171,13 @@ const DashboardDetailKelasPage = () => {
                     isOpen={isModalOpen}
                     onClose={handleCloseModalInfo}
                   >
-                    {selectedAssistant && selectedAssistant.id ? (
-                      <EditFormAsisten
-                        user={selectedAssistant}
-                        onSave={(updatedInfo) =>
-                          handleUpdateAssist(
-                            updatedInfo,
-                            kelasItem.classroom.id,
-                            selectedAssistant.id
-                          )
-                        }
-                      />
-                    ) : (
-                      <PostFormAsisten
-                        user={selectedAssistant}
-                        onSave={(newAsisten) =>
-                          handleSaveAssist(newAsisten, kelasItem.classroom.id)
-                        }
-                      />
-                    )}
+                    <PostFormAsisten
+                      idClassroom={kelasItem.classroom.id}
+                      user={selectedAssistant}
+                      onSave={(postedUser) =>
+                        handleSaveAssist(postedUser, kelasItem.classroom.id)
+                      } // Mengirim postedUser ke parent
+                    />
                   </Modal>
                 </div>
               )}

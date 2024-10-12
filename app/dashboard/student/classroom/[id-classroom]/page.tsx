@@ -265,8 +265,6 @@ const StudentClassroomPage = () => {
     return <p>{error}</p>;
   }
 
-  console.log(presences);
-
   return (
     <>
       <Breadcrumb items={dataBreadcrumb} />
