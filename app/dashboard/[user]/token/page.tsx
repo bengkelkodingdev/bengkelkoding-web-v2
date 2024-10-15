@@ -2,7 +2,6 @@
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
 import Modal from "@/app/component/general/Modal";
-import Link from "next/link";
 import Cookies from "js-cookie";
 import React, { useCallback, useEffect, useState } from "react";
 import { Tokens } from "@/app/interface/Tokens";
@@ -15,7 +14,6 @@ import Pagination from "@/app/component/general/PaginationCustom";
 import { formatDate } from "@/app/lib/formatDate";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 const HomeDashboardTokenPage = () => {
@@ -117,34 +115,12 @@ const HomeDashboardTokenPage = () => {
 
   // Handle export token
   const handleExportToken = async () => {
-    const response = await getExportTokens(used, expired);
-    const tokenData = response.data;
     try {
-      // If the response contains data
-      if (tokenData && tokenData.length > 0) {
-        // Convert JSON data to a worksheet
-        const worksheet = XLSX.utils.json_to_sheet(tokenData);
-
-        // Create a new workbook and append the worksheet
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Tokens");
-
-        // Create a binary Excel file and trigger download
-        const excelBuffer = XLSX.write(workbook, {
-          bookType: "xlsx",
-          type: "array",
-        });
-        const blob = new Blob([excelBuffer], {
-          type: "application/octet-stream",
-        });
-
-        // Use FileSaver to save the Excel file
-        saveAs(blob, "tokens.xlsx");
-        toast.success("Berhasil Export Token");
-      } else {
-        toast.error("Tidak ada data yang dapat di export");
-      }
-      setIsModalExportTokenOpen(false);
+      const response = await getExportTokens(used, expired);
+      const blob = new Blob([response], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      saveAs(blob, "activate_tokens.xlsx");
     } catch (error) {
       // Log error and show toast message
       console.error("Failed to export token", error);

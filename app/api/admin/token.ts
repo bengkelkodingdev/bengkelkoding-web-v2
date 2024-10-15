@@ -1,5 +1,8 @@
-import { AxiosResponse } from "axios";
+import Axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 import { createPostRequest, createRequest } from "../request";
+
+const API_URL: string = process.env.NEXT_PUBLIC_API_URL_BENGKEL_KODING || "";
 
 // format date
 const formatDate = (value) => {
@@ -26,11 +29,20 @@ export const getListTokens = async (
   );
 
 // Get Export Tokens
-export const getExportTokens = async (
-  used: string,
-  expired: string
-): Promise<AxiosResponse> =>
-  createRequest(`/api/v1/admin/tokens?used=${used}&expired=${expired}`);
+export const getExportTokens = async (used: string, expired: string) => {
+  const access_token = Cookies.get("access_token");
+  if (!access_token) throw new Error("Access token not found");
+
+  const config: AxiosRequestConfig = {
+    headers: { Authorization: `Bearer ${access_token}` },
+    responseType: "blob",
+  };
+
+  const url = `/api/v1/admin/tokens/export?used=${used}&expired=${expired}`;
+  const response = await Axios.get(`${API_URL}${url}`, config);
+
+  return response.data;
+};
 
 // Post Generate Tokens
 export const postGenerateToken = async (
