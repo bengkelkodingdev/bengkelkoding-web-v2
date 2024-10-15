@@ -1,94 +1,93 @@
-"use client"
-import { getAdminListCourses } from '@/app/api/admin/course';
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react'
+"use client";
+import { getAdminListCourses } from "@/app/api/admin/course";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 
 const DashboardKursus = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    // const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
 
-    // // Handler untuk mengubah nilai pencarian
-    // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //   setSearchTerm(e.target.value);
-    // };
+  // // Handler untuk mengubah nilai pencarian
+  // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setSearchTerm(e.target.value);
+  // };
 
-    const [listCourses, setListCourses] = useState([
-      {
-        id: 0,
-        first_article_id: 0,
-        title: "",
-        image: "",
-        background_image: "",
-        tools: "",
-        rating: 0,
-        level: "",
-        student_count: 0,
-      },
-    ]);
+  const [listCourses, setListCourses] = useState([
+    {
+      id: 0,
+      first_article_id: 0,
+      title: "",
+      image: "",
+      background_image: "",
+      tools: "",
+      rating: 0,
+      level: "",
+      student_count: 0,
+    },
+  ]);
 
-    const toolsArray = (tools: string) => {
-      const data = tools?.split(", ");
-      return data?.map((d, index) => (
-        <p
-          key={index}
-          className="text-xs bg-primary5 text-primary1 px-2 py-0.5 rounded-sm"
-        >
-          {d}
-        </p>
-      ));
-    };
+  const toolsArray = (tools: string) => {
+    const data = tools?.split(", ");
+    return data?.map((d, index) => (
+      <p
+        key={index}
+        className="text-xs bg-primary5 text-primary1 px-2 py-0.5 rounded-sm"
+      >
+        {d}
+      </p>
+    ));
+  };
 
-    useEffect(() => {
-      try {
-        const fetchData = async () => {
-          // Response ListCourses
-          const responseListCourses = await getAdminListCourses();
-          setListCourses(responseListCourses.data);
-        };
-        fetchData();
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to load data. Please try again.");
-        setIsLoading(false);
-      }
-    }, []);
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        // Response ListCourses
+        const responseListCourses = await getAdminListCourses();
+        setListCourses(responseListCourses.data);
+      };
+      fetchData();
+      setIsLoading(false);
+    } catch (err) {
+      setError("Failed to load data. Please try again.");
+      setIsLoading(false);
+    }
+  }, []);
 
-    if (isLoading) {
-      return (
-        <div className="bg-[#f7f9fa]">
-          <div className="max-w-5xl mx-auto px-2 lg:px-4 py-4 min-h-screen">
-            <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg mb-6 md:mb-8" />
-            <div className="mx-auto grid lg:max-w-screen-lg grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
-              <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
-              <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
-              <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
-              <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
-              <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
-            </div>
+  if (isLoading) {
+    return (
+      <div className="bg-[#f7f9fa]">
+        <div className="max-w-5xl mx-auto px-2 lg:px-4 py-4 min-h-screen">
+          <div className="w-full min-h-36 bg-neutral5 animate-pulse rounded-lg mb-6 md:mb-8" />
+          <div className="mx-auto grid lg:max-w-screen-lg grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
+            <div className="w-full min-h-72 mx-auto rounded-xl bg-neutral5 animate-pulse" />
           </div>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
-    if (error) {
-      return <p>{error}</p>;
-    }
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div>
       <section
         id="kursus"
         aria-label="Kursus Bengkel Koding"
-        className="mx-auto grid lg:max-w-screen-lg grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid lg:max-w-screen-xl grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3"
       >
         {listCourses.length > 0 ? (
           listCourses.map((k, index) => (
-            <Link
-              href={`/kursus/${k.id}/artikel/${k.first_article_id}`}
+            <div
               key={index}
               className="max-w-[90%] lg:max-w-full mx-auto rounded-xl transition-all duration-200 ease-in-out transform hover:shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px] hover:scale-105"
             >
@@ -165,8 +164,40 @@ const DashboardKursus = () => {
                     {toolsArray(k.tools)}
                   </div>
                 </div>
+
+                {/* Action Button */}
+                <div className="grid grid-cols-2 gap-2 mt-3">
+                  <Link
+                    href={`/kursus/${k.id}/artikel/${k.first_article_id}`}
+                    className="flex gap-1 items-center justify-center py-1 rounded-md hover:bg-green-100 border-2 hover:border-green-300 hover:text-green-600 hover:fill-green-600 font-medium transition-all ease-in-out duration-150"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      className="w-4"
+                    >
+                      <path d="M0 0h24v24H0V0z" fill="none" />
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z" />
+                    </svg>
+                    <p className="hidden lg:block">Preview Kursus</p>
+                  </Link>
+                  <Link
+                    href={`kursus/${k.id}`}
+                    className="flex gap-1 items-center justify-center py-1 rounded-md hover:bg-red-100 border-2 hover:border-red-300 hover:text-red-600 hover:fill-red-600 font-medium transition-all ease-in-out duration-150"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      className="w-4"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                    <p className="hidden lg:block">Edit Kursus</p>
+                  </Link>
+                </div>
               </div>
-            </Link>
+            </div>
           ))
         ) : (
           <div className="w-full mx-auto col-span-3 text-center">
@@ -179,6 +210,6 @@ const DashboardKursus = () => {
       </section>
     </div>
   );
-}
+};
 
-export default DashboardKursus
+export default DashboardKursus;
