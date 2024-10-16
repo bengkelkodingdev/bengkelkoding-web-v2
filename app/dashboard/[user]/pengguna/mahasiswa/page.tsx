@@ -12,6 +12,7 @@ import {
   getAllStudentData,
 } from "@/app/api/manageUser";
 import Pagination from "@/app/component/general/PaginationCustom";
+import Modal from "@/app/component/general/Modal";
 
 const HomeDashboardPenggunaMahasiswa = () => {
   const access_token = Cookies.get("access_token");
@@ -24,6 +25,29 @@ const HomeDashboardPenggunaMahasiswa = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10; // Jumlah data per halaman
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudents, setSelectedStudents] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const openModal = (id: number, name: string) => {
+    setSelectedStudents({ id, name });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedStudents(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedStudents) {
+      handleDelete(selectedStudents.id, selectedStudents.name);
+      closeModal();
+    }
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -214,7 +238,7 @@ const HomeDashboardPenggunaMahasiswa = () => {
                       </Link>
                       <button
                         onClick={() =>
-                          handleDelete(listStudent.id, listStudent.name)
+                          openModal(listStudent.id, listStudent.name)
                         }
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
@@ -246,52 +270,29 @@ const HomeDashboardPenggunaMahasiswa = () => {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />
-        {/* <nav
-          className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-          aria-label="Table navigation"
-        >
-          <span className="text-sm font-normal text-neutral3 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-            Menampilkan halaman {currentPage} dari {totalPages}
-          </span>
-          <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-            <li>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-neutral3 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-neutral2"
-                disabled={currentPage === 1}
-              >
-                Sebelumnya
-              </button>
-            </li>
-            {[...Array(totalPages)].map((_, index) => (
-              <li key={index}>
-                <button
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={`flex items-center justify-center px-3 h-8 leading-tight ${
-                    currentPage === index + 1
-                      ? "text-blue-600 bg-blue-50 border-blue-300"
-                      : "text-neutral3 bg-white border-gray-300 hover:bg-gray-100 hover:text-neutral2"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
-            <li>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                className="flex items-center justify-center px-3 h-8 leading-tight text-neutral3 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-neutral2"
-                disabled={currentPage === totalPages}
-              >
-                Selanjutnya
-              </button>
-            </li>
-          </ul>
-        </nav> */}
       </div>
       <ToastContainer />
+
+      {/* Modal konfirmasi */}
+      <Modal isOpen={isModalOpen} onClose={closeModal} title="Konfirmasi Hapus">
+        <p>
+          Apakah Anda yakin ingin menghapus Mahasiswa {selectedStudents?.name}?
+        </p>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={closeModal}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
+          >
+            Batal
+          </button>
+          <button
+            onClick={confirmDelete}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Hapus
+          </button>
+        </div>
+      </Modal>
     </>
   );
 };

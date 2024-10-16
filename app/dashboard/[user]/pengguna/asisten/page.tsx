@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { AssistantRespon } from "@/app/interface/UserManagement";
 import { deleteAssistant, getAllAssistantData } from "@/app/api/manageUser";
 import Pagination from "@/app/component/general/PaginationCustom";
+import Modal from "@/app/component/general/Modal";
 
 const HomeDashboardPenggunaAsisten = () => {
   const access_token = Cookies.get("access_token");
@@ -20,6 +21,29 @@ const HomeDashboardPenggunaAsisten = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10; // Jumlah data per halaman
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAssistant, setSelectedAssistant] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const openModal = (id: number, name: string) => {
+    setSelectedAssistant({ id, name });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedAssistant(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedAssistant) {
+      handleDelete(selectedAssistant.id, selectedAssistant.name);
+      closeModal();
+    }
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -214,7 +238,7 @@ const HomeDashboardPenggunaAsisten = () => {
                       </Link>
                       <button
                         onClick={() =>
-                          handleDelete(listAsisten.id, listAsisten.name)
+                          openModal(listAsisten.id, listAsisten.name)
                         }
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
@@ -248,6 +272,25 @@ const HomeDashboardPenggunaAsisten = () => {
           setCurrentPage={setCurrentPage}
         />
       </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal} title="Konfirmasi Hapus">
+        <p>
+          Apakah Anda yakin ingin menghapus Asisten {selectedAssistant?.name}?
+        </p>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={closeModal}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
+          >
+            Batal
+          </button>
+          <button
+            onClick={confirmDelete}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Hapus
+          </button>
+        </div>
+      </Modal>
       <ToastContainer />
     </>
   );

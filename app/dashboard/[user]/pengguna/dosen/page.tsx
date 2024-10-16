@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { DosenRespon } from "@/app/interface/UserManagement";
 import { deleteLecture, getAllLectureData } from "@/app/api/manageUser";
 import Pagination from "@/app/component/general/PaginationCustom";
+import Modal from "@/app/component/general/Modal";
 
 const HomeDashboardPenggunaDosen = () => {
   const access_token = Cookies.get("access_token");
@@ -20,6 +21,29 @@ const HomeDashboardPenggunaDosen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10; // Jumlah data per halaman
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLecture, setSelectedLecture] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const openModal = (id: number, name: string) => {
+    setSelectedLecture({ id, name });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedLecture(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedLecture) {
+      handleDelete(selectedLecture.id, selectedLecture.name);
+      closeModal();
+    }
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -195,9 +219,7 @@ const HomeDashboardPenggunaDosen = () => {
                         </svg>
                       </Link>
                       <button
-                        onClick={() =>
-                          handleDelete(listDosen.id, listDosen.name)
-                        }
+                        onClick={() => openModal(listDosen.id, listDosen.name)}
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -230,6 +252,23 @@ const HomeDashboardPenggunaDosen = () => {
           setCurrentPage={setCurrentPage}
         />
       </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal} title="Konfirmasi Hapus">
+        <p>Apakah Anda yakin ingin menghapus dosen {selectedLecture?.name}?</p>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={closeModal}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
+          >
+            Batal
+          </button>
+          <button
+            onClick={confirmDelete}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Hapus
+          </button>
+        </div>
+      </Modal>
       <ToastContainer />
     </>
   );
