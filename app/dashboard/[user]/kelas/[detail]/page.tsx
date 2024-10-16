@@ -84,11 +84,31 @@ const DashboardDetailKelasPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [activeSection, setActiveSection] = useState("asisten");
-
-  // const { dayNameStart, timeStart, dateStart } = formatDateStart();
-  // const { dayNameEnd, timeEnd, dateEnd } = formatDateEnd();
-
   const [isMobile, setIsMobile] = useState(window.innerWidth < 500);
+
+  // BEGIN MODAL
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteAction, setDeleteAction] = useState<
+    (() => Promise<void>) | null
+  >(null);
+
+  const handleOpenDeleteModal = (deleteFunction: () => Promise<void>) => {
+    setDeleteAction(() => deleteFunction); // Store the delete function
+    setIsDeleteModalOpen(true); // Open the modal
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false); // Close the modal
+    setDeleteAction(null); // Clear the delete function
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteAction) {
+      await deleteAction(); // Call the stored delete function
+      setIsDeleteModalOpen(false);
+    }
+  };
+  // --------------- END MODAL ------------------
   // PASTIKAN DIHAPUS
   const today = new Date().toISOString().split("T")[0];
   // const today = "2024-10-25";
@@ -180,25 +200,6 @@ const DashboardDetailKelasPage = () => {
     }
     setIsModalOpen(true); // Buka modal
   };
-
-  // alif save asisten
-  // const handleSaveAssist = async (
-  //   savedAsisten: Assistant,
-  //   idClassroom: number
-  // ) => {
-  //   try {
-  //     //const response = await postAssistant(
-  //     //   idClassroom,
-  //     //
-  //     // );
-
-  //     handleCloseModalInfo();
-  //     fetchClassrooms();
-  //     toast.success(`Asisten berhasil ditambahkan😁`);
-  //   } catch (error) {
-  //     toast.error(`Gagal menambahkan Asisten`, error);
-  //   }
-  // };
 
   const handleSaveAssist = async (
     postedUser: Assistant,
@@ -402,7 +403,7 @@ const DashboardDetailKelasPage = () => {
 
   // ----
 
-  const handleDelete = async (idClassroom, idAssignment) => {
+  const handleDeleteAssigment = async (idClassroom, idAssignment) => {
     try {
       if (role_user === "superadmin" || role_user === "admin") {
         await deleteAssigmentAdmin(idClassroom, idAssignment);
@@ -1060,9 +1061,11 @@ const DashboardDetailKelasPage = () => {
                                   <div className="flex gap-1">
                                     <button
                                       onClick={() =>
-                                        handleDeleteAssist(
-                                          kelasItem.classroom.id,
-                                          asisten.id
+                                        handleOpenDeleteModal(() =>
+                                          handleDeleteAssist(
+                                            kelasItem.classroom.id,
+                                            asisten.id
+                                          )
                                         )
                                       }
                                       className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
@@ -1146,9 +1149,11 @@ const DashboardDetailKelasPage = () => {
                                 <div className="flex gap-1">
                                   <button
                                     onClick={() =>
-                                      handleDeleteAssist(
-                                        kelasItem.classroom.id,
-                                        asisten.id
+                                      handleOpenDeleteModal(() =>
+                                        handleDeleteAssist(
+                                          kelasItem.classroom.id,
+                                          asisten.id
+                                        )
                                       )
                                     }
                                     className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
@@ -1171,6 +1176,8 @@ const DashboardDetailKelasPage = () => {
                       </tbody>
                     </table>
                   )}
+
+                  {/* Update modal */}
                   <Modal
                     title={
                       selectedAssistant?.id
@@ -1348,7 +1355,7 @@ const DashboardDetailKelasPage = () => {
                             </Link>
                             <button
                               onClick={() =>
-                                handleDelete(
+                                handleDeleteAssigment(
                                   kelasItem.classroom.id,
                                   tugasItem.id
                                 )
@@ -1524,12 +1531,14 @@ const DashboardDetailKelasPage = () => {
                                       {/* delete */}
                                       <button
                                         onClick={() =>
-                                          handleDelete(
-                                            kelasItem.classroom.id,
-                                            tugasItem.id
+                                          handleOpenDeleteModal(() =>
+                                            handleDeleteAssigment(
+                                              kelasItem.classroom.id,
+                                              tugasItem.id
+                                            )
                                           )
                                         }
-                                        className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
+                                        className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                                       >
                                         <svg
                                           xmlns="http://www.w3.org/2000/svg"
@@ -1740,12 +1749,14 @@ const DashboardDetailKelasPage = () => {
                             {/* delete */}
                             <button
                               onClick={() =>
-                                handleDeleteInfo(
-                                  kelasItem.classroom.id,
-                                  informasi.id
+                                handleOpenDeleteModal(() =>
+                                  handleDeleteInfo(
+                                    kelasItem.classroom.id,
+                                    informasi.id
+                                  )
                                 )
                               }
-                              className="bg-red-400 p-2 rounded-md hover:bg-red-500 transition-all ease-in-out duration-150"
+                              className="bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1794,6 +1805,31 @@ const DashboardDetailKelasPage = () => {
               )}
             </section>
           </article>
+          {/* Konfirmasi delete modal */}
+          <Modal
+            isOpen={isDeleteModalOpen}
+            onClose={handleCloseDeleteModal}
+            title="Confirm Deletion"
+          >
+            <div className="p-4">
+              <p>Apakah kamu ingin menghapus?</p>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={handleCloseDeleteModal}
+                  className="px-4 py-2 bg-gray-300 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="ml-2 px-4 py-2 bg-red-600 text-white rounded-md"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </Modal>
+          {/* ---- */}
           <ToastContainer />
         </div>
       ))}
