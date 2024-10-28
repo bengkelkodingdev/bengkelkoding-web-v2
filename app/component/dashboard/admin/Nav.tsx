@@ -1,6 +1,9 @@
+import { logout } from "@/app/api/auth";
+import { getProfile } from "@/app/api/general";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
+import Cookies from "js-cookie";
 
 interface NavProps {
   open: boolean;
@@ -8,7 +11,30 @@ interface NavProps {
 }
 
 const Nav = ({ open, setOpen }: NavProps) => {
+  let user_role = Cookies.get("user_role");
+  if (user_role === "lecture") {
+    user_role = "dosen";
+  } else if (user_role === "assistant") {
+    user_role = "asisten";
+  }
+
   const [profileIsOpen, setProfileIsOpen] = useState(false);
+  const [profile, setProfile] = useState({
+    id: 0,
+    identity_code: "",
+    name: "",
+    email: "",
+    role: "",
+    image: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const responseProfile = await getProfile();
+      setProfile(responseProfile.data);
+    };
+    fetchData();
+  }, []);
 
   const [notificationIsOpen, setNotificationIsOpen] = useState(false);
 
@@ -38,6 +64,15 @@ const Nav = ({ open, setOpen }: NavProps) => {
 
   const toggleNotification = () => {
     setNotificationIsOpen(!notificationIsOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -87,7 +122,8 @@ const Nav = ({ open, setOpen }: NavProps) => {
           </div>
           <div className="flex items-center gap-3">
             <div className="relative flex items-center" ref={dropdownRef}>
-              <div>
+              {/* Icon notification */}
+              {/* <div>
                 <button
                   type="button"
                   className="p-1 rounded-full fill-neutral2 hover:bg-neutral5 focus:bg-neutral5"
@@ -105,7 +141,7 @@ const Nav = ({ open, setOpen }: NavProps) => {
                     <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.89 0 1.34-1.08.71-1.71L18 16z" />
                   </svg>
                 </button>
-              </div>
+              </div> */}
               {/* {notificationIsOpen && ( */}
               {notificationIsOpen && (
                 <div
@@ -128,13 +164,25 @@ const Nav = ({ open, setOpen }: NavProps) => {
                   onClick={toggleProfile}
                 >
                   <span className="sr-only">Open user menu</span>
-                  <Image
-                    src={"/img/user.png"}
-                    alt="User"
-                    className="w-8 h-8 rounded-full"
-                    width={50}
-                    height={50}
-                  />
+                  <div className="w-8 h-8 overflow-hidden rounded-full mx-auto">
+                    {profile.image !== null ? (
+                      <Image
+                        src={profile.image}
+                        alt="Image Profile"
+                        className="w-full scale-110"
+                        width={100}
+                        height={100}
+                      />
+                    ) : (
+                      <Image
+                        src="/img/user.png"
+                        alt="Image Profile"
+                        className="w-full"
+                        width={100}
+                        height={100}
+                      />
+                    )}
+                  </div>
                 </button>
               </div>
               {profileIsOpen && (
@@ -142,11 +190,36 @@ const Nav = ({ open, setOpen }: NavProps) => {
                   className="absolute top-8 right-0 z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow"
                   id="dropdown-profile"
                 >
-                  <div className="px-4 py-3">
-                    <p className="text-sm text-neutral1">Arif Saputra</p>
-                    <p className="text-sm font-medium text-neutral1 truncate">
-                      arif.sptrra@gmail.com
+                  <div className="px-4 py-3 text-sm text-gray-900 flex flex-col gap-1">
+                    <p className="text-xs md:text-sm font-medium">
+                      {profile.name}
                     </p>
+                    <p className="text-xs md:text-sm">{profile.email}</p>
+                    <p className="text-xs md:text-sm">
+                      {profile.identity_code}
+                    </p>
+                  </div>
+                  <ul
+                    className="py-2 text-sm text-gray-700"
+                    aria-labelledby="avatarButton"
+                  >
+                    <li>
+                      <a
+                        href={`/dashboard/${user_role}/profile`}
+                        className="text-xs md:text-sm block px-4 py-2 hover:bg-gray-100"
+                      >
+                        Pengaturan
+                      </a>
+                    </li>
+                  </ul>
+                  <div className="py-1">
+                    <a
+                      href="#"
+                      className="text-xs md:text-sm block px-4 py-2 text-red-700 hover:bg-red-100"
+                      onClick={handleLogout}
+                    >
+                      Keluar
+                    </a>
                   </div>
                 </div>
               )}

@@ -33,10 +33,16 @@ const ContentPath = ({ selectedMenu }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [classroomId, setClassroomId] = useState(0);
+  const [classroomTitle, setClassroomTitle] = useState("");
+  const [confirmJoinClass, setConfirmJoinClass] = useState("");
   const [token, setToken] = useState("");
-  const handleOpenModalAktivasiToken = (id_classroom: number) => {
+  const handleOpenModalAktivasiToken = (
+    id_classroom: number,
+    title_classroom: string
+  ) => {
     setIsModalOpen(true);
     setClassroomId(id_classroom);
+    setClassroomTitle(title_classroom);
   };
   const handleCloseModalAktivasiToken = () => {
     setIsModalOpen(false);
@@ -405,17 +411,23 @@ const ContentPath = ({ selectedMenu }) => {
                       </span>
                     </div>
                     <div className="flex justify-center mt-4">
-                      {login ? (
-                        kelasPathItem.student_count >= kelasPathItem.quota ? (
-                          <Button text="Penuh" theme="tertiary" disabled className="hover:bg-white" />
-                        ) : (
-                          <Button
-                            text="Masuk"
-                            onClick={() =>
-                              handleOpenModalAktivasiToken(kelasPathItem.id)
-                            }
-                          />
-                        )
+                      {kelasPathItem.student_count >= kelasPathItem.quota ? (
+                        <Button
+                          text="Penuh"
+                          theme="tertiary"
+                          className="hover:bg-white"
+                          disabled
+                        />
+                      ) : login ? (
+                        <Button
+                          text="Masuk"
+                          onClick={() =>
+                            handleOpenModalAktivasiToken(
+                              kelasPathItem.id,
+                              kelasPathItem.name
+                            )
+                          }
+                        />
                       ) : (
                         <Button
                           text="Masuk"
@@ -491,17 +503,23 @@ const ContentPath = ({ selectedMenu }) => {
                         {kelasPathItem.student_count}/{kelasPathItem.quota}
                       </td>
                       <td className="py-4 flex justify-center">
-                        {login ? (
-                          kelasPathItem.student_count >= kelasPathItem.quota ? (
-                            <Button text="Penuh" theme="tertiary" disabled className="hover:bg-white" />
-                          ) : (
-                            <Button
-                              text="Masuk"
-                              onClick={() =>
-                                handleOpenModalAktivasiToken(kelasPathItem.id)
-                              }
-                            />
-                          )
+                        {kelasPathItem.student_count >= kelasPathItem.quota ? (
+                          <Button
+                            text="Penuh"
+                            theme="tertiary"
+                            className="hover:bg-white"
+                            disabled
+                          />
+                        ) : login ? (
+                          <Button
+                            text="Masuk"
+                            onClick={() =>
+                              handleOpenModalAktivasiToken(
+                                kelasPathItem.id,
+                                kelasPathItem.name
+                              )
+                            }
+                          />
                         ) : (
                           <Button
                             text="Masuk"
@@ -531,11 +549,32 @@ const ContentPath = ({ selectedMenu }) => {
             required
             onChange={(e) => setToken(e.target.value)}
           />
-          <Button
-            text="Aktifkan Token"
-            className="w-full"
-            onClick={handlePostActivateToken}
+          <p className="mb-1 text-sm">
+            Konfirmasi masuk kelas dengan menginputkan judul kelas berikut:{" "}
+            <b>{classroomTitle}</b>
+          </p>
+          <Input
+            label=""
+            type="text"
+            name="confirmJoinClass"
+            placeholder="Masukkan Judul Kelas"
+            required
+            onChange={(e) => setConfirmJoinClass(e.target.value)}
           />
+          {classroomTitle !== confirmJoinClass ? (
+            <Button
+              text="Aktifkan Token"
+              className="w-full hover:bg-white"
+              theme="tertiary"
+              disabled
+            />
+          ) : (
+            <Button
+              text="Aktifkan Token"
+              className="w-full"
+              onClick={handlePostActivateToken}
+            />
+          )}
         </div>
       </Modal>
       <ToastContainer />
