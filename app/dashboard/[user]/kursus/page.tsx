@@ -1,5 +1,5 @@
 "use client";
-import { getAdminListCourses } from "@/app/api/admin/course";
+import { deleteAdminCourse, getAdminListCourses } from "@/app/api/admin/course";
 import Button from "@/app/component/general/Button";
 import Modal from "@/app/component/general/Modal";
 import Image from "next/image";
@@ -46,19 +46,20 @@ const DashboardKursus = () => {
     ));
   };
 
-  useEffect(() => {
+  const fetchData = async () => {
     try {
-      const fetchData = async () => {
-        // Response ListCourses
-        const responseListCourses = await getAdminListCourses();
-        setListCourses(responseListCourses.data);
-      };
-      fetchData();
+      // Response ListCourses
+      const responseListCourses = await getAdminListCourses();
+      setListCourses(responseListCourses.data);
       setIsLoading(false);
     } catch (err) {
       setError("Failed to load data. Please try again.");
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const [courseId, setCourseId] = useState(0);
@@ -78,11 +79,13 @@ const DashboardKursus = () => {
 
   const handleDeleteKursus = async () => {
     try {
-      // const response = await postAktivasiToken(classroomId, token);
+      const response = await deleteAdminCourse(courseId);
 
       // Success handling
       toast.success("Anda Berhasil Mengaktifkan Token 😁");
       setIsModalOpen(false);
+
+      await fetchData();
     } catch (error) {
       // Log error and show toast message
       console.error("Failed to activate token", error);

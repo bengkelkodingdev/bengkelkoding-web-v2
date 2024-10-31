@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { createPostRequest, createRequest } from "../request";
+import { createPostRequest, createRequest, deleteRequest } from "../request";
 
 // List Courses
 export const getAdminListCourses = async (): Promise<AxiosResponse> =>
@@ -45,3 +45,9 @@ export const postAdminCourses = async (
     level: level,
     category: category,
   });
+
+// Delte Course
+export const deleteAdminCourse = async (
+  course_id: number
+): Promise<AxiosResponse> =>
+  deleteRequest(`/api/v1/admin/courses/${course_id}`);

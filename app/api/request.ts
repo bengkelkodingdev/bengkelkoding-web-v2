@@ -72,12 +72,9 @@ export const createPutRequest = async (
 };
 
 // Delete
-export const deleteRequest = async (
-  url: string,
-
-  access_token: string
-): Promise<AxiosResponse> => {
+export const deleteRequest = async (url: string): Promise<AxiosResponse> => {
   try {
+    const access_token = Cookies.get("access_token");
     const config = {
       headers: { Authorization: `Bearer ${access_token}` },
     };
