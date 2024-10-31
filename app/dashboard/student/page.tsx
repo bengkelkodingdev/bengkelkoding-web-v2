@@ -6,6 +6,7 @@ import {
   getStudentStatistics,
 } from "@/app/api/student/dashboard";
 import { formatDate } from "@/app/lib/formatDate";
+import { timeNow } from "@/app/lib/timeNow";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -122,7 +123,7 @@ const StudentPage = () => {
     }
   };
 
-  const today = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const today = timeNow();
 
   if (isLoading) {
     return (

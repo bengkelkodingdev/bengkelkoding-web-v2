@@ -136,6 +136,7 @@ export interface Courses {
   image: string;
   author: string;
   description: string;
+  first_article_id: number;
 }
 
 export interface Meta {

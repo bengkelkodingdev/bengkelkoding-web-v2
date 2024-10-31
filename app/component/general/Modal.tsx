@@ -1,4 +1,5 @@
-import React, { Fragment, ReactNode } from "react";
+"use client";
+import React, { Fragment, ReactNode, useEffect } from "react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,13 +9,38 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
+  // Close the modal when the Escape key is pressed
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  // Prevent modal from closing when clicking inside it
+  const handleModalClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <Fragment>
       {isOpen ? (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex h-full items-center justify-center p-2">
-            <div className="bg-white w-96 rounded-lg shadow-lg p-6 ">
-              <div className="flex items-center justify-between md:p-5 border-b rounded-t ">
+        <div
+          className="fixed z-50 inset-0 overflow-y-auto bg-black bg-opacity-10 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <div
+            className="flex h-full items-center justify-center p-2"
+            onClick={handleModalClick}
+          >
+            <div className="bg-white w-96 rounded-lg shadow-lg p-6 z-[60]">
+              <div className="flex items-center justify-between pb-2 md:p-5 border-b rounded-t ">
                 {/* judul */}
                 <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
                 {/* close */}

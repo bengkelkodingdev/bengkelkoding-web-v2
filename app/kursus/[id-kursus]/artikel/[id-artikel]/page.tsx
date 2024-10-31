@@ -3,9 +3,21 @@ import { getDetailArticles, getListArticles } from "@/app/api/student/course";
 import { marked } from "marked";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import dynamic from "next/dynamic";
+import {
+  getAdminDetailArticles,
+  getAdminListArticles,
+} from "@/app/api/admin/course";
+import {
+  getLectureDetailArticles,
+  getLectureListArticles,
+} from "@/app/api/dosen/courses";
+import {
+  getAssistantDetailArticles,
+  getAssistantListArticles,
+} from "@/app/api/assistant/courses";
 
 const MarkdownReader = dynamic(
   () => import("@/app/component/general/MarkdownReader"),
@@ -13,6 +25,7 @@ const MarkdownReader = dynamic(
 );
 
 const ArticlesPage = () => {
+  const user_role = Cookies.get("user_role");
   const current_classroom_id = Cookies.get("current_classroom_id");
   const url = usePathname();
   const pathParts = url.split("/");
@@ -56,6 +69,23 @@ const ArticlesPage = () => {
   });
 
   const [isNavVisible, setIsNavVisible] = useState(true);
+  useEffect(() => {
+    // Function to handle screen size check
+    const handleResize = () => {
+      const isSmallScreen = window.innerWidth < 768; // 768px is typical for tablets
+      setIsNavVisible(!isSmallScreen); // Set to false for phones and tablets, true for larger screens
+    };
+
+    // Set visibility on initial load
+    handleResize();
+
+    // Add event listener to handle screen resizing
+    window.addEventListener("resize", handleResize);
+
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [expandedSections, setExpandedSections] = useState(new Set());
 
   useEffect(() => {
@@ -95,18 +125,50 @@ const ArticlesPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Response List Articles
-      const responseListArticles = await getListArticles(idKursus);
-      setListArticles(responseListArticles.data);
-      // Response Detail Article
-      const responseDetailArticle = await getDetailArticles(
-        idKursus,
-        idArtikel
-      );
-      setDetailArticle(responseDetailArticle.data);
+      if (user_role === "admin" || user_role === "superadmin") {
+        // Response List Articles
+        const responseListArticles = await getAdminListArticles(idKursus);
+        setListArticles(responseListArticles.data);
+        // Response Detail Article
+        const responseDetailArticle = await getAdminDetailArticles(
+          idKursus,
+          idArtikel
+        );
+        setDetailArticle(responseDetailArticle.data);
+      } else if (user_role === "assistant") {
+        // Response List Articles
+        const responseListArticles = await getAssistantListArticles(idKursus);
+        setListArticles(responseListArticles.data);
+        // Response Detail Article
+        const responseDetailArticle = await getAssistantDetailArticles(
+          idKursus,
+          idArtikel
+        );
+        setDetailArticle(responseDetailArticle.data);
+      } else if (user_role === "lecture") {
+        // Response List Articles
+        const responseListArticles = await getLectureListArticles(idKursus);
+        setListArticles(responseListArticles.data);
+        // Response Detail Article
+        const responseDetailArticle = await getLectureDetailArticles(
+          idKursus,
+          idArtikel
+        );
+        setDetailArticle(responseDetailArticle.data);
+      } else {
+        // Response List Articles
+        const responseListArticles = await getListArticles(idKursus);
+        setListArticles(responseListArticles.data);
+        // Response Detail Article
+        const responseDetailArticle = await getDetailArticles(
+          idKursus,
+          idArtikel
+        );
+        setDetailArticle(responseDetailArticle.data);
+      }
     };
     fetchData();
-  }, [idKursus, idArtikel]);
+  }, [user_role, idKursus, idArtikel]);
 
   // const text = marked(detailArticle.content);
   const markdownToHtml = marked(detailArticle.content);
@@ -138,14 +200,20 @@ const ArticlesPage = () => {
     );
   };
 
+  const rolePaths = {
+    student: `/dashboard/student/classroom/${current_classroom_id}`,
+    lecture: `/dashboard/dosen/kelas/${current_classroom_id}`,
+    assistant: `/dashboard/asisten/kelas/${current_classroom_id}`,
+  };
+
   return (
     <div
       className="fixed scroll-smooth min-h-screen max-h-screen w-screen flex flex-col"
       data-color-mode="light"
     >
-      <header className="flex-shrink-0 px-10 py-4 border-b flex justify-between items-center">
+      <header className="flex-shrink-0 px-4 md:px-10 py-4 border-b flex justify-between items-center">
         <Link
-          href={`/dashboard/student/classroom/${current_classroom_id}`}
+          href={rolePaths[user_role] || `/dashboard/${user_role}/kursus`}
           className="w-max p-2 hover:bg-neutral5 text-black flex gap-2 rounded-sm items-center font-medium"
         >
           <div>
@@ -161,7 +229,7 @@ const ArticlesPage = () => {
           </div>
           <p>{listArticles.title}</p>
         </Link>
-        <div className="block lg:hidden">
+        <div className="block lg:hidden" onClick={toggleNavVisibility}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"
@@ -190,17 +258,19 @@ const ArticlesPage = () => {
               </div>
             </div>
             {/* Progress Kursus */}
-            <div className="border-b p-4 bg-neutral5">
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div
-                  className="bg-primary2 h-1.5 rounded-full"
-                  style={{ width: `${listArticles.course_progress}%` }}
-                ></div>
+            {user_role === "student" && (
+              <div className="border-b p-4 bg-neutral5">
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div
+                    className="bg-primary2 h-1.5 rounded-full"
+                    style={{ width: `${listArticles.course_progress}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs mt-1">
+                  {listArticles.course_progress}% Selesai
+                </p>
               </div>
-              <p className="text-xs mt-1">
-                {listArticles.course_progress}% Selesai
-              </p>
-            </div>
+            )}
             {/* List Artikel */}
             <div className="flex-1 overflow-y-auto px-4 py-2">
               {listArticles.sections.map((section) => (
@@ -246,22 +316,29 @@ const ArticlesPage = () => {
                               : "text-neutral2"
                           }`}
                         >
-                          <div>
-                            {article.id == idArtikel &&
-                            article.completed == false ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="16px"
-                                viewBox="0 -960 960 960"
-                                width="16px"
-                                className="w-4 h-4 fill-green-600"
-                              >
-                                <path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q17 0 28.5 11.5T520-840q0 17-11.5 28.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-17 11.5-28.5T840-520q17 0 28.5 11.5T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Z" />
-                              </svg>
-                            ) : (
-                              renderIcon(article.completed)
-                            )}
-                          </div>
+                          {user_role === "admin" ||
+                          user_role === "superadmin" ||
+                          user_role === "assistant" ||
+                          user_role === "lecture" ? (
+                            <div>{renderIcon(!article.completed)}</div>
+                          ) : (
+                            <div>
+                              {article.id == idArtikel &&
+                              article.completed == false ? (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  height="16px"
+                                  viewBox="0 -960 960 960"
+                                  width="16px"
+                                  className="w-4 h-4 fill-green-600"
+                                >
+                                  <path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q17 0 28.5 11.5T520-840q0 17-11.5 28.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-17 11.5-28.5T840-520q17 0 28.5 11.5T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Z" />
+                                </svg>
+                              ) : (
+                                renderIcon(article.completed)
+                              )}
+                            </div>
+                          )}
                           <p>{article.title}</p>
                         </Link>
                       ))}
@@ -292,12 +369,12 @@ const ArticlesPage = () => {
             className="prose prose-slate mx-auto"
           /> */}
           {/* <MarkdownEditor.Markdown source={detailArticle.content} className="prose prose-slate mx-auto" /> */}
-          <div className="w-[50%] p-4 prose prose-slate mx-auto">
+          <div className="lg:w-[50%] p-4 prose prose-slate mx-auto">
             <MarkdownReader content={markdownToHtml.toString()} />
           </div>
         </article>
       </main>
-      <footer className="flex-shrink-0 grid grid-cols-3 px-10 py-4 border-t">
+      <footer className="flex-shrink-0 grid grid-cols-3 px-4 md:px-10 py-4 border-t">
         <div>
           {detailArticle.prev !== null && (
             <Link

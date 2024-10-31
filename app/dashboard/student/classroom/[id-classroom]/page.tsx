@@ -13,6 +13,7 @@ import ReactApexChart from "react-apexcharts";
 import Cookies from "js-cookie";
 import Button from "@/app/component/general/Button";
 import splitTextByURL from "@/app/lib/validUrl";
+import { timeNow } from "@/app/lib/timeNow";
 
 const StudentClassroomPage = () => {
   const url = usePathname();
@@ -241,7 +242,7 @@ const StudentClassroomPage = () => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const today = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const today = timeNow();
 
   const dataBreadcrumb = [
     { text: "Dashboard", href: "/dashboard/student" },

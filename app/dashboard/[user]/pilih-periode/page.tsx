@@ -5,6 +5,8 @@ import {
   postSetActivePeriod,
 } from "@/app/api/superadmin/pilihPeriode";
 import Button from "@/app/component/general/Button";
+import Input from "@/app/component/general/Input";
+import Modal from "@/app/component/general/Modal";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -88,67 +90,112 @@ const HomeDashboardPilihPeriode = () => {
     }
   };
 
+  // Modal period
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  const [confirmChangePeriod, setConfirmChangePeriod] = useState("");
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <>
-      <div className="mb-4 border border-neutral4 rounded-xl p-6">
-        <h3 className="text-xl mb-1">Periode Terpilih Saat Ini</h3>
-        <p className="text-neutral2 text-base mb-1">
-          Periode yang terpilih saat ini, merupakan periode yang berjalan di
-          seluruh sistem Aplikasi Bengkel Koding.
-        </p>
-        <p className="text-neutral2 text-base mb-1">
-          Periode ini mempengaruhi seluruh data yang ada di Aplikasi Bengkel
-          Koding.
-        </p>
-        <p className="text-primary1 text-lg p-4 font-semibold bg-primary5 w-max rounded-xl">
-          Period {activePeriod.year} {activePeriod.semester}
-        </p>
+      <div className="max-w-screen-xl">
+        <div className="mb-4 border border-neutral4 rounded-xl p-6">
+          <h3 className="text-xl mb-1">Periode Terpilih Saat Ini</h3>
+          <p className="text-neutral2 text-base mb-1">
+            Periode yang terpilih saat ini, merupakan periode yang berjalan di
+            seluruh sistem Aplikasi Bengkel Koding.
+          </p>
+          <p className="text-neutral2 text-base mb-1">
+            Periode ini mempengaruhi seluruh data yang ada di Aplikasi Bengkel
+            Koding.
+          </p>
+          <p className="text-primary1 text-lg p-4 font-semibold bg-primary5 w-max rounded-xl">
+            Period {activePeriod.year} {activePeriod.semester}
+          </p>
+        </div>
+
+        <div className="border border-neutral4 rounded-xl p-6">
+          <h3 className="text-xl mb-1">Ganti Periode</h3>
+          <p className="text-neutral2 text-base mb-1">
+            Pilih periode yang ingin anda terapkan di Aplikasi Bengkel Koding.
+          </p>
+          <form className="flex gap-2 items-center">
+            <p className="text-neutral2 text-base mb-1">Period</p>
+
+            {/* Year Dropdown */}
+            <select
+              name="year-period"
+              id="year-period"
+              className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
+              value={selectedYear}
+              onChange={handleYearChange}
+            >
+              {years.map((year, index) => (
+                <option key={index} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+
+            {/* Semester Dropdown */}
+            <select
+              name="semester-period"
+              id="semester-period"
+              className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
+              value={selectedSemester}
+              onChange={handleSemesterChange}
+            >
+              <option value="odd">Odd</option>
+              <option value="even">Even</option>
+            </select>
+
+            <Button text="Terapkan" type="button" onClick={handleOpenModal} />
+          </form>
+        </div>
       </div>
-
-      <div className="border border-neutral4 rounded-xl p-6">
-        <h3 className="text-xl mb-1">Ganti Periode</h3>
-        <p className="text-neutral2 text-base mb-1">
-          Pilih periode yang ingin anda terapkan di Aplikasi Bengkel Koding.
-        </p>
-        <form
-          className="flex gap-2 items-center"
-          onSubmit={handlePostActivePeriod}
-        >
-          <p className="text-neutral2 text-base mb-1">Period</p>
-
-          {/* Year Dropdown */}
-          <select
-            name="year-period"
-            id="year-period"
-            className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
-            value={selectedYear}
-            onChange={handleYearChange}
-          >
-            {years.map((year, index) => (
-              <option key={index} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-
-          {/* Semester Dropdown */}
-          <select
-            name="semester-period"
-            id="semester-period"
-            className="p-2.5 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
-            value={selectedSemester}
-            onChange={handleSemesterChange}
-          >
-            <option value="odd">Odd</option>
-            <option value="even">Even</option>
-          </select>
-
-          <Button text="Terapkan" type="submit" />
-        </form>
-      </div>
+      <Modal
+        title="Aktivasi Token"
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      >
+        <div className="mt-4">
+          <p className="mb-4 text-sm">
+            Konfirmasi ganti periode dengan menginputkan teks berikut:{" "}
+            <b>
+              {selectedYear} {selectedSemester}
+            </b>
+          </p>
+          <Input
+            label=""
+            type="text"
+            name="confirmChangePeriod"
+            placeholder="Masukkan Teks Periode"
+            required
+            onChange={(e) => setConfirmChangePeriod(e.target.value)}
+          />
+          {selectedYear + " " + selectedSemester !== confirmChangePeriod ? (
+            <Button
+              text="Ganti Periode"
+              className="w-full hover:bg-white"
+              theme="tertiary"
+              disabled
+            />
+          ) : (
+            <Button
+              text="Ganti Periode"
+              className="w-full"
+              onClick={() => handlePostActivePeriod}
+            />
+          )}
+        </div>
+      </Modal>
       <ToastContainer />
     </>
   );
