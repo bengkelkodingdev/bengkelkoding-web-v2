@@ -62,3 +62,38 @@ export const getAdminCourse = async (
   course_id: string
 ): Promise<AxiosResponse> =>
   createRequest(`/api/v1/admin/courses/${course_id}`);
+
+// List Section Courses
+export const getAdminSectionCourse = async (
+  course_id: string
+): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/admin/courses/${course_id}/sections`);
+
+// Create Section Course
+export const postAdminSectionCourses = async (
+  course_id: string,
+  name: string
+): Promise<AxiosResponse> =>
+  createPostRequest(`/api/v1/admin/courses/${course_id}/sections`, {
+    name: name,
+  });
+
+// Update Section Course
+export const patchAdminSectionCourses = async (
+  course_id: string,
+  section_id: string,
+  name: string
+): Promise<AxiosResponse> =>
+  createPatchRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}`,
+    {
+      name: name,
+    }
+  );
+
+// Delete Section Course
+export const deleteAdminSectionCourses = async (
+  course_id: string,
+  section_id: string
+): Promise<AxiosResponse> =>
+  deleteRequest(`/api/v1/admin/courses/${course_id}/sections/${section_id}`);
