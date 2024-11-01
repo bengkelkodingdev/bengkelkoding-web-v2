@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import {
   createPatchRequest,
   createPostRequest,
+  createPutRequest,
   createRequest,
   deleteRequest,
 } from "../request";
@@ -97,3 +98,63 @@ export const deleteAdminSectionCourses = async (
   section_id: string
 ): Promise<AxiosResponse> =>
   deleteRequest(`/api/v1/admin/courses/${course_id}/sections/${section_id}`);
+
+// List Article Courses
+export const getAdminArticleCourse = async (
+  course_id: string,
+  section_id: string
+): Promise<AxiosResponse> =>
+  createRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles`
+  );
+
+// Detail Article Courses
+export const getAdminDetailArticleCourse = async (
+  course_id: string,
+  section_id: string,
+  article_id: string
+): Promise<AxiosResponse> =>
+  createRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles/${article_id}`
+  );
+
+// Create Article Course
+export const postAdminArticleCourses = async (
+  course_id: string,
+  section_id: string,
+  title: string,
+  content: string
+): Promise<AxiosResponse> =>
+  createPostRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles`,
+    {
+      title: title,
+      content: content,
+    }
+  );
+
+// Update Article Course
+export const putAdminArticleCourses = async (
+  course_id: string,
+  section_id: string,
+  article_id: string,
+  title: string,
+  content: string
+): Promise<AxiosResponse> =>
+  createPutRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles/${article_id}`,
+    {
+      title: title,
+      content: content,
+    }
+  );
+
+// Delete Article Course
+export const deleteAdminArticleCourses = async (
+  course_id: string,
+  section_id: string,
+  article_id: string
+): Promise<AxiosResponse> =>
+  deleteRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles/${article_id}`
+  );
