@@ -1,46 +1,41 @@
 "use client";
+
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import Cookies from "js-cookie";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
-const GoogleCallback = () => {
-  const router = useRouter();
+const CallbackPage = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
-    const handleGoogleCallback = async () => {
-      // Get query params from the callback URL
-      const token = searchParams.get("token");
-      const success = searchParams.get("success") === "true";
-      const errorMessage = searchParams.get("error");
+    const token = searchParams.get("token");
+    const success = searchParams.get("success");
 
-      if (!success) {
-        toast.error(errorMessage || "Gagal Masuk!");
-        router.push("/masuk"); // Redirect to masuk if unsuccessful
-      } else if (token) {
-        // Save token to cookies
-        Cookies.set("access_token", token);
-        Cookies.set("user_role", "student");
-
-        toast.success("Berhasil Masuk!");
-
-        router.push("/dashboard/student");
-      }
-    };
-
-    handleGoogleCallback();
+    if (success === "true" && token) {
+      // Save the token in cookies
+      Cookies.set("access_token", token);
+      Cookies.set("user_role", "student");
+      // Redirect to dashboard or other page
+      router.push("/dashboard/student");
+    } else {
+      // Handle login failure or missing token
+      router.push("/masuk?error=true?message=akun_tidak_terdaftar");
+    }
   }, [searchParams, router]);
 
   return (
-    <>
-      <div className="flex items-center justify-center h-screen">
-        <p>Processing login...</p>
-      </div>
-      <ToastContainer />
-    </>
+    <div className="flex items-center justify-center h-screen">
+      <p>Redirecting...</p>
+    </div>
   );
 };
 
-export default GoogleCallback;
+export default function PageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CallbackPage />
+    </Suspense>
+  );
+}
