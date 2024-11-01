@@ -1,5 +1,10 @@
 import { AxiosResponse } from "axios";
-import { createPostRequest, createRequest, deleteRequest } from "../request";
+import {
+  createPatchRequest,
+  createPostRequest,
+  createRequest,
+  deleteRequest,
+} from "../request";
 
 // List Courses
 export const getAdminListCourses = async (): Promise<AxiosResponse> =>
@@ -46,8 +51,14 @@ export const postAdminCourses = async (
     category: category,
   });
 
-// Delte Course
+// Delete Course
 export const deleteAdminCourse = async (
   course_id: number
 ): Promise<AxiosResponse> =>
   deleteRequest(`/api/v1/admin/courses/${course_id}`);
+
+// Detail Courses
+export const getAdminCourse = async (
+  course_id: string
+): Promise<AxiosResponse> =>
+  createRequest(`/api/v1/admin/courses/${course_id}`);
