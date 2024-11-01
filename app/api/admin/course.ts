@@ -52,6 +52,35 @@ export const postAdminCourses = async (
     category: category,
   });
 
+// Update Courses
+export const putAdminCourses = async (
+  course_id: string,
+  image: string,
+  background_image: string,
+  title: string,
+  author: string,
+  url_trailer: string,
+  description: string,
+  brief_description: string,
+  tools: string,
+  teaching_method: string,
+  level: string,
+  category: string
+): Promise<AxiosResponse> =>
+  createPutRequest(`/api/v1/admin/courses/${course_id}`, {
+    image: image,
+    background_image: background_image,
+    title: title,
+    author: author,
+    url_trailer: url_trailer,
+    description: description,
+    brief_description: brief_description,
+    tools: tools,
+    teaching_method: teaching_method,
+    level: level,
+    category: category,
+  });
+
 // Delete Course
 export const deleteAdminCourse = async (
   course_id: number
