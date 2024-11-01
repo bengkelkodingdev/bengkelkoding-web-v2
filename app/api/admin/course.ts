@@ -128,6 +128,23 @@ export const deleteAdminSectionCourses = async (
 ): Promise<AxiosResponse> =>
   deleteRequest(`/api/v1/admin/courses/${course_id}/sections/${section_id}`);
 
+  // Update Sort Section Course
+interface SortSection {
+  id: number;
+  sort_order: number;
+}
+export const putAdminSortSectionCourses = async (
+  course_id: string,
+  section_id: string,
+  sort_section: SortSection
+): Promise<AxiosResponse> =>
+  createPutRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}`,
+    {
+      section: sort_section,
+    }
+  );
+
 // List Article Courses
 export const getAdminArticleCourse = async (
   course_id: string,

@@ -20,12 +20,10 @@ export const postInformationAdmin = async (
 
 export const deleteInformationAdmin = async (
   idClassroom: number,
-  idInfo: number,
-  access_token: string
+  idInfo: number
 ): Promise<AxiosResponse> =>
   deleteRequest(
-    `/api/v1/admin/classrooms/${idClassroom}/informations/${idInfo}`,
-    access_token
+    `/api/v1/admin/classrooms/${idClassroom}/informations/${idInfo}`
   );
 
 export const updateInformationAdmin = async (
@@ -58,12 +56,10 @@ export const postInformationLecture = async (
 
 export const deleteInformationLecture = async (
   idClassroom: number,
-  idInfo: number,
-  access_token: string
+  idInfo: number
 ): Promise<AxiosResponse> =>
   deleteRequest(
-    `/api/v1/lecture/classrooms/${idClassroom}/informations/${idInfo}`,
-    access_token
+    `/api/v1/lecture/classrooms/${idClassroom}/informations/${idInfo}`
   );
 
 export const updateInformationLecture = async (
@@ -99,12 +95,10 @@ export const postInformationAssistant = async (
 
 export const deleteInformationAssistant = async (
   idClassroom: number,
-  idInfo: number,
-  access_token: string
+  idInfo: number
 ): Promise<AxiosResponse> =>
   deleteRequest(
-    `/api/v1/assistant/classrooms/${idClassroom}/informations/${idInfo}`,
-    access_token
+    `/api/v1/assistant/classrooms/${idClassroom}/informations/${idInfo}`
   );
 
 export const updateInformationAssistant = async (
