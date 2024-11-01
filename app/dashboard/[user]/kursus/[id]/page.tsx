@@ -133,6 +133,12 @@ const DetailKursusPage = () => {
             >
               List Section
             </Link>
+            <Link
+              href={`${course.id}/edit`}
+              className="block bg-neutral6 text-black hover:bg-neutral5 focus:ring-neutral5 border px-5 py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
+            >
+              Edit Kursus
+            </Link>
           </nav>
         </div>
       </section>
