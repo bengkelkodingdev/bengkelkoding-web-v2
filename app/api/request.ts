@@ -51,7 +51,7 @@ export const createPostRequest = async (
   }
 };
 
-// Update
+// Update - put
 export const createPutRequest = async (
   url: string,
   data: any,
@@ -61,6 +61,26 @@ export const createPutRequest = async (
     const access_token = Cookies.get("access_token");
     const config = { headers: { Authorization: `Bearer ${access_token}` } };
     const response: AxiosResponse = await Axios.put(
+      `${API_URL}${url}`,
+      data,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(`API POST Request for ${url} failed: ${error.message}`);
+  }
+};
+
+// Update - patch
+export const createPatchRequest = async (
+  url: string,
+  data: any,
+  access_token?: string
+): Promise<AxiosResponse> => {
+  try {
+    const access_token = Cookies.get("access_token");
+    const config = { headers: { Authorization: `Bearer ${access_token}` } };
+    const response: AxiosResponse = await Axios.patch(
       `${API_URL}${url}`,
       data,
       config
