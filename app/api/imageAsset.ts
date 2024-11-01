@@ -82,9 +82,5 @@ export const updateImage = async (data: FormData, imageId: string) => {
 };
 
 // Delete
-
-export const deleteImage = async (
-  idImage: number,
-  access_token: string
-): Promise<AxiosResponse> =>
-  deleteRequest(`/api/v1/admin/image-assets/${idImage}`, access_token);
+export const deleteImage = async (idImage: number): Promise<AxiosResponse> =>
+  deleteRequest(`/api/v1/admin/image-assets/${idImage}`);

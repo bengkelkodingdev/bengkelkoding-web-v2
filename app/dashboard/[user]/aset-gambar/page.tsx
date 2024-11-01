@@ -86,7 +86,7 @@ const HomeDashboardAsetGambarPage = () => {
 
   const handleDelete = async (idImage) => {
     try {
-      await deleteImage(idImage, access_token);
+      await deleteImage(idImage);
       toast.success(`Berhasil menghapus image 😁`);
       fetchData();
     } catch (error) {
