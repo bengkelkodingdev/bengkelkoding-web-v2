@@ -255,7 +255,7 @@ const DashboardKursus = () => {
                     </span>
                   </Link>
                   <Link
-                    href={`kursus/${k.id}/detail`}
+                    href={`kursus/${k.id}`}
                     className="relative group flex gap-1 items-center justify-center py-1 rounded-md hover:bg-blue-100 border-2 hover:border-blue-300 hover:text-blue-600 hover:fill-blue-600 font-medium transition-all ease-in-out duration-150"
                   >
                     <svg
