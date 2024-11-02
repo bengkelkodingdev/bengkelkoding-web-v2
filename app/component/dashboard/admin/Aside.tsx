@@ -114,8 +114,8 @@ const navigations = {
           <path d="M4 21.5h6c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1z" />
         </svg>
       ),
-      title: "Kategori Kelas",
-      link: "/dashboard/superadmin/kategori-kelas",
+      title: "Learning Path",
+      link: "/dashboard/superadmin/learning-path",
     },
     // kursus
     {
@@ -337,8 +337,8 @@ const navigations = {
           <path d="M4 21.5h6c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1z" />
         </svg>
       ),
-      title: "Kategori Kelas",
-      link: "/dashboard/admin/kategori-kelas",
+      title: "Learning Path",
+      link: "/dashboard/superadmin/learning-path",
     },
     {
       icon: (
