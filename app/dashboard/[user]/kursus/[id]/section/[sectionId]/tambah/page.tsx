@@ -1,7 +1,5 @@
 "use client";
-import {
-  postAdminArticleCourses,
-} from "@/app/api/admin/course";
+import { postAdminArticleCourses } from "@/app/api/admin/course";
 import Button from "@/app/component/general/Button";
 import Input from "@/app/component/general/Input";
 import MarkdownReader from "@/app/component/general/MarkdownReader";
@@ -45,7 +43,7 @@ const TambahArticleKursusPage = () => {
     <>
       <div className="lg:max-w-screen-xl">
         <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-          <p className="font-semibold text-lg">Add Article</p>
+          <p className="font-semibold text-lg">Tambah Article</p>
         </div>
 
         {/* Table */}
@@ -65,9 +63,7 @@ const TambahArticleKursusPage = () => {
             </label>
             <div className="flex mt-1">
               <MarkdownEditor
-                onChange={(value) =>
-                  setContentArticle(value)
-                }
+                onChange={(value) => setContentArticle(value)}
                 className="w-[50%]"
               />
               <div className="lg:w-[50%] p-4 prose prose-slate mx-auto border">
@@ -76,7 +72,9 @@ const TambahArticleKursusPage = () => {
             </div>
           </div>
           {/* Konten */}
-          <Button text="Tambah Artikel" type="submit" />
+          <div className="text-end">
+            <Button text="Tambah Artikel" type="submit" />
+          </div>
         </form>
       </div>
 

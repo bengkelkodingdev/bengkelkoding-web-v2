@@ -12,13 +12,24 @@ const CallbackPage = () => {
   useEffect(() => {
     const token = searchParams.get("token");
     const success = searchParams.get("success");
+    const user_role = searchParams.get("user_role");
+
+    // for user role path
+    const roleToPath = {
+      student: "/dashboard/student",
+      assistant: "/dashboard/asisten",
+      lecture: "/dashboard/dosen",
+      admin: "/dashboard/admin",
+      superadmin: "/dashboard/superadmin",
+    };
 
     if (success === "true" && token) {
       // Save the token in cookies
       Cookies.set("access_token", token);
-      Cookies.set("user_role", "student");
+      Cookies.set("user_role", user_role);
       // Redirect to dashboard or other page
-      router.push("/dashboard/student");
+      const path = roleToPath[user_role as keyof typeof roleToPath] || "/";
+      router.push(path);
     } else {
       // Handle login failure or missing token
       router.push("/masuk?error=true?message=akun_tidak_terdaftar");

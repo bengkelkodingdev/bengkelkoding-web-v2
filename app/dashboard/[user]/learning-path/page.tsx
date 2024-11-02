@@ -2,26 +2,29 @@
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import { AdminResponse } from "@/app/interface/UserManagement";
 import Pagination from "@/app/component/general/PaginationCustom";
-import { deleteUserAdmin, getUserAdmin } from "@/app/api/superadmin/userAdmin";
 import Modal from "@/app/component/general/Modal";
-import Input from "@/app/component/general/Input";
 import Button from "@/app/component/general/Button";
+import {
+  deleteAdminLerningPath,
+  getAdminListLearningPath,
+} from "@/app/api/admin/learning-path";
+import { LearningPathResponse } from "@/app/interface/dashboard/admin/LearningPath";
+import Image from "next/image";
 
-const HomeDashboardPenggunaAdmin = () => {
+const HomeDashboardLearningPathPage = () => {
   const access_token = Cookies.get("access_token");
   const role_user = Cookies.get("user_role");
 
-  const [DataAdmin, setDataAdmin] = useState<AdminResponse>();
+  const [listLearningPath, setListLearningPath] =
+    useState<LearningPathResponse>();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const itemsPerPage = 10; // Jumlah data per halaman
+  const itemsPerPage = 10;
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -35,12 +38,16 @@ const HomeDashboardPenggunaAdmin = () => {
     try {
       let response;
       if (role_user && (role_user === "superadmin" || role_user === "admin")) {
-        response = await getUserAdmin(searchTerm, currentPage, itemsPerPage);
+        response = await getAdminListLearningPath(
+          searchTerm,
+          currentPage,
+          itemsPerPage
+        );
       }
 
       if (response) {
-        setDataAdmin(response);
-        setTotalPages(response.meta.pagination.total_pages); // Set total halaman dari meta pagination API
+        setListLearningPath(response);
+        setTotalPages(response.meta.pagination.total_pages);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -52,12 +59,15 @@ const HomeDashboardPenggunaAdmin = () => {
     fetchData();
   }, [fetchData]); // Jalankan fetchData saat searchTerm berubah
 
-  const [adminId, setAdminId] = useState(0);
-  const [adminName, setAdminName] = useState("");
+  const [learningPathId, setLearningPathId] = useState(0);
+  const [learningPathName, setLearningPathName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleOpenModal = (adminId: number, adminName: string) => {
-    setAdminId(adminId);
-    setAdminName(adminName);
+  const handleOpenModal = (
+    learningPathId: number,
+    learningPathName: string
+  ) => {
+    setLearningPathId(learningPathId);
+    setLearningPathName(learningPathName);
     setIsModalOpen(true);
   };
   const handleCloseModal = () => {
@@ -66,8 +76,8 @@ const HomeDashboardPenggunaAdmin = () => {
 
   const handleDelete = async () => {
     try {
-      await deleteUserAdmin(adminId);
-      toast.success(`Berhasil Menghapus Admin ${adminName} 😁`);
+      await deleteAdminLerningPath(learningPathId);
+      toast.success(`Berhasil Menghapus Admin ${learningPathName} 😁`);
       fetchData();
       handleCloseModal();
     } catch (error) {
@@ -81,7 +91,7 @@ const HomeDashboardPenggunaAdmin = () => {
 
   return (
     <>
-      <div className="overflow-x-auto ">
+      <div className="overflow-x-auto max-w-7xl">
         {/* Searching + Button */}
         <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
           {/* Search */}
@@ -107,11 +117,11 @@ const HomeDashboardPenggunaAdmin = () => {
               id="table-search"
               onChange={handleSearchChange}
               className="block w-[200px] lg:w-[300px] p-2 ps-10 border border-neutral4 rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm"
-              placeholder="Cari admin"
+              placeholder="Cari learning path"
             />
           </div>
           <Link
-            href={"admin/tambah"}
+            href={"learning-path/tambah"}
             className="flex items-center gap-2 bg-primary1 text-white fill-white hover:bg-primary2 focus:ring-primary5 px-4 py-2 lg:px-5 lg:py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
           >
             <svg
@@ -123,7 +133,7 @@ const HomeDashboardPenggunaAdmin = () => {
               <path d="M0 0h24v24H0V0z" fill="none" />
               <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />
             </svg>
-            <p>Admin</p>
+            <p>Learning Path</p>
           </Link>
         </div>
 
@@ -135,51 +145,56 @@ const HomeDashboardPenggunaAdmin = () => {
                 <div className="flex items-center">No</div>
               </th>
               <th scope="col" className="px-6 py-3">
+                Image
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Nama Admin
               </th>
               <th scope="col" className="px-6 py-3">
-                Kode Identitas
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Email
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Status
+                Description
               </th>
               <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody>
-            {DataAdmin && DataAdmin.data ? (
-              DataAdmin.data.map((admin, index) => (
+            {listLearningPath && listLearningPath.data ? (
+              listLearningPath.data.map((learningPath, index) => (
                 <tr key={index} className="bg-white border-b hover:bg-gray-50">
                   <td className="w-4 p-4">
                     <div className="flex items-center">{index + 1}</div>
                   </td>
-                  <td className="px-6 py-4 font-semibold">{admin.name}</td>
-                  <td className="px-6 py-4">{admin.identity_code}</td>
-                  <td className="px-6 py-4">{admin.email}</td>
-                  <td className="px-6 py-4">
-                    {admin.is_active ? (
-                      <p className="w-max px-4 rounded-sm text-green-600 bg-green-100">
-                        Aktif
-                      </p>
-                    ) : (
-                      <p className="w-max px-4 rounded-sm text-slate-600 bg-slate-100">
-                        Tidak Aktif
-                      </p>
-                    )}
+                  <td className="px-6">
+                    <Image
+                      src={learningPath.image}
+                      alt={learningPath.name}
+                      width={150}
+                      height={96}
+                      className="max-w-24 rounded-md"
+                    />
                   </td>
+                  <td className="px-6 py-4 min-w-48 font-semibold">
+                    {learningPath.name}
+                  </td>
+                  <td className="px-6 py-4">{learningPath.description}</td>
+
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
                       <Link
-                        href={{
-                          pathname: `admin/tambah`,
-                          query: {
-                            idAdmin: admin.id,
-                            status: "edit",
-                          },
-                        }}
+                        href={`learning-path/${learningPath.id}`}
+                        className="block bg-blue2 p-1 rounded-md fill-white hover:bg-blue1 transition-all ease-in-out duration-150"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                        >
+                          <path d="M0 0h24v24H0V0z" fill="none" />
+                          <path d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                        </svg>
+                      </Link>
+                      <Link
+                        href={`learning-path/${learningPath.id}/edit`}
                         className="block bg-yellow2 p-1 rounded-md fill-white hover:bg-yellow1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -193,7 +208,9 @@ const HomeDashboardPenggunaAdmin = () => {
                         </svg>
                       </Link>
                       <button
-                        onClick={() => handleOpenModal(admin.id, admin.name)}
+                        onClick={() =>
+                          handleOpenModal(learningPath.id, learningPath.name)
+                        }
                         className="block bg-red2 p-1 rounded-md fill-white hover:bg-red1 transition-all ease-in-out duration-150"
                       >
                         <svg
@@ -227,16 +244,16 @@ const HomeDashboardPenggunaAdmin = () => {
         />
       </div>
       <Modal
-        title="Hapus Admin"
+        title="Hapus Learning Path"
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       >
         <div className="mt-4">
           <p className="mb-4 text-sm">
-            Anda yakin ingin menghapus admin <b>{adminName}</b>?
+            Anda yakin ingin menghapus learning path <b>{learningPathName}</b>?
           </p>
           <Button
-            text="Hapus Admin"
+            text="Hapus Learning Path"
             className="w-full"
             onClick={handleDelete}
           />
@@ -247,4 +264,4 @@ const HomeDashboardPenggunaAdmin = () => {
   );
 };
 
-export default HomeDashboardPenggunaAdmin;
+export default HomeDashboardLearningPathPage;

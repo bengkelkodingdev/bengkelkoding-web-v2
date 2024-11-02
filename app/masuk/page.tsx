@@ -12,6 +12,9 @@ import { LoginResponse } from "../component/types/auth";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 
+const LOGIN_WITH_GOOGLE: string =
+  process.env.NEXT_PUBLIC_API_LOGIN_WITH_GOOGLE || "";
+
 const MasukPage = () => {
   // for input data
   const [email, setEmail] = useState("");
@@ -52,12 +55,6 @@ const MasukPage = () => {
     } catch (error) {
       toast.error("Gagal Masuk. Email atau Password Anda Salah!");
     }
-  };
-
-  const handleGoogleLogin = () => {
-    // Redirect user to the backend endpoint for Google login
-    window.location.href =
-      "https://bengkod-api.rayhanashlikh.my.id/api/v1/auth/login/google/redirect";
   };
 
   return (
@@ -114,9 +111,7 @@ const MasukPage = () => {
               <div className="w-full h-0.5 bg-gray-200 rounded-full" />
             </div>
             <Link
-              href={
-                "https://bengkod-api.rayhanashlikh.my.id/api/v1/auth/login/google/redirect"
-              }
+              href={LOGIN_WITH_GOOGLE}
               className="w-full flex items-center justify-center gap-2 bg-neutral6 text-black hover:bg-neutral5 focus:ring-neutral5 border px-5 py-2.5 font-medium rounded-lg focus:ring-4 focus:outline-none transition-all ease-in-out duration-300"
             >
               <svg

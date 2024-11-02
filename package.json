@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^17.0.0",
     "@uiw/react-markdown-editor": "^6.1.2",
     "apexcharts": "^3.50.0",
     "axios": "^1.7.2",

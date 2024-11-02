@@ -36,10 +36,10 @@ const TambahKursusPage = () => {
         level,
         category
       );
-      toast.success("Successfully changed the period 😁");
+      toast.success("Berhasil tambah kursus");
       window.location.href = "./";
     } catch (error: any) {
-      toast.error(`Failed to change the period 😔: ${error.message}`);
+      toast.error(`Gagal tambah kursus: ${error.message}`);
     }
   };
 
@@ -117,7 +117,6 @@ const TambahKursusPage = () => {
             required
           />
         </div>
-
         <label className="block mb-4">
           <span className="text-gray-700">Brief Description</span>
           <textarea
@@ -127,7 +126,6 @@ const TambahKursusPage = () => {
             className="block w-full px-3 py-2 border rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
           />
         </label>
-
         <div className="mb-4">
           <span className="text-gray-700">Description</span>
           <div className="h-60 w-full">
@@ -137,8 +135,9 @@ const TambahKursusPage = () => {
             />
           </div>
         </div>
-
-        <Button text="Tambah Kursus" type="submit" />
+        <div className="text-end">
+          <Button text="Tambah Kursus" type="submit" />
+        </div>{" "}
       </form>
       <ToastContainer />
     </>

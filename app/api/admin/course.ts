@@ -128,20 +128,19 @@ export const deleteAdminSectionCourses = async (
 ): Promise<AxiosResponse> =>
   deleteRequest(`/api/v1/admin/courses/${course_id}/sections/${section_id}`);
 
-  // Update Sort Section Course
+// Update Sort Section Course
 interface SortSection {
   id: number;
   sort_order: number;
 }
 export const putAdminSortSectionCourses = async (
   course_id: string,
-  section_id: string,
-  sort_section: SortSection
+  sections: SortSection[]
 ): Promise<AxiosResponse> =>
   createPutRequest(
-    `/api/v1/admin/courses/${course_id}/sections/${section_id}`,
+    `/api/v1/admin/courses/${course_id}/sections`,
     {
-      section: sort_section,
+      sections,
     }
   );
 
@@ -203,4 +202,20 @@ export const deleteAdminArticleCourses = async (
 ): Promise<AxiosResponse> =>
   deleteRequest(
     `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles/${article_id}`
+  );
+
+// Update Sort Article
+interface SortSection {
+  id: number;
+  sort_order: number;
+}
+
+export const putAdminSortArticleCourses = async (
+  course_id: string,
+  section_id: string,
+  articles: SortSection[]
+): Promise<AxiosResponse> =>
+  createPutRequest(
+    `/api/v1/admin/courses/${course_id}/sections/${section_id}/articles`,
+    { articles }
   );

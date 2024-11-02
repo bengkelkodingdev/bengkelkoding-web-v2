@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import Input from "@/app/component/general/Input";
 import Button from "@/app/component/general/Button";
 import MarkdownEditor from "@uiw/react-markdown-editor";
-import { getAdminCourse, postAdminCourses, putAdminCourses } from "@/app/api/admin/course";
+import {
+  getAdminCourse,
+  postAdminCourses,
+  putAdminCourses,
+} from "@/app/api/admin/course";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { usePathname } from "next/navigation";
@@ -31,33 +35,20 @@ const EditKursusPage = () => {
     category: "",
   });
 
-  const fetchData = async () => {
-    try {
-      // Response courses
-      const responseCourse = await getAdminCourse(courseId);
-      setCourse(responseCourse.data);
-      setIsLoading(false);
-    } catch (err) {
-      setError("Failed to load data. Please try again.");
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Response courses
+        const responseCourse = await getAdminCourse(courseId);
+        setCourse(responseCourse.data);
+        setIsLoading(false);
+      } catch (err) {
+        setError("Failed to load data. Please try again.");
+        setIsLoading(false);
+      }
+    };
     fetchData();
-  }, []);
-
-  // const [image, setImage] = useState("");
-  // const [backgroundImage, setBackgroundImage] = useState("");
-  // const [title, setTitle] = useState("");
-  // const [author, setAuthor] = useState("");
-  // const [urlTrailer, setUrlTrailer] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [briefDescription, setBriefDescription] = useState("");
-  // const [tools, setTools] = useState("");
-  // const [teachingMethod, setTeachingMethod] = useState("");
-  // const [level, setLevel] = useState("Pemula");
-  // const [category, setCategory] = useState("");
+  }, [courseId]);
 
   const handlePutKursus = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +99,9 @@ const EditKursusPage = () => {
             type="text"
             name="url_trailer"
             value={course.url_trailer}
-            onChange={(e) => setCourse({ ...course, url_trailer: e.target.value })}
+            onChange={(e) =>
+              setCourse({ ...course, url_trailer: e.target.value })
+            }
           />
           <Input
             label="Tools (comma-separated)"
@@ -153,7 +146,9 @@ const EditKursusPage = () => {
             type="text"
             name="background_image"
             value={course.background_image}
-            onChange={(e) => setCourse({ ...course, background_image: e.target.value })}
+            onChange={(e) =>
+              setCourse({ ...course, background_image: e.target.value })
+            }
             required
           />
           <Input
@@ -161,7 +156,9 @@ const EditKursusPage = () => {
             type="text"
             name="teaching_method"
             value={course.teaching_method}
-            onChange={(e) => setCourse({ ...course, teaching_method: e.target.value })}
+            onChange={(e) =>
+              setCourse({ ...course, teaching_method: e.target.value })
+            }
             required
           />
         </div>
@@ -171,7 +168,9 @@ const EditKursusPage = () => {
           <textarea
             name="brief_description"
             value={course.brief_description}
-            onChange={(e) => setCourse({ ...course, brief_description: e.target.value })}
+            onChange={(e) =>
+              setCourse({ ...course, brief_description: e.target.value })
+            }
             required
             className="block w-full px-3 py-2 border rounded-md text-neutral1 focus:outline-none focus:ring-4 focus:ring-primary5 focus:border-primary1 sm:text-sm border-neutral4"
           />
@@ -190,7 +189,9 @@ const EditKursusPage = () => {
           </div>
         </div>
 
-        <Button text="Edit Kursus" type="submit" />
+        <div className="text-end">
+          <Button text="Edit Kursus" type="submit" />
+        </div>
       </form>
       <ToastContainer />
     </>
