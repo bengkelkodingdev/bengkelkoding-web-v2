@@ -1,3 +1,10 @@
+export interface AdminData {
+  id: number;
+  identity_code: string;
+  name: string;
+  email: string;
+  is_active: number;
+}
 export interface DosenData {
   id: number;
   npp: string;
@@ -22,6 +29,15 @@ export interface StudentData {
   name: string;
   email: string;
   is_active: number;
+  password: string;
+}
+
+export interface UpAdminData {
+  id: number;
+  identity_code: string;
+  name: string;
+  email: string;
+  is_active: boolean;
   password: string;
 }
 
@@ -71,6 +87,11 @@ interface Meta {
   success: boolean;
   message: string;
   pagination: Pagination;
+}
+
+export interface AdminResponse {
+  data: AdminData[];
+  meta: Meta;
 }
 
 export interface DosenRespon {
