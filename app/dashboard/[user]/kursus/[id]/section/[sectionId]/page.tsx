@@ -98,7 +98,7 @@ const ArticleKursusPage = () => {
     setIsChangedSort(true);
   };
 
-  const handlePostSortArticle = async () => {
+  const handlePutSortArticle = async () => {
     try {
       // Send updated sort order to the API
       const articles = listArticle.map(({ id, sort_order }) => ({
@@ -107,6 +107,7 @@ const ArticleKursusPage = () => {
       }));
       await putAdminSortArticleCourses(courseId, sectionId, articles);
       toast.success("Order updated successfully");
+      handleCloseSortModal();
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
     }
@@ -259,7 +260,7 @@ const ArticleKursusPage = () => {
           </Droppable>
         </DragDropContext>
       </div>
-      
+
       {/* Delete Section */}
       <Modal
         title="Hapus Artikel"
@@ -289,7 +290,7 @@ const ArticleKursusPage = () => {
           <Button
             text="Ubah Urutan Artikel"
             className="w-full"
-            onClick={handlePostSortArticle}
+            onClick={handlePutSortArticle}
           />
         </div>
       </Modal>
