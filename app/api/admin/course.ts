@@ -135,13 +135,12 @@ interface SortSection {
 }
 export const putAdminSortSectionCourses = async (
   course_id: string,
-  section_id: string,
-  sort_section: SortSection
+  sections: SortSection[]
 ): Promise<AxiosResponse> =>
   createPutRequest(
-    `/api/v1/admin/courses/${course_id}/sections/${section_id}`,
+    `/api/v1/admin/courses/${course_id}/sections`,
     {
-      section: sort_section,
+      sections,
     }
   );
 
