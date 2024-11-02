@@ -102,7 +102,9 @@ const EditArticleKursusPage = () => {
             </div>
           </div>
 
-          <Button text="Edit Artikel" type="submit" />
+          <div className="text-end">
+            <Button text="Edit Artikel" type="submit" />
+          </div>
         </form>
       </div>
 
