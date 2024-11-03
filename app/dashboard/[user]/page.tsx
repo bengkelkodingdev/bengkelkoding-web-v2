@@ -1,5 +1,8 @@
+"use client";
+import { getRole } from "@/app/api/general";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import HomeDashboardAdmin from "./home-dashboard/Admin";
 
 const statistics = [
   {
@@ -74,6 +77,31 @@ const statistics = [
 ];
 
 const HomeDashboardPage = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [userRole, setUserRole] = useState({ role: "" });
+
+  // UseEffect to load data on component mount
+  useEffect(() => {
+    // Function to fetch dashboard data
+    const fetchData = async () => {
+      try {
+        // Get user role
+        const responseUserRole = await getRole();
+        setUserRole(responseUserRole.data);
+      } catch (err) {
+        setError("Failed to load data. Please try again.");
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (userRole.role === "admin" || "superadmin") {
+    return <HomeDashboardAdmin />;
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 2xl:gap-4">

@@ -387,11 +387,11 @@ const DashboardDetailKelasPage = () => {
   const handleDeleteInfo = async (idClassroom, idInfo) => {
     try {
       if (role_user === "superadmin" || role_user === "admin") {
-        await deleteInformationAdmin(idClassroom, idInfo, access);
+        await deleteInformationAdmin(idClassroom, idInfo);
       } else if (role_user === "lecture") {
-        await deleteInformationLecture(idClassroom, idInfo, access);
+        await deleteInformationLecture(idClassroom, idInfo);
       } else if (role_user === "assistant") {
-        await deleteInformationAssistant(idClassroom, idInfo, access);
+        await deleteInformationAssistant(idClassroom, idInfo);
       }
       toast.success(`Berhasil menghapus Informasi 😁`);
       fetchClassrooms();
