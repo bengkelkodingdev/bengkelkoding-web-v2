@@ -1,6 +1,5 @@
 import { AxiosResponse } from "axios";
 import {
-  createPatchRequest,
   createPostRequest,
   createPutRequest,
   createRequest,
@@ -109,12 +108,12 @@ export const postAdminSectionCourses = async (
   });
 
 // Update Section Course
-export const patchAdminSectionCourses = async (
+export const putAdminSectionCourses = async (
   course_id: string,
   section_id: string,
   name: string
 ): Promise<AxiosResponse> =>
-  createPatchRequest(
+  createPutRequest(
     `/api/v1/admin/courses/${course_id}/sections/${section_id}`,
     {
       name: name,

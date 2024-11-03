@@ -2,8 +2,8 @@
 import {
   deleteAdminSectionCourses,
   getAdminSectionCourse,
-  patchAdminSectionCourses,
   postAdminSectionCourses,
+  putAdminSectionCourses,
   putAdminSortSectionCourses,
 } from "@/app/api/admin/course";
 import Button from "@/app/component/general/Button";
@@ -85,7 +85,7 @@ const SectionKursusPage = () => {
   };
   const handleUpdateSection = async () => {
     try {
-      await patchAdminSectionCourses(courseId, sectionId, titleSection);
+      await putAdminSectionCourses(courseId, sectionId, titleSection);
       toast.success("Successfully change the section");
 
       handleCloseUpdateModal();
